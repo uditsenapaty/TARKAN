@@ -31,7 +31,14 @@ def main():
         rows.append({"model": "TARKAN", "dataset": ds, "best_dev_F1": round(res["best_dev_f1"], 2),
                      **{k: round(v, 2) for k, v in flatten_metrics(metrics).items()}})
         print(ds, metrics)
-    write_table(rows, ROOT / "results" / "tables" / "main_results.csv")
+
+    # merge with existing rows (running a subset of datasets must not drop the others)
+    out = ROOT / "results" / "tables" / "main_results.csv"
+    if out.exists():
+        import csv as _csv
+        fresh = {r["dataset"] for r in rows}
+        rows = [r for r in _csv.DictReader(open(out)) if r["dataset"] not in fresh] + rows
+    write_table(rows, out)
 
 
 if __name__ == "__main__":

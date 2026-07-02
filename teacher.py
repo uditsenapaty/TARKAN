@@ -28,12 +28,27 @@ KG_PROMPT = (
     "Given a tweet, an aspect term, and a candidate KG triple, decide whether the triple "
     "is useful for aspect-level sentiment reasoning. Return 1 if useful and 0 otherwise."
 )
+# Calibration variant (paper Table 8 operating point): the binary prompt makes strict teachers
+# (Llama-3.1) retain ~0.1 triples/aspect vs the paper's published ~3.1/2.9. Eliciting a GRADED
+# usefulness score and keeping the teacher's top-k reproduces the paper's mechanism
+# (teacher-ranked usefulness, §3.4 top-M criterion) at the paper's own retention statistics.
+KG_SCORE_PROMPT = (
+    "Given a tweet, an aspect term, and a candidate KG triple, rate how useful the triple is "
+    "for reasoning about sentiment toward the aspect, on a scale from 0 (useless) to 10 "
+    "(highly useful). Answer with a single integer."
+)
 _BIN_RE = re.compile(r"[01]")
+_INT_RE = re.compile(r"\d+")
 
 
 def _parse_binary(text: str) -> int:
     m = _BIN_RE.search(text or "")
     return int(m.group(0)) if m else 0
+
+
+def _parse_int10(text: str) -> int:
+    m = _INT_RE.search(text or "")
+    return max(0, min(10, int(m.group(0)))) if m else 0
 
 
 # --------------------------------------------------------------------------- #
@@ -136,7 +151,7 @@ class LLMTeacher:
         gen = self._tok.decode(out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True)
         return _parse_binary(gen)
 
-    def _ask_batch(self, system: str, users: List[str], max_new_tokens: int = 4) -> List[int]:
+    def _ask_batch(self, system: str, users: List[str], max_new_tokens: int = 4, parser=None) -> List[int]:
         """P1 (OBEYING, result-neutral): score many INDEPENDENT prompts in one greedy
         generate() via left-padding + attention mask. Per-sequence argmax is identical to
         the unbatched call (padding is masked; left-padding right-aligns real tokens), so
@@ -168,7 +183,8 @@ class LLMTeacher:
             decoded = self._tok.batch_decode(gen, skip_special_tokens=True)
         finally:
             self._tok.padding_side = prev_side
-        return [_parse_binary(d) for d in decoded]
+        parse = parser or _parse_binary
+        return [parse(d) for d in decoded]
 
     def relevance_label(self, tweet: str, aspect: str, image_description: str) -> int:
         return self._ask(RELEVANCE_PROMPT, self._rel_user(tweet, aspect, image_description))
@@ -193,10 +209,15 @@ class LLMTeacher:
         users = [self._kg_user(tw, asp, tr) for (tw, asp, tr) in items]
         return self._run_batched(KG_PROMPT, users, batch_size)
 
-    def _run_batched(self, system: str, users: List[str], batch_size: int) -> List[int]:
+    def kg_score_batch(self, items: List[Tuple[str, str, Triple]], batch_size: int = 16) -> List[int]:
+        """Graded (0-10) usefulness scores for KG triples (Table-8 calibration; see KG_SCORE_PROMPT)."""
+        users = [self._kg_user(tw, asp, tr) for (tw, asp, tr) in items]
+        return self._run_batched(KG_SCORE_PROMPT, users, batch_size, parser=_parse_int10)
+
+    def _run_batched(self, system: str, users: List[str], batch_size: int, parser=None) -> List[int]:
         out: List[int] = []
         for i in range(0, len(users), batch_size):
-            out.extend(self._ask_batch(system, users[i: i + batch_size]))
+            out.extend(self._ask_batch(system, users[i: i + batch_size], parser=parser))
         return out
 
 

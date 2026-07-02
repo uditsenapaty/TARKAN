@@ -104,18 +104,26 @@ class _RationalKAN(nn.Module):
 # Fusion strategies (Table 10). All: forward(t, v, g) -> z  ([K, d] each).
 # --------------------------------------------------------------------------- #
 class KANFusion(nn.Module):
-    def __init__(self, d: int = None, hidden=None, backend: str = None, grid_size: int = None, spline_order: int = None, dropout: float = None):
+    def __init__(self, d: int = None, hidden=None, backend: str = None, grid_size: int = None,
+                 spline_order: int = None, dropout: float = None, in_extra: int = 0):
         super().__init__()
         d = d or CONFIG.hidden_dim
         hidden = list(hidden if hidden is not None else CONFIG.kan_hidden)
-        widths = [3 * d, *hidden, d]
+        # in_extra: appended confidence features (A9) widen the input beyond [t; v; g]
+        widths = [3 * d + in_extra, *hidden, d]
+        self.in_extra = in_extra
         self.net = _build_kan(
             backend or CONFIG.kan_backend, widths,
             grid_size or CONFIG.kan_grid_size, spline_order or CONFIG.kan_spline_order,
         )
 
-    def forward(self, t, v, g):
-        return self.net(torch.cat([t, v, g], dim=-1))  # Eq. 18 -> Eq. 20
+    def forward(self, t, v, g, conf=None):
+        parts = [t, v, g]
+        if self.in_extra:
+            if conf is None:
+                conf = t.new_zeros((*t.shape[:-1], self.in_extra))
+            parts.append(conf)
+        return self.net(torch.cat(parts, dim=-1))  # Eq. 18 -> Eq. 20 (+A9 confidence features)
 
 
 class ConcatLinear(nn.Module):
@@ -210,8 +218,10 @@ FUSION_REGISTRY = {
 }
 
 
-def build_fusion(name: str = None, d: int = None, dropout: float = None) -> nn.Module:
+def build_fusion(name: str = None, d: int = None, dropout: float = None, in_extra: int = 0) -> nn.Module:
     name = name or CONFIG.fusion
     if name not in FUSION_REGISTRY:
         raise ValueError(f"unknown fusion '{name}'. options: {list(FUSION_REGISTRY)}")
-    return FUSION_REGISTRY[name](d=d, dropout=dropout)
+    if name == "kan":
+        return KANFusion(d=d, dropout=dropout, in_extra=in_extra)
+    return FUSION_REGISTRY[name](d=d, dropout=dropout)  # A9 conf-append is KAN-only

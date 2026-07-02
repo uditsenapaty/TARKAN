@@ -63,3 +63,10 @@ referred_clones/**/*.npz
 referred_clones/**/checkpoints/
 referred_clones/**/pretrained*/
 referred_clones/**/.git/
+
+# ── backbone graft heavy artifacts (weights/data/env/clones) ──
+graft/vlp_assets/
+graft/aom_assets/
+graft/vlpenv/
+graft/AoM_full/
+graft/*.log

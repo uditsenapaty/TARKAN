@@ -27,6 +27,7 @@ def main():
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--tag", default="run")
     ap.add_argument("--epochs", type=int, default=None)
+    ap.add_argument("--seed", type=int, default=None, help="override CONFIG.seed (ensembling)")
     # ---- patch override knobs ----
     ap.add_argument("--evidence-dropout", type=float, default=None)
     ap.add_argument("--kan-hidden", default=None, help="comma list, e.g. 768 or 1024,512")
@@ -43,6 +44,8 @@ def main():
     ap.add_argument("--aux-asc-head", action="store_true", help="A7: dedicated ASC polarity head as polarity source")
     ap.add_argument("--lambda-asc", type=float, default=None, help="weight of L_asc when A7 on")
     ap.add_argument("--crf", action="store_true", help="A4: word-level linear-chain CRF for L_tag + Viterbi decode")
+    ap.add_argument("--conf-append", action="store_true", help="A9: append [r, mean(s), max(s)] to KAN input")
+    ap.add_argument("--feat-gate", action="store_true", help="A10: learnable (1+γ)⊙v, (1+δ)⊙g evidence gates")
     ap.add_argument("--text-model", default=None, help="A8: text encoder HF id (e.g. vinai/bertweet-large)")
     ap.add_argument("--batch-size", type=int, default=None)
     ap.add_argument("--grad-accum", type=int, default=None, help="A8: grad accumulation steps")
@@ -50,6 +53,8 @@ def main():
 
     # ---- apply overrides to the global CONFIG singleton ----
     CONFIG.device = args.device
+    if args.seed is not None:
+        CONFIG.seed = args.seed
     if args.evidence_dropout is not None:
         CONFIG.evidence_dropout = args.evidence_dropout
     if args.kan_hidden is not None:
@@ -73,6 +78,8 @@ def main():
     if args.lambda_asc is not None:
         CONFIG.lambda_asc = args.lambda_asc
     CONFIG.use_crf = bool(args.crf)                            # A4
+    CONFIG.fusion_conf_append = bool(args.conf_append)         # A9
+    CONFIG.fusion_feat_gate = bool(args.feat_gate)             # A10
     if args.text_model:
         CONFIG.text_model_id = args.text_model                 # A8
     if args.batch_size:
@@ -100,6 +107,7 @@ def main():
         "layerwise_lr": CONFIG.layerwise_lr, "aux_asc_head": CONFIG.aux_asc_head,
         "use_crf": CONFIG.use_crf, "text_model": CONFIG.text_model_id,
         "batch_size": CONFIG.batch_size, "grad_accum": CONFIG.grad_accum,
+        "conf_append": CONFIG.fusion_conf_append, "feat_gate": CONFIG.fusion_feat_gate,
     }
     out = ROOT / "results" / "tables" / "iterations.csv"
     exists = out.exists()

@@ -213,9 +213,10 @@ class TarkanDataset:
         if self._tok is None:
             from transformers import AutoTokenizer
 
-            self._tok = AutoTokenizer.from_pretrained(
-                self.cfg.text_model_id, use_fast=False, normalization=True, token=self.cfg.hf_token
-            )
+            kw = {"use_fast": False, "token": self.cfg.hf_token}
+            if "bertweet" in self.cfg.text_model_id.lower():
+                kw["normalization"] = True  # BERTweet-specific tweet normalization
+            self._tok = AutoTokenizer.from_pretrained(self.cfg.text_model_id, **kw)
         return self._tok
 
     def _img_processor(self):
@@ -231,7 +232,9 @@ class TarkanDataset:
         Returns input_ids, attention_mask, word_ids (subtoken -> word index or -1).
         """
         tok = self._tokenizer()
-        bos, eos = tok.bos_token or "<s>", tok.eos_token or "</s>"
+        # BERTweet/RoBERTa use <s>/</s>; DeBERTa/BERT-style use [CLS]/[SEP]
+        bos = tok.bos_token or tok.cls_token or "<s>"
+        eos = tok.eos_token or tok.sep_token or "</s>"
         pieces = [bos]
         word_ids = [-1]
         for wi, w in enumerate(tokens):

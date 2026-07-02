@@ -18,3 +18,9 @@ E8_large_best,twitter2015,66.61,63.07,65.38,64.2,83.62,76.08,69.71,0.2,"(768,)",
 E9_large_crf_richasc,twitter2015,66.17,62.26,65.38,63.78,83.82,75.8,70.33,0.2,"(768,)",8,mean,False,0.0,,True,True,vinai/bertweet-large,8,2
 T17_large_crf_richasc,twitter2017,66.31,66.75,68.64,67.68,92.29,72.85,72.0,0.2,"(768,)",8,mean,False,0.0,,True,True,vinai/bertweet-large,8,2
 T17_D2_base_crf_richasc,twitter2017,64.48,65.23,67.67,66.43,91.17,72.04,70.87,0.2,"(768,)",8,mean,False,0.0,,True,True,vinai/bertweet-base,16,1
+ALLIN_t2015,twitter2015,62.52,62.22,66.06,64.08,84.1,74.73,68.67,0.2,"(768,)",8,mean,False,0.0,,True,True,vinai/bertweet-base,16,1,True,True
+NS_twitter2015,twitter2015,,63.02,66.06,64.5,84.93,74.83,68.66,,,,"ns:bio=1,a=0.6,w=4,c=0",,,,,,,,
+ALLIN_deb_t2015,twitter2015,67.02,65.72,67.12,66.41,85.4,76.95,70.95,0.2,"(768,)",8,mean,False,0.0,,True,True,microsoft/deberta-v3-large,4,4,True,True
+NS_twitter2015,twitter2015,,66.0,67.21,66.6,85.71,77.05,71.22,,,,"ns:bio=1,a=0.6,w=4,c=0",,,,,,,,
+ENS_s42,twitter2015,68.23,66.64,68.18,67.4,84.56,78.21,72.19,0.2,"(768,)",8,mean,False,0.0,,True,True,microsoft/deberta-v3-large,4,4,False,False
+ENS_s43,twitter2015,67.14,66.89,67.6,67.24,85.85,77.15,72.42,0.2,"(768,)",8,mean,False,0.0,,True,True,microsoft/deberta-v3-large,4,4,False,False

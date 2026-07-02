@@ -155,6 +155,19 @@ class TarkanConfig:
     # A8 (DISOBEYING): gradient accumulation — enables larger text encoders (e.g. bertweet-large)
     # on the 16GB T4 at reduced per-step batch while keeping the paper's effective batch of 16.
     grad_accum: int = 1
+    # A9 (DISOBEYING, opt-in): append per-token evidence-confidence features [r_k, mean(s), max(s)]
+    # to the KAN fusion input (3d -> 3d+3). Lets the fusion condition on HOW MUCH to trust each
+    # evidence stream — meaningful only once teacher scores are informative (post Table-8 recalibration).
+    fusion_conf_append: bool = False
+    # A10 (DISOBEYING, opt-in): learnable feature-wise evidence gates v'=(1+γ)⊙v, g'=(1+δ)⊙g
+    # (γ, δ ∈ R^d, init 0 = identity) applied before fusion.
+    fusion_feat_gate: bool = False
+    # ---- neurosymbolic inference layer (A12-A14, DISOBEYING, inference-only, see neurosymbolic.py) ----
+    ns_bio_rules: bool = False        # A12: hard BIO-transition logic in CRF Viterbi
+    ns_lexicon_alpha: float = 0.0     # A13: product-of-experts weight for the SenticNet polarity prior (0=off)
+    ns_lexicon_tau: float = 0.5       # A13: prior temperature
+    ns_window: int = 5                # A13: context window (words) around the aspect
+    ns_aspect_consistency: bool = False  # A14: majority polarity for duplicate aspect strings
 
     # ---- runtime ----
     seed: int = 42

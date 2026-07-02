@@ -87,6 +87,14 @@ help macro/minority but *hurt* it; both rolled back. (2) A4 CRF is the only patc
 (5) Joint ≈ MATE × polarity-on-extracted: 84 × ~77 ⇒ ~65 — reaching the 72.5 bar needs ~88 × ~82,
 which is why the remaining lever is encoder scale (A8), not more head/loss tuning.
 
+### Bug found & fixed during the final suite (O7, OBEYING — genuine correctness fix)
+**Encoder/config divergence:** `models.TarkanStudent` built `TextEncoder()`/`VisualEncoder()` with
+no arguments, so they silently read the *global* `CONFIG` model ids while the dataset/tokenizer used
+the *passed* per-dataset cfg. With the t2017 bertweet-large override this trained a base-vocab
+encoder on large-vocab token ids → joint F1 collapsed to 36.88 (vs 67.68). Fixed by passing
+`config.text_model_id`/`config.visual_model_id` explicitly. t2015 was unaffected (both paths base)
+and reproduced its champion exactly (64.98), confirming run-to-run determinism.
+
 ### New patches added during the chase (not in the original menu)
 | id | what | faithfulness | file(s) |
 |---|---|---|---|

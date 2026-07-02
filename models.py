@@ -62,8 +62,12 @@ class TarkanStudent(nn.Module):
         if build_encoders:
             from encoders import TextEncoder, VisualEncoder
 
-            self.text_encoder = TextEncoder()
-            self.visual_encoder = VisualEncoder()
+            # Pass THIS model's config explicitly — the encoders' no-arg defaults read the
+            # global CONFIG, which silently diverges from a replace()-constructed cfg (e.g.
+            # the per-dataset bertweet-large override: tokenizer used large ids while the
+            # encoder loaded base → vocabulary mismatch → garbage training).
+            self.text_encoder = TextEncoder(model_id=config.text_model_id, hidden_dim=d, dropout=config.dropout)
+            self.visual_encoder = VisualEncoder(model_id=config.visual_model_id, hidden_dim=d, dropout=config.dropout)
         else:  # tests/feature-precompute: feed text_feats/visual_feats to forward()
             self.text_encoder = None
             self.visual_encoder = None
@@ -72,7 +76,15 @@ class TarkanStudent(nn.Module):
         self.relevance = AspectVisualRelevance(d, dropout=dp)
         self.triple_encoder = TripleEncoder(d, embedder=entity_embedder, dropout=dp)
         self.kg_filter = KGFilter(d, dropout=dp)
-        self.fusion = build_fusion(config.fusion, d, dropout=dp)
+        self._conf_extra = 3 if (getattr(config, "fusion_conf_append", False) and config.fusion == "kan") else 0
+        self.fusion = build_fusion(config.fusion, d, dropout=dp, in_extra=self._conf_extra)
+        # A10 (opt-in): feature-wise evidence gates, init 0 -> identity at start of training
+        if getattr(config, "fusion_feat_gate", False):
+            self.gate_gamma = nn.Parameter(torch.zeros(d))
+            self.gate_delta = nn.Parameter(torch.zeros(d))
+        else:
+            self.gate_gamma = None
+            self.gate_delta = None
         self.tag_norm = nn.LayerNorm(d)  # stabilizes the residual KAN-enhanced token rep h̃
         self.bio_head = BIOTaggingHead(d, dropout=dp)
         # A7 (DISOBEYING, opt-in): dedicated 3-way polarity head on a RICH aspect rep of h̃
@@ -167,6 +179,7 @@ class TarkanStudent(nn.Module):
         # per-token aspect-relevant evidence (zeros for tokens outside any aspect)
         v_tok = text_feats.new_zeros((B, n, d))
         g_tok = text_feats.new_zeros((B, n, d))
+        conf_tok = text_feats.new_zeros((B, n, 3)) if self._conf_extra else None  # A9 [r, mean(s), max(s)]
 
         all_r, all_s, all_tr, all_alpha, owner = [], [], [], [], []
         spans_b = batch["aspect_spans"]
@@ -187,6 +200,11 @@ class TarkanStudent(nn.Module):
                 s_, e_ = spans[k][0], spans[k][1]
                 v_tok[b, s_:e_] = v_tilde[k]
                 g_tok[b, s_:e_] = g_list[k]
+                if conf_tok is not None:
+                    conf_tok[b, s_:e_, 0] = r_k[k]
+                    if s_list[k].numel():
+                        conf_tok[b, s_:e_, 1] = s_list[k].mean()
+                        conf_tok[b, s_:e_, 2] = s_list[k].max()
             if K:
                 all_r.append(r_k)
                 all_s.extend(s_list)
@@ -212,11 +230,24 @@ class TarkanStudent(nn.Module):
                 keep = (torch.rand(B, 1, 1, device=text_feats.device) >= cfg.evidence_dropout).to(text_feats.dtype)
                 v_tok = v_tok * keep
                 g_tok = g_tok * keep
-            fused = self.fusion(
-                text_feats.reshape(B * n, d),
-                v_tok.reshape(B * n, d),
-                g_tok.reshape(B * n, d),
-            ).reshape(B, n, d)
+                if conf_tok is not None:
+                    conf_tok = conf_tok * keep  # dropped-evidence instances must look like stage-1 (all zeros)
+            if self.gate_gamma is not None:  # A10: (1+γ)⊙v, (1+δ)⊙g — identity at init, zeros stay zeros
+                v_tok = v_tok * (1 + self.gate_gamma)
+                g_tok = g_tok * (1 + self.gate_delta)
+            if conf_tok is not None:
+                fused = self.fusion(
+                    text_feats.reshape(B * n, d),
+                    v_tok.reshape(B * n, d),
+                    g_tok.reshape(B * n, d),
+                    conf=conf_tok.reshape(B * n, 3),
+                ).reshape(B, n, d)
+            else:
+                fused = self.fusion(
+                    text_feats.reshape(B * n, d),
+                    v_tok.reshape(B * n, d),
+                    g_tok.reshape(B * n, d),
+                ).reshape(B, n, d)
             h_tilde = self.tag_norm(text_feats + fused)  # add & norm (stable scale for the BIO head)
         else:  # Table-6 ablation "w/o KAN-enhanced tag representation": BIO head on text only
             h_tilde = text_feats
