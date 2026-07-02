@@ -1,0 +1,65 @@
+# ── secrets ──
+.env.local
+.env
+
+# ── environments / caches ──
+myenv
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.cache/
+
+# ── IDE / editor / Lightning-studio server junk ──
+.idea/
+.vscode/
+.vscode-server
+.cursor-server
+.windsurf-server
+.lightning_studio/
+.lightningignore
+.bash_history
+.claude.json
+.screenrc
+
+# ── source material (heavy / licensed) ──
+TARKAN.pdf
+TARKAN_latex/
+referred_papers
+CLAUDE.md
+.claude
+
+# ── data, models, KG dumps, indices (heavy) ──
+data/
+# results: ignore heavy contents (checkpoints/logs) but commit the light artifacts
+# (paper-format tables + plots + reports). NB: `results/` would block the negations —
+# git cannot re-include children of an ignored DIRECTORY, hence `results/*`.
+results/*
+!results/tables/
+!results/tables/**
+!results/plots/
+!results/plots/**
+!results/reports/
+!results/reports/**
+*.pt
+*.bin
+*.safetensors
+*.pth
+*.h5
+*.npy
+*.npz
+*.csv.gz
+
+# ── heavy contents inside cloned baselines (keep source, drop weights/data/features) ──
+referred_clones/**/data/
+referred_clones/**/datasets/
+referred_clones/**/*.pt
+referred_clones/**/*.bin
+referred_clones/**/*.safetensors
+referred_clones/**/*.pth
+referred_clones/**/*.h5
+referred_clones/**/*.npy
+referred_clones/**/*.npz
+referred_clones/**/checkpoints/
+referred_clones/**/pretrained*/
+referred_clones/**/.git/

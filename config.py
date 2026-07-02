@@ -1,0 +1,197 @@
+"""TARKAN central configuration.
+
+All hyperparameters are the paper values (§4.3). Paths are repo-relative. Secrets
+(HF_TOKEN, ...) are read from .env.local via python-dotenv and are NEVER hard-coded.
+
+Usage:
+    from config import CONFIG
+    CONFIG.text_model_id            # 'vinai/bertweet-base'
+    CONFIG.lambda1                  # 0.5
+
+Override any field from a YAML/CLI by constructing TarkanConfig(**overrides) — the
+experiment/ablation runners do exactly this.
+"""
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass, field, asdict
+from pathlib import Path
+from typing import Optional
+
+# ----------------------------------------------------------------------------- #
+# Secrets: load .env.local (preferred) then .env, without overriding real env.
+# ----------------------------------------------------------------------------- #
+try:
+    from dotenv import load_dotenv
+
+    _ROOT = Path(__file__).resolve().parent
+    load_dotenv(_ROOT / ".env.local", override=False)
+    load_dotenv(_ROOT / ".env", override=False)
+except Exception:  # python-dotenv not installed yet (e.g. during scaffolding)
+    _ROOT = Path(__file__).resolve().parent
+
+
+# ----------------------------------------------------------------------------- #
+# Label spaces (paper §3.1, Eq. 3) — single source of truth.
+# ----------------------------------------------------------------------------- #
+# Unified BIO sentiment tags. Order is fixed; index is the class id used by the
+# token-tagging head (Eq. 21) and Ltag (Eq. 22).
+BIO_TAGS = ["O", "B-POS", "I-POS", "B-NEU", "I-NEU", "B-NEG", "I-NEG"]
+TAG2ID = {t: i for i, t in enumerate(BIO_TAGS)}
+ID2TAG = {i: t for t, i in TAG2ID.items()}
+NUM_BIO_TAGS = len(BIO_TAGS)  # 7
+
+# Sentiment polarities = the suffix of the unified BIO tags (Eq. 3). Used for
+# polarity decoding from BIO tags and for the MASC subtask. (No separate ASC head:
+# the updated paper §3.6 folds extraction + classification into one BIO head.)
+POLARITIES = ["POS", "NEU", "NEG"]
+POL2ID = {p: i for i, p in enumerate(POLARITIES)}
+ID2POL = {i: p for p, i in POL2ID.items()}
+NUM_POLARITIES = len(POLARITIES)  # 3
+
+# Raw dataset label encodings -> canonical polarity (see §3.1 / §5.2).
+TSV_LABEL2POL = {0: "NEG", 1: "NEU", 2: "POS"}   # CopotronicRifat .tsv
+TXT_LABEL2POL = {-1: "NEG", 0: "NEU", 1: "POS"}  # .txt 4-line format
+
+
+@dataclass
+class Paths:
+    root: Path = _ROOT
+    data: Path = _ROOT / "data"
+    twitter2015: Path = _ROOT / "data" / "twitter2015"
+    twitter2017: Path = _ROOT / "data" / "twitter2017"
+    images2015: Path = _ROOT / "data" / "images" / "twitter2015"
+    images2017: Path = _ROOT / "data" / "images" / "twitter2017"
+    conceptnet: Path = _ROOT / "data" / "conceptnet"
+    senticnet: Path = _ROOT / "data" / "senticnet"
+    kg_index: Path = _ROOT / "data" / "kg_index"
+    captions: Path = _ROOT / "data" / "captions"
+    teacher_labels: Path = _ROOT / "data" / "teacher_labels"
+    results: Path = _ROOT / "results"
+    checkpoints: Path = _ROOT / "results" / "checkpoints"
+    logs: Path = _ROOT / "results" / "logs"
+    tables: Path = _ROOT / "results" / "tables"
+    plots: Path = _ROOT / "results" / "plots"
+    reports: Path = _ROOT / "results" / "reports"
+
+
+@dataclass
+class TarkanConfig:
+    # ---- models (paper §4.3) ----
+    text_model_id: str = "vinai/bertweet-base"
+    visual_model_id: str = "openai/clip-vit-base-patch32"   # image encoder (user-mandated)
+    teacher_llm_id: str = "meta-llama/Llama-3.1-8B-Instruct"  # offline teacher (user-mandated; was Qwen2.5-7B)
+    captioner_id: str = "Salesforce/blip-image-captioning-large"  # Open-Q #3
+
+    # ---- dimensions ----
+    hidden_dim: int = 768          # d
+    max_text_len: int = 128        # paper §4.3
+    num_visual_tokens: int = 49    # CLIP ViT-B/32 patch tokens (Open-Q #5)
+
+    # ---- optimization (paper §4.3) ----
+    batch_size: int = 16
+    learning_rate: float = 2e-5
+    dropout: float = 0.3
+    weight_decay: float = 0.01
+    max_epochs: int = 30
+    warmup_ratio: float = 0.1      # Open-Q #7 (paper-unspecified)
+    grad_clip: float = 1.0         # Open-Q #7
+    early_stop_patience: int = 8   # Open-Q #7 (FINAL; initial default was 5 — paper-unspecified)
+
+    # ---- loss weights (updated paper §3.7: L = L_tag + λ1 L_rel + λ2 L_kg) ----
+    lambda1: float = 0.5           # Lrel weight (teacher-guided aspect-visual relevance)
+    lambda2: float = 0.5           # Lkg weight (teacher-guided KG evidence filtering)
+
+    # ---- KG retrieval/filter ----
+    top_m_triples: int = 10        # paper §4.3 (top-M = 10)
+    kg_eps: float = 1e-8           # Eq. 17 epsilon
+    entity_emb_dim: int = 300      # ConceptNet Numberbatch
+    kg_sources: tuple = ("conceptnet", "senticnet")
+
+    # ---- fusion (Eq. 18-20) ----
+    fusion: str = "kan"            # one of FUSION_REGISTRY keys (Table 10)
+    kan_backend: str = "efficient_kan"  # efficient_kan | fastkan | rkan (Open-Q #11)
+    kan_hidden: tuple = (768,)     # hidden widths between 3*d and d (FINAL; O2, paper-unspecified)
+    kan_grid_size: int = 5
+    kan_spline_order: int = 3
+
+    # ---- ablation toggles (Table 6) ----
+    use_teacher: bool = True          # --no-teacher  ("w/o LLM teacher guidance")
+    use_relevance: bool = True        # --no-relevance ("w/o aspect-visual relevance")
+    use_kg_filter: bool = True        # --no-kg-filter ("w/o KG evidence filtering")
+    use_kg_stream: bool = True        # --no-kg-stream ("w/o KG stream")
+    use_visual_stream: bool = True    # --no-visual-stream ("w/o visual stream")
+    # Updated paper §3.6: the BIO tagging head runs on the KAN-fused multimodal token
+    # representation h̃_i = LayerNorm(h^t_i + KAN([h^t_i ; v_tilde ; g_tilde])). Setting this
+    # False feeds the BIO head text-only features -> reproduces the Table-6 ablation
+    # "w/o KAN-enhanced tag representation".
+    use_kan_tag_representation: bool = True
+    # Evidence dropout (training only): with this probability per instance, zero the
+    # per-token visual/KG evidence fed to the tag fusion. This teaches the unified BIO head
+    # to ALSO extract aspect spans from text alone (zero-evidence regime), which matches the
+    # two-stage inference's stage-1 extraction pass (no aspect evidence yet). Without it the
+    # head learns "B/I requires evidence" and fails to extract at stage-1 (recall ~0).
+    # Does not affect L_rel / L_kg (those supervise the relevance/usefulness scores upstream).
+    # FINAL = 0.2 (measured sweet spot: 0.5 starves the evidence path, <0.1 starves stage-1 extraction).
+    evidence_dropout: float = 0.2
+
+    # ---- reproduction-aid patches ----
+    # FINAL TARKAN-repro config (measured champion over 19 logged runs — see
+    # possible-patches.md "MEASURED patch ledger" and results/tables/iterations.csv).
+    # The paper-faithful baseline values are noted per field; the deterministic battery
+    # still exercises the faithful loss/decode paths (they activate only via these flags).
+    pool_mode: str = "mean"               # O5 (OBEYING): aspect-span pooling operator (mean|max|first)
+    tag_class_weight: bool = False        # A1 (DISOBEYING): inverse-freq weighted L_tag (targets MASC collapse)
+    tag_label_smoothing: float = 0.0      # A5 (DISOBEYING): label smoothing on L_tag
+    layerwise_lr: Optional[float] = None  # A3 (DISOBEYING): LR for fresh (non-encoder) modules; encoders keep learning_rate
+    # A7 (DISOBEYING): dedicated ASC polarity head on the pooled aspect rep of h̃, used as the
+    # polarity source at inference (instead of the BIO-tag suffix). §3.6 folded polarity into the
+    # BIO head; re-adding a focused 3-way classifier targets the MATE-vs-joint polarity gap.
+    aux_asc_head: bool = True             # FINAL: on (paper-faithful = False; +MASC, composes with A4)
+    lambda_asc: float = 1.0               # weight of L_asc when aux_asc_head is on
+    # A4 (DISOBEYING): linear-chain CRF over word-level BIO emissions (first-subtoken logits).
+    # Enforces valid tag transitions at train (NLL) and inference (Viterbi); paper uses softmax.
+    use_crf: bool = True                  # FINAL: on (paper-faithful = False; +2.5 MATE)
+    # A8 (DISOBEYING): gradient accumulation — enables larger text encoders (e.g. bertweet-large)
+    # on the 16GB T4 at reduced per-step batch while keeping the paper's effective batch of 16.
+    grad_accum: int = 1
+
+    # ---- runtime ----
+    seed: int = 42
+    device: str = "cpu"            # set 'cuda' on the T4 server
+    num_workers: int = 4           # P2: DataLoader workers (cuda only; result-neutral, seeded)
+    bootstrap_samples: int = 1000  # paper §4.3 (paired bootstrap)
+    bootstrap_alpha: float = 0.05  # p < 0.05
+
+    paths: Paths = field(default_factory=Paths)
+
+    # ---- derived / secrets ----
+    @property
+    def hf_token(self) -> Optional[str]:
+        return os.environ.get("HF_TOKEN")
+
+    def to_dict(self) -> dict:
+        d = asdict(self)
+        d["paths"] = {k: str(v) for k, v in d["paths"].items()}
+        return d
+
+
+CONFIG = TarkanConfig()
+
+# Per-dataset champion overrides for the HEADLINE runs (Tables 1 & 3): on twitter2017 the
+# measured champion uses bertweet-large (A8; joint 67.68 vs 66.43 with base), while
+# twitter2015's champion is bertweet-base (64.98 vs 63.78 with large). Ablations/diagnostics
+# (Tables 6, 10) run the base config on both datasets — component DELTAS are the object
+# there, and large would triple their cost. See possible-patches.md ledger.
+DATASET_OVERRIDES = {
+    "twitter2017": {"text_model_id": "vinai/bertweet-large", "batch_size": 8, "grad_accum": 2},
+}
+
+
+def cfg_for(dataset: str, **extra):
+    """CONFIG + per-dataset champion overrides (+ any extra runner overrides)."""
+    from dataclasses import replace
+
+    ov = dict(DATASET_OVERRIDES.get(dataset, {}))
+    ov.update(extra)
+    return replace(CONFIG, **ov) if ov else CONFIG
