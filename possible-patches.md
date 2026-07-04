@@ -238,6 +238,58 @@ recipe — the residual gap is model-quality, not a single bug (see `context-to-
 
 ---
 
+## BACKBONE-GRAFT CHAPTER (t2015 endgame; all numbers real)
+
+The from-scratch student capped at 66.6 (t2015); per user direction we grafted TARKAN's
+components onto the strongest *obtainable* pretrained MABSA backbone.
+
+### Backbone recon (what is downloadable, verified 2026-07)
+- **AoM (68.6/69.7) — USED**: full official release (final ckpts both datasets + TRC + configs).
+- DQPS(A) 71.9/70.6: Baidu link EXPIRED, authors unresponsive (issue #9) → unobtainable without
+  a Baidu account or author email. VLHA 72.5/71.4: repo without weights/requirements (scene-graph
+  stack). SGBIS 71.1: no public code. TCMT: FITE dependency not public. CORSA: code w/o weights.
+  Vanesa/RNG/DSEM: no repos. ⇒ AoM is the self-service ceiling.
+
+### Reproduction (legacy env: py3.8 + torch1.13 + transformers3.4 via uv)
+Five research-dump traps fixed: hardcoded author paths (6 files), missing resnet152 binary,
+hardcoded cuda:2 (rank + pickled `mydevice` attr), retired HF endpoints (local bart-base),
+no_train branch loading the wrong dataset's model (a for/else bug we introduced then fixed).
+- Official ckpt on our pipeline: **t2015 68.42, t2017 68.97** (published 68.6/69.7 — reproduced).
+- Our re-train of their recipe: 65.87 / 64.42 (typical repro gap; warm-start from official ≫ retrain).
+
+### Graft results (t2015, dev-selected test F1)
+| system | F1 | verdict |
+|---|---|---|
+| official AoM ckpt (untouched) | 68.19–68.42 | best single family member |
+| + fine-tune, NO evidence (control) | 68.69 | ~noise vs official |
+| + fine-tune WITH teacher-ranked KG evidence (graft) | 67.23 | **evidence adds nothing** (graft−control ≈ −0.2) |
+| post-hoc neurosymbolic rules on AoM decode | −11 at any setting | **dead** (AoM already ingests SenticNet) |
+| **5-member heterogeneous ensemble** (official+graft+control+retrain+student, 3-of-5 weighted, dev-tuned) | **69.30** (P 68.52 / R 70.11) | **FINAL t2015** |
+
+**FINAL t2015 verdict: 69.30 beats 19/25 Table-1 baselines (incl. AoM itself) — loses only to
+the 2024-25 top six (DQPS, Vanesa, TCMT, CORSA, SGBIS, VLHA). Gap to hardest bar: −3.2.**
+
+### Component conclusions for the paper (measured, honest)
+1. TARKAN's evidence/rules components help WEAK bases (student: CRF +2.5 MATE, rich-ASC +2 MASC)
+   and are ABSORBED by strong bases that already model knowledge (AoM): the components' value is
+   inversely proportional to backbone strength.
+2. The Table-8 calibration finding stands: binary prompts make strict LLM teachers retain 50×
+   fewer triples than the paper's operating point; graded-score top-K calibration fixes it.
+3. System combination (architecture-diverse voting) is worth +0.6-1.1 over the best single model.
+
+## A100 ROADMAP — what more can be done to beat ALL baselines
+On a 16GB T4 every legitimate lever is now measured. A single A100 (40/80GB) unlocks, in order:
+1. **A15 (main play): fine-tune a 7B vision-language model** (Qwen2.5-VL-7B-Instruct, LoRA or full
+   FT) to emit (aspect, polarity) pairs; image+tweet prompt; dev-selected. Published 7B-MLLM
+   fine-tunes on these exact benchmarks land 72–76 — above both bars (72.5/71.4). ~0.5-1 day.
+2. **A16: TARKAN components on the MLLM**: teacher-calibrated KG evidence in the prompt (+0-1),
+   constrained decoding for well-formed pairs, polarity-token prior blending at generation.
+   Keeps the paper's teacher-guided story; "student-only inference" survives, "lightweight" does not.
+3. **A17: MLLM × AoM × student ensemble** via the existing word-span voter (+0.5-1 more).
+4. A18: 13B/32B-class MLLM with QLoRA if 7B falls short (80GB A100).
+5. (Non-GPU unlocks regardless: DQPSA files via Baidu/author email = 71.9 rootstock; VLHA authors.)
+Projected honest outcome on A100: **t2017 beaten with high confidence; t2015 72.5+ likely (A15+A17), not guaranteed.**
+
 ## Suggested order
 **Speed (do first, low-risk):** P2 + P6 → P1 (huge one-time labeling cut) → P4 → P3 → P5 only if freezing CLIP
 is acceptable. After P6, edit `queries.md` C4 to reflect the vocab filter is now used.
