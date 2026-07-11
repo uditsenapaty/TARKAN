@@ -1,0 +1,727 @@
+{"gold": [[4, 5, "NEU"]], "pairs": [["Tyga", "NEG"]], "raw": "[{\"aspect\": \"Tyga\", \"sentiment\": \"negative\"}]"}
+{"gold": [[0, 1, "NEU"], [11, 12, "NEU"]], "pairs": [["Pedro", "NEU"], ["Cooperstown", "NEU"]], "raw": "[{\"aspect\": \"Pedro\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Cooperstown\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 8, "POS"]], "pairs": [["Joe Johnson", "POS"], ["brickell", "NEU"]], "raw": "[{\"aspect\": \"Joe Johnson\", \"sentiment\": \"positive\"}, {\"aspect\": \"brickell\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 9, "NEU"], [11, 12, "NEU"], [12, 13, "NEU"]], "pairs": [["ECS Appliance", "NEU"], ["EMC ECS Software", "NEU"]], "raw": "[{\"aspect\": \"ECS Appliance\", \"sentiment\": \"neutral\"}, {\"aspect\": \"EMC ECS Software\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[18, 20, "NEU"]], "pairs": [["# Tribeca", "NEU"]], "raw": "[{\"aspect\": \"# Tribeca\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 10, "NEG"], [14, 16, "NEU"]], "pairs": [["SF", "NEG"], ["Haight Street", "NEG"]], "raw": "[{\"aspect\": \"SF\", \"sentiment\": \"negative\"}, {\"aspect\": \"Haight Street\", \"sentiment\": \"negative\"}]"}
+{"gold": [[7, 8, "NEG"]], "pairs": [["Montana", "NEG"]], "raw": "[{\"aspect\": \"Montana\", \"sentiment\": \"negative\"}]"}
+{"gold": [[6, 9, "POS"]], "pairs": [["South Boston TEAM", "POS"], ["Youth Tutoring Youth", "POS"], ["Laboure Center", "NEU"]], "raw": "[{\"aspect\": \"South Boston TEAM\", \"sentiment\": \"positive\"}, {\"aspect\": \"Youth Tutoring Youth\", \"sentiment\": \"positive\"}, {\"aspect\": \"Laboure Center\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "NEG"]], "pairs": [["Sherlock Holmes", "NEU"]], "raw": "[{\"aspect\": \"Sherlock Holmes\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "POS"]], "pairs": [["Eishkom", "POS"]], "raw": "[{\"aspect\": \"Eishkom\", \"sentiment\": \"positive\"}]"}
+{"gold": [[2, 3, "NEU"]], "pairs": [["Tokong", "NEU"]], "raw": "[{\"aspect\": \"Tokong\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "POS"], [8, 10, "POS"], [10, 12, "NEU"], [12, 14, "NEU"]], "pairs": [["Anna", "POS"], ["# Anna", "POS"], ["# Frozen", "NEU"], ["# Disney", "NEU"]], "raw": "[{\"aspect\": \"Anna\", \"sentiment\": \"positive\"}, {\"aspect\": \"# Anna\", \"sentiment\": \"positive\"}, {\"aspect\": \"# Frozen\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Disney\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "NEU"], [14, 16, "NEU"]], "pairs": [["Medina Lake", "NEU"], ["SA Express - News", "NEU"]], "raw": "[{\"aspect\": \"Medina Lake\", \"sentiment\": \"neutral\"}, {\"aspect\": \"SA Express - News\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[22, 23, "POS"]], "pairs": [["Ellen", "POS"]], "raw": "[{\"aspect\": \"Ellen\", \"sentiment\": \"positive\"}]"}
+{"gold": [[5, 7, "POS"], [15, 16, "NEU"]], "pairs": [["Annie Kuster", "POS"], ["Nashua", "NEU"]], "raw": "[{\"aspect\": \"Annie Kuster\", \"sentiment\": \"positive\"}, {\"aspect\": \"Nashua\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 13, "NEU"], [16, 19, "NEU"]], "pairs": [["Regions Bank", "NEU"], ["University Drive", "NEU"]], "raw": "[{\"aspect\": \"Regions Bank\", \"sentiment\": \"neutral\"}, {\"aspect\": \"University Drive\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 11, "NEU"]], "pairs": [["Salem State University", "NEU"]], "raw": "[{\"aspect\": \"Salem State University\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 10, "NEU"]], "pairs": [["CHICAGO", "NEU"]], "raw": "[{\"aspect\": \"CHICAGO\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[12, 14, "NEG"]], "pairs": [["Montgomery County", "NEG"], ["PA", "NEG"]], "raw": "[{\"aspect\": \"Montgomery County\", \"sentiment\": \"negative\"}, {\"aspect\": \"PA\", \"sentiment\": \"negative\"}]"}
+{"gold": [[15, 16, "NEG"]], "pairs": [["Japan", "NEU"]], "raw": "[{\"aspect\": \"Japan\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "POS"], [3, 5, "POS"], [11, 13, "POS"]], "pairs": [["Mike Fisher", "POS"], ["Pekka Rinne", "POS"], ["# Preds", "POS"]], "raw": "[{\"aspect\": \"Mike Fisher\", \"sentiment\": \"positive\"}, {\"aspect\": \"Pekka Rinne\", \"sentiment\": \"positive\"}, {\"aspect\": \"# Preds\", \"sentiment\": \"positive\"}]"}
+{"gold": [[7, 9, "NEG"], [11, 13, "NEG"]], "pairs": [["Pinal County", "NEU"], ["Jose Valenzuela", "NEG"]], "raw": "[{\"aspect\": \"Pinal County\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Jose Valenzuela\", \"sentiment\": \"negative\"}]"}
+{"gold": [[8, 10, "NEG"]], "pairs": [["Max Kellerman", "NEG"]], "raw": "[{\"aspect\": \"Max Kellerman\", \"sentiment\": \"negative\"}]"}
+{"gold": [[18, 20, "NEU"]], "pairs": [["ALICE MUNRO", "NEU"]], "raw": "[{\"aspect\": \"ALICE MUNRO\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 6, "NEU"], [11, 13, "POS"]], "pairs": [["BBC", "NEU"], ["Man Utd", "NEU"]], "raw": "[{\"aspect\": \"BBC\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Man Utd\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["Baghdad", "NEU"]], "raw": "[{\"aspect\": \"Baghdad\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 7, "NEG"]], "pairs": [["La Plata Peak", "NEU"]], "raw": "[{\"aspect\": \"La Plata Peak\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "POS"]], "pairs": [["Cam Newton", "POS"]], "raw": "[{\"aspect\": \"Cam Newton\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 11, "NEU"]], "pairs": [["# VMworld", "NEU"]], "raw": "[{\"aspect\": \"# VMworld\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 10, "NEG"]], "pairs": [["Gamergate", "NEG"], ["Sarah Nyberg", "NEG"]], "raw": "[{\"aspect\": \"Gamergate\", \"sentiment\": \"negative\"}, {\"aspect\": \"Sarah Nyberg\", \"sentiment\": \"negative\"}]"}
+{"gold": [[12, 13, "NEU"], [15, 17, "NEU"]], "pairs": [["California condors", "POS"], ["Hopper Mountain", "NEU"], ["CA", "NEU"]], "raw": "[{\"aspect\": \"California condors\", \"sentiment\": \"positive\"}, {\"aspect\": \"Hopper Mountain\", \"sentiment\": \"neutral\"}, {\"aspect\": \"CA\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 12, "POS"], [17, 20, "NEU"]], "pairs": [["Ay Ziggy Zoomba", "POS"], ["Big Ten", "NEU"]], "raw": "[{\"aspect\": \"Ay Ziggy Zoomba\", \"sentiment\": \"positive\"}, {\"aspect\": \"Big Ten\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "NEG"], [9, 11, "NEU"]], "pairs": [["Carlos Marino", "NEU"], ["Wicker Park", "NEU"]], "raw": "[{\"aspect\": \"Carlos Marino\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Wicker Park\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEG"], [15, 16, "NEU"]], "pairs": [["Kevin Folta", "NEG"], ["WHO", "NEU"]], "raw": "[{\"aspect\": \"Kevin Folta\", \"sentiment\": \"negative\"}, {\"aspect\": \"WHO\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 8, "POS"]], "pairs": [["Clint", "POS"]], "raw": "[{\"aspect\": \"Clint\", \"sentiment\": \"positive\"}]"}
+{"gold": [[13, 15, "NEU"]], "pairs": [["North Carolina", "NEU"]], "raw": "[{\"aspect\": \"North Carolina\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["William Shakespeare", "NEU"]], "raw": "[{\"aspect\": \"William Shakespeare\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "NEU"], [3, 6, "NEU"]], "pairs": [["Entertainment City", "NEU"], ["Doha Exhibition Centre", "NEU"]], "raw": "[{\"aspect\": \"Entertainment City\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Doha Exhibition Centre\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "POS"]], "pairs": [["Colt McCoy", "NEU"]], "raw": "[{\"aspect\": \"Colt McCoy\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 6, "NEG"], [12, 13, "NEG"]], "pairs": [["Sochi", "NEG"], ["Russia", "NEG"]], "raw": "[{\"aspect\": \"Sochi\", \"sentiment\": \"negative\"}, {\"aspect\": \"Russia\", \"sentiment\": \"negative\"}]"}
+{"gold": [[6, 8, "POS"], [9, 10, "NEG"]], "pairs": [["# Nokia", "NEU"], ["Samsung", "NEU"], ["# Nokia", "NEU"]], "raw": "[{\"aspect\": \"# Nokia\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Samsung\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Nokia\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "NEU"]], "pairs": [["ChiTrib", "NEU"]], "raw": "[{\"aspect\": \"ChiTrib\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 5, "POS"]], "pairs": [["Northern Canada", "POS"]], "raw": "[{\"aspect\": \"Northern Canada\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Theresa May", "NEU"]], "raw": "[{\"aspect\": \"Theresa May\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["Rocklin", "NEU"]], "raw": "[{\"aspect\": \"Rocklin\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[18, 19, "NEU"], [20, 21, "NEU"]], "pairs": [["Andy", "NEU"], ["Novak", "NEU"], ["Australian Open", "NEU"]], "raw": "[{\"aspect\": \"Andy\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Novak\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Australian Open\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 5, "NEU"], [8, 10, "NEU"]], "pairs": [["Alex LaMarsh", "NEU"], ["Billy Rood", "NEU"]], "raw": "[{\"aspect\": \"Alex LaMarsh\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Billy Rood\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"], [6, 7, "NEG"], [11, 12, "NEU"], [13, 14, "NEU"], [15, 16, "NEU"]], "pairs": [["CNN", "NEU"], ["ISIS", "NEG"]], "raw": "[{\"aspect\": \"CNN\", \"sentiment\": \"neutral\"}, {\"aspect\": \"ISIS\", \"sentiment\": \"negative\"}]"}
+{"gold": [[14, 16, "NEG"]], "pairs": [["West China", "NEG"]], "raw": "[{\"aspect\": \"West China\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 6, "NEU"], [7, 9, "NEU"], [11, 13, "NEU"]], "pairs": [["Alice Dellal", "NEU"], ["Kristen Stewart", "NEU"], ["Vanessa Paradis", "NEU"]], "raw": "[{\"aspect\": \"Alice Dellal\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Kristen Stewart\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Vanessa Paradis\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[17, 19, "NEU"]], "pairs": [["Deepak Chopra", "NEU"]], "raw": "[{\"aspect\": \"Deepak Chopra\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 8, "NEU"]], "pairs": [["Penn Station", "NEU"]], "raw": "[{\"aspect\": \"Penn Station\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 8, "NEU"]], "pairs": [["Chris Chadwick", "NEU"]], "raw": "[{\"aspect\": \"Chris Chadwick\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "POS"]], "pairs": [["Taylor", "NEG"]], "raw": "[{\"aspect\": \"Taylor\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 5, "NEU"], [20, 21, "NEU"]], "pairs": [["Bowie", "NEU"], ["Bernhardt", "POS"]], "raw": "[{\"aspect\": \"Bowie\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Bernhardt\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "POS"]], "pairs": [["Kurt Cobain", "POS"]], "raw": "[{\"aspect\": \"Kurt Cobain\", \"sentiment\": \"positive\"}]"}
+{"gold": [[9, 11, "NEU"]], "pairs": [["Paul Krugman", "NEU"]], "raw": "[{\"aspect\": \"Paul Krugman\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"], [17, 19, "NEU"]], "pairs": [["Argentina", "NEU"], ["El Palomar", "NEU"]], "raw": "[{\"aspect\": \"Argentina\", \"sentiment\": \"neutral\"}, {\"aspect\": \"El Palomar\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "NEU"], [3, 5, "NEU"]], "pairs": [["Jens Nielsen", "NEU"], ["Michele Sabban", "NEU"]], "raw": "[{\"aspect\": \"Jens Nielsen\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Michele Sabban\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[15, 16, "POS"]], "pairs": [["Vienna", "POS"]], "raw": "[{\"aspect\": \"Vienna\", \"sentiment\": \"positive\"}]"}
+{"gold": [[8, 9, "NEU"], [19, 21, "NEG"]], "pairs": [["Mildenhall", "NEU"]], "raw": "[{\"aspect\": \"Mildenhall\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Shawn Marion", "NEU"]], "raw": "[{\"aspect\": \"Shawn Marion\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 6, "POS"]], "pairs": [["Winston - Salem", "NEU"]], "raw": "[{\"aspect\": \"Winston - Salem\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Lion King", "NEG"]], "raw": "[{\"aspect\": \"Lion King\", \"sentiment\": \"negative\"}]"}
+{"gold": [[3, 4, "POS"]], "pairs": [["lush", "POS"]], "raw": "[{\"aspect\": \"lush\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 2, "POS"], [3, 4, "NEU"], [5, 6, "POS"], [9, 11, "POS"], [16, 18, "POS"]], "pairs": [["South Korea", "POS"], ["Japan", "NEG"], ["Chicago", "POS"], ["State Street", "POS"]], "raw": "[{\"aspect\": \"South Korea\", \"sentiment\": \"positive\"}, {\"aspect\": \"Japan\", \"sentiment\": \"negative\"}, {\"aspect\": \"Chicago\", \"sentiment\": \"positive\"}, {\"aspect\": \"State Street\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 1, "POS"], [8, 9, "NEU"], [11, 12, "NEU"]], "pairs": [["Nicholas", "NEU"], ["AH", "NEU"], ["Lloyd", "NEU"], ["Rumor nightclub", "NEU"]], "raw": "[{\"aspect\": \"Nicholas\", \"sentiment\": \"neutral\"}, {\"aspect\": \"AH\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Lloyd\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Rumor nightclub\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 11, "NEU"]], "pairs": [["Peter Dutton", "NEU"]], "raw": "[{\"aspect\": \"Peter Dutton\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[15, 17, "NEU"]], "pairs": [["John Dagevos", "NEU"]], "raw": "[{\"aspect\": \"John Dagevos\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "NEU"]], "pairs": [["Chickchaw Press", "NEU"], ["# SantaAna", "NEU"]], "raw": "[{\"aspect\": \"Chickchaw Press\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# SantaAna\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"], [7, 8, "NEU"]], "pairs": [["North Yorkshire", "NEU"], ["Angleterre", "NEU"]], "raw": "[{\"aspect\": \"North Yorkshire\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Angleterre\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 8, "NEG"], [9, 10, "NEG"]], "pairs": [["Zion Canyon", "NEG"], ["Utah", "NEG"]], "raw": "[{\"aspect\": \"Zion Canyon\", \"sentiment\": \"negative\"}, {\"aspect\": \"Utah\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 6, "NEU"], [11, 12, "NEU"], [14, 16, "NEU"]], "pairs": [["Boris Yeltsin", "NEU"], ["Siberian", "NEU"], ["Tuva Republic", "NEU"]], "raw": "[{\"aspect\": \"Boris Yeltsin\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Siberian\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Tuva Republic\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 12, "POS"]], "pairs": [["Ken Watanabe", "POS"]], "raw": "[{\"aspect\": \"Ken Watanabe\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "NEG"], [6, 7, "NEG"], [8, 9, "NEG"], [10, 14, "NEU"]], "pairs": [["US", "NEG"], ["Japan", "NEG"], ["Canada", "NEG"]], "raw": "[{\"aspect\": \"US\", \"sentiment\": \"negative\"}, {\"aspect\": \"Japan\", \"sentiment\": \"negative\"}, {\"aspect\": \"Canada\", \"sentiment\": \"negative\"}]"}
+{"gold": [[9, 10, "POS"], [11, 12, "POS"]], "pairs": [["CamRon", "POS"], ["Legos", "NEU"]], "raw": "[{\"aspect\": \"CamRon\", \"sentiment\": \"positive\"}, {\"aspect\": \"Legos\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "NEU"], [8, 10, "NEU"]], "pairs": [["Eddie Vedder", "NEU"], ["Better Man", "NEU"]], "raw": "[{\"aspect\": \"Eddie Vedder\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Better Man\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 12, "NEG"]], "pairs": [["Donald Trump", "NEG"], ["Republican", "NEG"]], "raw": "[{\"aspect\": \"Donald Trump\", \"sentiment\": \"negative\"}, {\"aspect\": \"Republican\", \"sentiment\": \"negative\"}]"}
+{"gold": [[6, 7, "NEU"], [11, 16, "NEG"]], "pairs": [["Saudi", "NEG"], ["Prince Saud", "NEG"], ["AP", "NEU"]], "raw": "[{\"aspect\": \"Saudi\", \"sentiment\": \"negative\"}, {\"aspect\": \"Prince Saud\", \"sentiment\": \"negative\"}, {\"aspect\": \"AP\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 11, "POS"]], "pairs": [["# MTN Foundation", "POS"]], "raw": "[{\"aspect\": \"# MTN Foundation\", \"sentiment\": \"positive\"}]"}
+{"gold": [[11, 13, "NEG"]], "pairs": [["Hong Kong", "NEU"]], "raw": "[{\"aspect\": \"Hong Kong\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 4, "NEU"], [5, 6, "NEU"]], "pairs": [["Kings Cross", "NEU"], ["London", "NEU"]], "raw": "[{\"aspect\": \"Kings Cross\", \"sentiment\": \"neutral\"}, {\"aspect\": \"London\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 8, "NEG"], [10, 12, "NEU"]], "pairs": [["Indian Ocean", "NEU"]], "raw": "[{\"aspect\": \"Indian Ocean\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 5, "NEU"]], "pairs": [["Pokemon Y", "NEU"]], "raw": "[{\"aspect\": \"Pokemon Y\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 9, "NEU"]], "pairs": [["Puerto Rico", "NEU"]], "raw": "[{\"aspect\": \"Puerto Rico\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 13, "NEU"]], "pairs": [["# Africa", "NEU"]], "raw": "[{\"aspect\": \"# Africa\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "POS"]], "pairs": [["Cole", "NEU"]], "raw": "[{\"aspect\": \"Cole\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["Canada", "NEU"]], "raw": "[{\"aspect\": \"Canada\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "NEU"]], "pairs": [["Trollington", "NEG"]], "raw": "[{\"aspect\": \"Trollington\", \"sentiment\": \"negative\"}]"}
+{"gold": [[9, 11, "NEU"]], "pairs": [["# Denver", "NEU"]], "raw": "[{\"aspect\": \"# Denver\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "POS"]], "pairs": [["# Germany", "POS"]], "raw": "[{\"aspect\": \"# Germany\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "NEU"], [8, 9, "NEU"]], "pairs": [["Duggan", "NEU"], ["Detroit", "NEU"]], "raw": "[{\"aspect\": \"Duggan\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Detroit\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "NEU"]], "pairs": [["Harvey", "NEU"], ["Richmond Hill", "NEU"]], "raw": "[{\"aspect\": \"Harvey\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Richmond Hill\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"], [12, 13, "NEU"]], "pairs": [["Ray Dalio", "NEU"], ["Fed", "NEU"]], "raw": "[{\"aspect\": \"Ray Dalio\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Fed\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[17, 18, "NEU"]], "pairs": [["Qatar", "NEU"]], "raw": "[{\"aspect\": \"Qatar\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "POS"], [9, 10, "POS"], [16, 18, "NEU"]], "pairs": [["# Chilliwack", "POS"], ["UFV", "POS"], ["Ellen Atkin", "NEU"]], "raw": "[{\"aspect\": \"# Chilliwack\", \"sentiment\": \"positive\"}, {\"aspect\": \"UFV\", \"sentiment\": \"positive\"}, {\"aspect\": \"Ellen Atkin\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Sarah Palin", "NEU"]], "raw": "[{\"aspect\": \"Sarah Palin\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 11, "NEU"], [11, 13, "NEU"]], "pairs": [["# Jodhpur", "NEU"], ["# Rajasthan", "NEU"], ["# India", "NEU"]], "raw": "[{\"aspect\": \"# Jodhpur\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Rajasthan\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# India\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 10, "NEU"]], "pairs": [["Vanessa Bruno", "NEU"]], "raw": "[{\"aspect\": \"Vanessa Bruno\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"], [21, 24, "NEU"]], "pairs": [["Jim Kelly", "NEU"], ["Ralph Wilson Stadium", "NEU"]], "raw": "[{\"aspect\": \"Jim Kelly\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Ralph Wilson Stadium\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"], [11, 12, "NEU"]], "pairs": [["Andy Cohen", "POS"], ["Twitter", "NEU"]], "raw": "[{\"aspect\": \"Andy Cohen\", \"sentiment\": \"positive\"}, {\"aspect\": \"Twitter\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[14, 15, "NEG"]], "pairs": [["Suarez", "NEG"]], "raw": "[{\"aspect\": \"Suarez\", \"sentiment\": \"negative\"}]"}
+{"gold": [[23, 25, "NEU"]], "pairs": [["# SNL", "NEU"]], "raw": "[{\"aspect\": \"# SNL\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEG"], [11, 13, "NEU"]], "pairs": [["KeiVarae Russell", "NEG"], ["Notre Dame", "NEU"]], "raw": "[{\"aspect\": \"KeiVarae Russell\", \"sentiment\": \"negative\"}, {\"aspect\": \"Notre Dame\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["Daisy", "NEU"]], "raw": "[{\"aspect\": \"Daisy\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 10, "NEG"], [11, 14, "NEG"], [19, 20, "NEG"]], "pairs": [["Rahul Gandhi", "NEU"], ["Indian Air Force", "NEU"], ["Kanpur", "NEU"]], "raw": "[{\"aspect\": \"Rahul Gandhi\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Indian Air Force\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Kanpur\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"], [13, 14, "NEU"]], "pairs": [["John Roberts", "NEG"], ["ObamaCare", "NEU"]], "raw": "[{\"aspect\": \"John Roberts\", \"sentiment\": \"negative\"}, {\"aspect\": \"ObamaCare\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 8, "NEU"]], "pairs": [["Vikram", "NEU"]], "raw": "[{\"aspect\": \"Vikram\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Paul Pierce", "NEU"]], "raw": "[{\"aspect\": \"Paul Pierce\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "POS"], [20, 22, "NEU"]], "pairs": [["Beda Anakur", "NEU"], ["# Chad", "NEU"]], "raw": "[{\"aspect\": \"Beda Anakur\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Chad\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[12, 13, "NEU"]], "pairs": [["Nintendo", "POS"]], "raw": "[{\"aspect\": \"Nintendo\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "POS"], [11, 13, "NEU"]], "pairs": [["Mashallah", "POS"], ["Imams Online", "POS"]], "raw": "[{\"aspect\": \"Mashallah\", \"sentiment\": \"positive\"}, {\"aspect\": \"Imams Online\", \"sentiment\": \"positive\"}]"}
+{"gold": [[11, 13, "NEU"], [18, 22, "NEU"]], "pairs": [["Spencer Tracy", "POS"], ["FATHER OF THE BRIDE", "NEU"]], "raw": "[{\"aspect\": \"Spencer Tracy\", \"sentiment\": \"positive\"}, {\"aspect\": \"FATHER OF THE BRIDE\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 10, "POS"], [14, 16, "POS"], [17, 18, "POS"], [21, 23, "POS"]], "pairs": [["# MCFC", "POS"], ["Sheikh Mansour", "POS"], ["Manchester", "POS"]], "raw": "[{\"aspect\": \"# MCFC\", \"sentiment\": \"positive\"}, {\"aspect\": \"Sheikh Mansour\", \"sentiment\": \"positive\"}, {\"aspect\": \"Manchester\", \"sentiment\": \"positive\"}]"}
+{"gold": [[12, 14, "NEU"], [15, 17, "NEU"]], "pairs": [["Adam LaRoche", "NEU"], ["Geovany Soto", "NEU"]], "raw": "[{\"aspect\": \"Adam LaRoche\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Geovany Soto\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 12, "NEU"]], "pairs": [["Divvy", "POS"], ["Wrigley", "NEU"]], "raw": "[{\"aspect\": \"Divvy\", \"sentiment\": \"positive\"}, {\"aspect\": \"Wrigley\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 11, "NEG"]], "pairs": [["Finnegan", "NEG"]], "raw": "[{\"aspect\": \"Finnegan\", \"sentiment\": \"negative\"}]"}
+{"gold": [[9, 10, "NEU"], [11, 12, "NEU"], [13, 14, "NEU"], [15, 16, "NEU"], [17, 18, "NEU"]], "pairs": [["Germany", "NEU"], ["France", "NEU"], ["Italy", "NEU"], ["Spain", "NEU"], ["IMF", "NEU"]], "raw": "[{\"aspect\": \"Germany\", \"sentiment\": \"neutral\"}, {\"aspect\": \"France\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Italy\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Spain\", \"sentiment\": \"neutral\"}, {\"aspect\": \"IMF\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "POS"], [8, 9, "NEU"]], "pairs": [["Germany", "NEU"], ["Munich central station", "NEU"]], "raw": "[{\"aspect\": \"Germany\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Munich central station\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 9, "NEU"]], "pairs": [["Ottawa", "NEG"]], "raw": "[{\"aspect\": \"Ottawa\", \"sentiment\": \"negative\"}]"}
+{"gold": [[9, 10, "POS"], [14, 16, "POS"]], "pairs": [["Lorde", "POS"], ["# Lolla", "POS"]], "raw": "[{\"aspect\": \"Lorde\", \"sentiment\": \"positive\"}, {\"aspect\": \"# Lolla\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "POS"], [8, 9, "NEU"], [15, 16, "NEU"], [17, 18, "NEU"]], "pairs": [["Biden", "POS"], ["Clinton", "NEG"], ["Democrats", "NEU"], ["NH", "NEU"], ["Iowa", "NEU"]], "raw": "[{\"aspect\": \"Biden\", \"sentiment\": \"positive\"}, {\"aspect\": \"Clinton\", \"sentiment\": \"negative\"}, {\"aspect\": \"Democrats\", \"sentiment\": \"neutral\"}, {\"aspect\": \"NH\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Iowa\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 8, "NEU"]], "pairs": [["Amazon Prime", "NEU"]], "raw": "[{\"aspect\": \"Amazon Prime\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"], [10, 12, "NEU"]], "pairs": [["Water Lilies", "NEU"], ["Claude Monet", "NEU"]], "raw": "[{\"aspect\": \"Water Lilies\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Claude Monet\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[14, 16, "POS"]], "pairs": [["Kate Middleton", "POS"]], "raw": "[{\"aspect\": \"Kate Middleton\", \"sentiment\": \"positive\"}]"}
+{"gold": [[11, 12, "NEU"]], "pairs": [["Disney channel", "NEU"]], "raw": "[{\"aspect\": \"Disney channel\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Al Czervik", "POS"]], "raw": "[{\"aspect\": \"Al Czervik\", \"sentiment\": \"positive\"}]"}
+{"gold": [[5, 6, "NEU"], [15, 17, "NEU"]], "pairs": [["NCA", "NEU"], ["# Stoke", "NEU"]], "raw": "[{\"aspect\": \"NCA\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Stoke\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 12, "NEU"], [15, 17, "POS"]], "pairs": [["Scotland", "NEU"], ["Bill Doherty", "NEU"]], "raw": "[{\"aspect\": \"Scotland\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Bill Doherty\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "NEU"], [4, 6, "NEU"], [13, 14, "NEU"]], "pairs": [["T54", "NEU"], ["Nottwill", "NEU"], ["SUI", "NEU"]], "raw": "[{\"aspect\": \"T54\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Nottwill\", \"sentiment\": \"neutral\"}, {\"aspect\": \"SUI\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 8, "NEU"]], "pairs": [["National Geographic", "NEU"]], "raw": "[{\"aspect\": \"National Geographic\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[13, 15, "POS"]], "pairs": [["Veronika Layne Has a Nose for News", "NEU"]], "raw": "[{\"aspect\": \"Veronika Layne Has a Nose for News\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 12, "NEU"], [13, 14, "NEU"]], "pairs": [["Mumbai", "NEU"], ["Vadodara", "NEU"], ["MODI", "POS"]], "raw": "[{\"aspect\": \"Mumbai\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Vadodara\", \"sentiment\": \"neutral\"}, {\"aspect\": \"MODI\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 2, "NEU"], [8, 10, "NEU"]], "pairs": [["Johnny Oduya", "NEU"], ["# Blackhawks", "NEU"]], "raw": "[{\"aspect\": \"Johnny Oduya\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Blackhawks\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 4, "POS"], [5, 6, "POS"]], "pairs": [["Cali", "NEU"], ["Colombia", "NEU"]], "raw": "[{\"aspect\": \"Cali\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Colombia\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 13, "POS"]], "pairs": [["Londoner", "NEU"], ["Johnson Banks", "NEU"]], "raw": "[{\"aspect\": \"Londoner\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Johnson Banks\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 9, "NEU"], [25, 26, "POS"]], "pairs": [["Jensen", "POS"], ["Jensen", "POS"]], "raw": "[{\"aspect\": \"Jensen\", \"sentiment\": \"positive\"}, {\"aspect\": \"Jensen\", \"sentiment\": \"positive\"}]"}
+{"gold": [[8, 10, "NEU"]], "pairs": [["BOBBY HUTH", "POS"]], "raw": "[{\"aspect\": \"BOBBY HUTH\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "NEU"], [10, 13, "NEU"]], "pairs": [["Cecil", "NEU"], ["Empire State Building", "NEU"]], "raw": "[{\"aspect\": \"Cecil\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Empire State Building\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Kendall Jenner", "NEU"]], "raw": "[{\"aspect\": \"Kendall Jenner\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 10, "POS"]], "pairs": [["Final Four", "NEU"], ["Wisconsin", "POS"]], "raw": "[{\"aspect\": \"Final Four\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Wisconsin\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 11, "NEU"]], "pairs": [["Leicester", "NEU"], ["Jon Matthews Driving School", "NEU"]], "raw": "[{\"aspect\": \"Leicester\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Jon Matthews Driving School\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"], [9, 10, "NEU"]], "pairs": [["Zayn", "NEU"], ["LA", "NEU"]], "raw": "[{\"aspect\": \"Zayn\", \"sentiment\": \"neutral\"}, {\"aspect\": \"LA\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["# Evanston", "NEU"]], "raw": "[{\"aspect\": \"# Evanston\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 4, "NEU"], [7, 9, "NEU"], [14, 15, "NEU"]], "pairs": [["Gregg Popovich", "NEU"], ["Becky Hammon", "NEU"], ["NBA", "NEU"]], "raw": "[{\"aspect\": \"Gregg Popovich\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Becky Hammon\", \"sentiment\": \"neutral\"}, {\"aspect\": \"NBA\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 3, "NEG"], [8, 9, "NEU"]], "pairs": [["Iraq", "NEU"], ["Arizona", "NEU"]], "raw": "[{\"aspect\": \"Iraq\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Arizona\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 11, "NEU"]], "pairs": [["The Katelyn Rule", "NEU"]], "raw": "[{\"aspect\": \"The Katelyn Rule\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "POS"]], "pairs": [["# Astros", "POS"], ["Mike Fiers", "POS"]], "raw": "[{\"aspect\": \"# Astros\", \"sentiment\": \"positive\"}, {\"aspect\": \"Mike Fiers\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 1, "POS"], [7, 8, "NEU"]], "pairs": [["Loki", "POS"], ["Baltimore", "NEU"]], "raw": "[{\"aspect\": \"Loki\", \"sentiment\": \"positive\"}, {\"aspect\": \"Baltimore\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[14, 16, "NEG"], [18, 20, "NEU"]], "pairs": [["BRANDED TO KILL", "NEU"], ["Kazue Nagatsuka", "NEU"], ["Seijun Suzuki", "NEU"]], "raw": "[{\"aspect\": \"BRANDED TO KILL\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Kazue Nagatsuka\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Seijun Suzuki\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 10, "POS"], [18, 19, "NEU"], [20, 21, "NEU"]], "pairs": [["CATS", "NEU"], ["Chuck", "POS"], ["Washington", "NEU"], ["NY", "NEU"]], "raw": "[{\"aspect\": \"CATS\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Chuck\", \"sentiment\": \"positive\"}, {\"aspect\": \"Washington\", \"sentiment\": \"neutral\"}, {\"aspect\": \"NY\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[12, 13, "NEU"]], "pairs": [["THIALF", "NEU"], ["Mafumeira", "NEU"]], "raw": "[{\"aspect\": \"THIALF\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Mafumeira\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[13, 15, "NEU"]], "pairs": [["Francis Bacon", "NEU"]], "raw": "[{\"aspect\": \"Francis Bacon\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"], [12, 13, "NEU"]], "pairs": [["NAS", "NEU"], ["Isilon", "POS"]], "raw": "[{\"aspect\": \"NAS\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Isilon\", \"sentiment\": \"positive\"}]"}
+{"gold": [[8, 9, "NEU"]], "pairs": [["Oregon", "NEU"]], "raw": "[{\"aspect\": \"Oregon\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEG"]], "pairs": [["Nagasaki", "NEG"]], "raw": "[{\"aspect\": \"Nagasaki\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 6, "NEG"]], "pairs": [["Aqua Buddha", "NEU"]], "raw": "[{\"aspect\": \"Aqua Buddha\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 8, "NEG"], [9, 10, "NEG"], [16, 18, "NEU"]], "pairs": [["Syria", "NEG"], ["Islamist", "NEG"], ["Middle East", "NEG"]], "raw": "[{\"aspect\": \"Syria\", \"sentiment\": \"negative\"}, {\"aspect\": \"Islamist\", \"sentiment\": \"negative\"}, {\"aspect\": \"Middle East\", \"sentiment\": \"negative\"}]"}
+{"gold": [[9, 11, "POS"]], "pairs": [["Kindra Smiley", "POS"]], "raw": "[{\"aspect\": \"Kindra Smiley\", \"sentiment\": \"positive\"}]"}
+{"gold": [[2, 3, "NEU"]], "pairs": [["Benz", "NEG"]], "raw": "[{\"aspect\": \"Benz\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 6, "POS"]], "pairs": [["Mike Evans", "POS"], ["# NFLDraft", "NEU"]], "raw": "[{\"aspect\": \"Mike Evans\", \"sentiment\": \"positive\"}, {\"aspect\": \"# NFLDraft\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[16, 17, "NEU"]], "pairs": [["Bruno Martins Indi", "NEU"], ["Messi", "NEU"]], "raw": "[{\"aspect\": \"Bruno Martins Indi\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Messi\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Cap Metro", "NEU"]], "raw": "[{\"aspect\": \"Cap Metro\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[12, 13, "POS"]], "pairs": [["Jena", "POS"]], "raw": "[{\"aspect\": \"Jena\", \"sentiment\": \"positive\"}]"}
+{"gold": [[2, 4, "NEU"], [7, 9, "POS"], [10, 11, "POS"], [16, 18, "POS"]], "pairs": [["George Town", "NEU"], ["Penang Road Famous Chendul", "POS"], ["# Penang", "NEU"]], "raw": "[{\"aspect\": \"George Town\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Penang Road Famous Chendul\", \"sentiment\": \"positive\"}, {\"aspect\": \"# Penang\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEG"]], "pairs": [["Rondo", "POS"]], "raw": "[{\"aspect\": \"Rondo\", \"sentiment\": \"positive\"}]"}
+{"gold": [[7, 9, "POS"], [11, 12, "NEU"]], "pairs": [["Cheryl Strayed", "POS"], ["MN", "NEU"]], "raw": "[{\"aspect\": \"Cheryl Strayed\", \"sentiment\": \"positive\"}, {\"aspect\": \"MN\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 4, "NEU"]], "pairs": [["# Twitter", "NEU"]], "raw": "[{\"aspect\": \"# Twitter\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "NEU"]], "pairs": [["UNEP", "NEU"]], "raw": "[{\"aspect\": \"UNEP\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 4, "NEU"]], "pairs": [["Charles River", "NEU"]], "raw": "[{\"aspect\": \"Charles River\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["Harry", "NEU"]], "raw": "[{\"aspect\": \"Harry\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 12, "NEU"], [16, 17, "NEU"]], "pairs": [["Texas", "NEU"], ["Congress", "NEU"]], "raw": "[{\"aspect\": \"Texas\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Congress\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 5, "NEU"], [6, 8, "NEU"]], "pairs": [["Aitor Acedo", "NEU"]], "raw": "[{\"aspect\": \"Aitor Acedo\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEG"]], "pairs": [["Netflix", "NEG"]], "raw": "[{\"aspect\": \"Netflix\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 6, "NEU"], [8, 11, "NEU"]], "pairs": [["Wynne Fumble Club", "NEU"], ["Austin Brock", "NEU"]], "raw": "[{\"aspect\": \"Wynne Fumble Club\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Austin Brock\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "NEU"], [13, 14, "NEU"]], "pairs": [["RUSSIA", "NEU"], ["Caspian derby", "NEU"], ["Kaspiysk", "NEU"], ["# AFP", "NEU"]], "raw": "[{\"aspect\": \"RUSSIA\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Caspian derby\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Kaspiysk\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# AFP\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "NEG"], [8, 9, "NEU"]], "pairs": [["Navy SEAL", "NEU"], ["Arizona", "NEU"]], "raw": "[{\"aspect\": \"Navy SEAL\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Arizona\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 8, "POS"]], "pairs": [["Tim Duncan", "POS"]], "raw": "[{\"aspect\": \"Tim Duncan\", \"sentiment\": \"positive\"}]"}
+{"gold": [[2, 3, "NEU"]], "pairs": [["Columbia", "NEU"]], "raw": "[{\"aspect\": \"Columbia\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[18, 20, "NEU"]], "pairs": [["Eshleman hall", "NEU"]], "raw": "[{\"aspect\": \"Eshleman hall\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 10, "POS"]], "pairs": [["Mecca", "NEU"], ["# HajjSelfie", "POS"]], "raw": "[{\"aspect\": \"Mecca\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# HajjSelfie\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 8, "NEU"]], "pairs": [["# TAIWAN", "POS"]], "raw": "[{\"aspect\": \"# TAIWAN\", \"sentiment\": \"positive\"}]"}
+{"gold": [[10, 12, "NEU"]], "pairs": [["New Zealand", "POS"]], "raw": "[{\"aspect\": \"New Zealand\", \"sentiment\": \"positive\"}]"}
+{"gold": [[8, 9, "NEU"]], "pairs": [["Roboto", "NEU"], ["SanFrancisco", "NEU"]], "raw": "[{\"aspect\": \"Roboto\", \"sentiment\": \"neutral\"}, {\"aspect\": \"SanFrancisco\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 11, "NEU"]], "pairs": [["Shayanna Jenkins", "NEU"]], "raw": "[{\"aspect\": \"Shayanna Jenkins\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 11, "NEU"]], "pairs": [["AC Milan", "NEU"]], "raw": "[{\"aspect\": \"AC Milan\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"], [7, 8, "NEU"]], "pairs": [["Miss Piggy", "NEU"], ["Kermit", "NEU"]], "raw": "[{\"aspect\": \"Miss Piggy\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Kermit\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[1, 2, "NEU"], [3, 4, "NEU"], [8, 9, "NEU"]], "pairs": [["Washington", "NEU"], ["Sochi", "NEU"], ["Instagram", "NEU"]], "raw": "[{\"aspect\": \"Washington\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Sochi\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Instagram\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "NEU"]], "pairs": [["Geiranger", "NEU"], ["Kistrand", "NEU"]], "raw": "[{\"aspect\": \"Geiranger\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Kistrand\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 11, "NEU"]], "pairs": [["Jay Gatsby", "NEU"]], "raw": "[{\"aspect\": \"Jay Gatsby\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "NEU"], [9, 11, "NEU"], [11, 12, "NEU"]], "pairs": [["# Rays", "NEU"], ["Tommy Tutone", "NEU"]], "raw": "[{\"aspect\": \"# Rays\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Tommy Tutone\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 13, "POS"]], "pairs": [["# Mexico", "NEU"]], "raw": "[{\"aspect\": \"# Mexico\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 9, "NEU"], [10, 12, "NEU"]], "pairs": [["Chapel Hill", "NEU"], ["North Carolina", "NEU"]], "raw": "[{\"aspect\": \"Chapel Hill\", \"sentiment\": \"neutral\"}, {\"aspect\": \"North Carolina\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 8, "NEU"]], "pairs": [["South Africa", "POS"]], "raw": "[{\"aspect\": \"South Africa\", \"sentiment\": \"positive\"}]"}
+{"gold": [[8, 14, "POS"]], "pairs": [["# MLB", "NEU"]], "raw": "[{\"aspect\": \"# MLB\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"], [8, 10, "NEU"]], "pairs": [["Marielle Lagers", "NEU"], ["Desk South China", "NEU"]], "raw": "[{\"aspect\": \"Marielle Lagers\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Desk South China\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "POS"], [11, 12, "NEU"]], "pairs": [["Doc Rivers", "NEG"], ["NBA", "NEU"]], "raw": "[{\"aspect\": \"Doc Rivers\", \"sentiment\": \"negative\"}, {\"aspect\": \"NBA\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "POS"], [6, 7, "POS"]], "pairs": [["Johnathan Saunders", "NEU"]], "raw": "[{\"aspect\": \"Johnathan Saunders\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "POS"], [10, 11, "NEU"]], "pairs": [["Twiggy", "POS"], ["London", "NEU"]], "raw": "[{\"aspect\": \"Twiggy\", \"sentiment\": \"positive\"}, {\"aspect\": \"London\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "POS"], [9, 10, "NEU"], [11, 13, "POS"]], "pairs": [["Antoine Vermette", "POS"], ["Tampa", "NEU"], ["# Blackhawks", "POS"]], "raw": "[{\"aspect\": \"Antoine Vermette\", \"sentiment\": \"positive\"}, {\"aspect\": \"Tampa\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Blackhawks\", \"sentiment\": \"positive\"}]"}
+{"gold": [[10, 12, "POS"]], "pairs": [["Penn Station", "NEG"]], "raw": "[{\"aspect\": \"Penn Station\", \"sentiment\": \"negative\"}]"}
+{"gold": [[5, 6, "NEU"]], "pairs": [["Obama", "NEU"]], "raw": "[{\"aspect\": \"Obama\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 10, "NEU"], [11, 13, "NEU"]], "pairs": [["Shem Law", "NEU"], ["Don Smith", "NEU"]], "raw": "[{\"aspect\": \"Shem Law\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Don Smith\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[15, 19, "POS"], [24, 25, "NEU"]], "pairs": [["# AFA", "POS"], ["Key Person Income Insurance", "POS"], ["# BTAFA", "NEU"], ["KPI", "NEU"]], "raw": "[{\"aspect\": \"# AFA\", \"sentiment\": \"positive\"}, {\"aspect\": \"Key Person Income Insurance\", \"sentiment\": \"positive\"}, {\"aspect\": \"# BTAFA\", \"sentiment\": \"neutral\"}, {\"aspect\": \"KPI\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 10, "POS"]], "pairs": [["Cadbury World", "POS"]], "raw": "[{\"aspect\": \"Cadbury World\", \"sentiment\": \"positive\"}]"}
+{"gold": [[3, 4, "NEG"]], "pairs": [["CeCe", "NEU"], ["TWITTERRR", "NEU"]], "raw": "[{\"aspect\": \"CeCe\", \"sentiment\": \"neutral\"}, {\"aspect\": \"TWITTERRR\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[15, 18, "NEU"]], "pairs": [["Game of Thrones", "NEU"]], "raw": "[{\"aspect\": \"Game of Thrones\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "POS"], [18, 19, "NEG"]], "pairs": [["Jennifer Aniston", "POS"], ["Ross", "NEG"]], "raw": "[{\"aspect\": \"Jennifer Aniston\", \"sentiment\": \"positive\"}, {\"aspect\": \"Ross\", \"sentiment\": \"negative\"}]"}
+{"gold": [[10, 11, "POS"]], "pairs": [["Chile", "POS"]], "raw": "[{\"aspect\": \"Chile\", \"sentiment\": \"positive\"}]"}
+{"gold": [[3, 4, "NEU"]], "pairs": [["Skyplex", "NEU"], ["International Drive", "NEU"]], "raw": "[{\"aspect\": \"Skyplex\", \"sentiment\": \"neutral\"}, {\"aspect\": \"International Drive\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"], [7, 9, "NEU"], [15, 16, "NEU"], [17, 18, "NEU"]], "pairs": [["Robin Williams", "NEU"], ["Christopher Reeve", "NEU"], ["NYC", "NEU"]], "raw": "[{\"aspect\": \"Robin Williams\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Christopher Reeve\", \"sentiment\": \"neutral\"}, {\"aspect\": \"NYC\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "NEU"], [7, 9, "NEU"], [12, 13, "NEU"]], "pairs": [["Liz Banks", "NEU"], ["Ernie Banks", "NEG"], ["Chicago", "NEU"]], "raw": "[{\"aspect\": \"Liz Banks\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Ernie Banks\", \"sentiment\": \"negative\"}, {\"aspect\": \"Chicago\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 11, "POS"]], "pairs": [["Joseph Gordon - Levitt", "POS"]], "raw": "[{\"aspect\": \"Joseph Gordon - Levitt\", \"sentiment\": \"positive\"}]"}
+{"gold": [[2, 4, "NEU"], [4, 6, "NEU"], [8, 10, "NEU"]], "pairs": [["# Oxford", "NEU"], ["# Cecil", "POS"]], "raw": "[{\"aspect\": \"# Oxford\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Cecil\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 7, "NEU"]], "pairs": [["Sparta", "NEU"]], "raw": "[{\"aspect\": \"Sparta\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "POS"], [8, 9, "NEU"]], "pairs": [["Buzzfeed", "NEU"], ["Grindr", "NEU"]], "raw": "[{\"aspect\": \"Buzzfeed\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Grindr\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 9, "POS"]], "pairs": [["CNE", "NEU"]], "raw": "[{\"aspect\": \"CNE\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "NEU"]], "pairs": [["La Molina", "NEU"]], "raw": "[{\"aspect\": \"La Molina\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEG"]], "pairs": [["# Woodstock", "NEU"]], "raw": "[{\"aspect\": \"# Woodstock\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 12, "NEU"], [13, 14, "NEU"], [16, 17, "NEU"]], "pairs": [["India", "NEU"], ["China", "NEU"]], "raw": "[{\"aspect\": \"India\", \"sentiment\": \"neutral\"}, {\"aspect\": \"China\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 8, "NEU"]], "pairs": [["Blue Diamond Almonds", "POS"]], "raw": "[{\"aspect\": \"Blue Diamond Almonds\", \"sentiment\": \"positive\"}]"}
+{"gold": [[7, 9, "NEU"]], "pairs": [["Maya Angelou", "POS"]], "raw": "[{\"aspect\": \"Maya Angelou\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 8, "NEU"]], "pairs": [["Joseph Gordon - Levitt", "NEU"]], "raw": "[{\"aspect\": \"Joseph Gordon - Levitt\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "NEU"], [8, 10, "NEU"], [12, 14, "NEU"], [16, 18, "NEU"]], "pairs": [["Agnez Mo", "POS"], ["Ariana Grande", "POS"], ["Agnez Mo", "POS"]], "raw": "[{\"aspect\": \"Agnez Mo\", \"sentiment\": \"positive\"}, {\"aspect\": \"Ariana Grande\", \"sentiment\": \"positive\"}, {\"aspect\": \"Agnez Mo\", \"sentiment\": \"positive\"}]"}
+{"gold": [[20, 22, "NEU"]], "pairs": [["Zig Ziglar", "NEU"]], "raw": "[{\"aspect\": \"Zig Ziglar\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 9, "POS"]], "pairs": [["SAP Hybris Marketing", "POS"]], "raw": "[{\"aspect\": \"SAP Hybris Marketing\", \"sentiment\": \"positive\"}]"}
+{"gold": [[5, 9, "NEU"], [13, 16, "NEU"]], "pairs": [["San Francisco Bay Bridge", "NEU"], ["San Francisco Anchorage", "NEU"]], "raw": "[{\"aspect\": \"San Francisco Bay Bridge\", \"sentiment\": \"neutral\"}, {\"aspect\": \"San Francisco Anchorage\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 8, "POS"]], "pairs": [["Kobe Bryant", "POS"]], "raw": "[{\"aspect\": \"Kobe Bryant\", \"sentiment\": \"positive\"}]"}
+{"gold": [[2, 4, "POS"], [5, 6, "POS"]], "pairs": [["Thomas", "POS"], ["beyonce", "POS"]], "raw": "[{\"aspect\": \"Thomas\", \"sentiment\": \"positive\"}, {\"aspect\": \"beyonce\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 1, "NEG"]], "pairs": [["Renault", "NEG"]], "raw": "[{\"aspect\": \"Renault\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 5, "NEG"]], "pairs": [["Revlon", "NEG"]], "raw": "[{\"aspect\": \"Revlon\", \"sentiment\": \"negative\"}]"}
+{"gold": [[5, 7, "NEG"], [8, 9, "NEU"]], "pairs": [["Nicki", "NEU"]], "raw": "[{\"aspect\": \"Nicki\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 10, "NEU"]], "pairs": [["Palestine", "POS"]], "raw": "[{\"aspect\": \"Palestine\", \"sentiment\": \"positive\"}]"}
+{"gold": [[2, 3, "NEU"]], "pairs": [["Mexico", "POS"], ["Mexican", "POS"]], "raw": "[{\"aspect\": \"Mexico\", \"sentiment\": \"positive\"}, {\"aspect\": \"Mexican\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "POS"], [18, 19, "NEU"]], "pairs": [["Richmond", "POS"], ["Virginia", "POS"], ["Columbus", "POS"]], "raw": "[{\"aspect\": \"Richmond\", \"sentiment\": \"positive\"}, {\"aspect\": \"Virginia\", \"sentiment\": \"positive\"}, {\"aspect\": \"Columbus\", \"sentiment\": \"positive\"}]"}
+{"gold": [[12, 14, "NEU"]], "pairs": [["Clayton Kershaw", "POS"]], "raw": "[{\"aspect\": \"Clayton Kershaw\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 7, "POS"]], "pairs": [["Canada", "POS"]], "raw": "[{\"aspect\": \"Canada\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 1, "NEU"], [4, 6, "POS"], [15, 16, "POS"]], "pairs": [["Kentucky", "NEU"], ["Confederate Memorial Day", "NEU"], ["Jefferson Davis Day", "NEU"], ["Robert E", "NEU"]], "raw": "[{\"aspect\": \"Kentucky\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Confederate Memorial Day\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Jefferson Davis Day\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Robert E\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 12, "POS"]], "pairs": [["Maastricht", "NEU"], ["Liege", "NEU"]], "raw": "[{\"aspect\": \"Maastricht\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Liege\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 14, "NEU"]], "pairs": [["Ban", "NEU"]], "raw": "[{\"aspect\": \"Ban\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEG"]], "pairs": [["Internet Explorer", "NEG"]], "raw": "[{\"aspect\": \"Internet Explorer\", \"sentiment\": \"negative\"}]"}
+{"gold": [[3, 4, "NEU"]], "pairs": [["Vegas", "POS"]], "raw": "[{\"aspect\": \"Vegas\", \"sentiment\": \"positive\"}]"}
+{"gold": [[2, 4, "NEU"]], "pairs": [["Wrigley Field", "NEU"]], "raw": "[{\"aspect\": \"Wrigley Field\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 13, "POS"], [17, 19, "POS"], [23, 25, "POS"]], "pairs": [["Giants", "POS"], ["North Central", "NEU"], ["Notre Dame", "POS"]], "raw": "[{\"aspect\": \"Giants\", \"sentiment\": \"positive\"}, {\"aspect\": \"North Central\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Notre Dame\", \"sentiment\": \"positive\"}]"}
+{"gold": [[13, 14, "NEU"], [15, 17, "NEU"]], "pairs": [["MAD", "NEU"], ["Jan Habraken", "NEU"]], "raw": "[{\"aspect\": \"MAD\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Jan Habraken\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 6, "NEG"]], "pairs": [["Robin", "NEG"]], "raw": "[{\"aspect\": \"Robin\", \"sentiment\": \"negative\"}]"}
+{"gold": [[13, 15, "POS"]], "pairs": [["Kansas City", "POS"]], "raw": "[{\"aspect\": \"Kansas City\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 2, "NEU"], [6, 8, "NEU"], [13, 15, "NEG"]], "pairs": [["Trippy Beatz", "NEU"], ["Sleazy Beatz", "NEG"]], "raw": "[{\"aspect\": \"Trippy Beatz\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Sleazy Beatz\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 5, "NEG"]], "pairs": [["Kris", "NEG"], ["Exo", "NEU"]], "raw": "[{\"aspect\": \"Kris\", \"sentiment\": \"negative\"}, {\"aspect\": \"Exo\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 11, "NEU"]], "pairs": [["Ponytail Lauren", "POS"]], "raw": "[{\"aspect\": \"Ponytail Lauren\", \"sentiment\": \"positive\"}]"}
+{"gold": [[11, 14, "NEU"], [15, 17, "NEU"]], "pairs": [["Davidson County", "NEG"]], "raw": "[{\"aspect\": \"Davidson County\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 8, "POS"]], "pairs": [["50 Shades Of Grey", "POS"]], "raw": "[{\"aspect\": \"50 Shades Of Grey\", \"sentiment\": \"positive\"}]"}
+{"gold": [[14, 16, "NEU"]], "pairs": [["# 14NTC", "POS"], ["# SXSW", "NEU"]], "raw": "[{\"aspect\": \"# 14NTC\", \"sentiment\": \"positive\"}, {\"aspect\": \"# SXSW\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 5, "NEU"]], "pairs": [["Adrian James", "NEU"]], "raw": "[{\"aspect\": \"Adrian James\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "NEG"]], "pairs": [["Derrick Rose", "POS"]], "raw": "[{\"aspect\": \"Derrick Rose\", \"sentiment\": \"positive\"}]"}
+{"gold": [[5, 7, "NEU"], [8, 10, "NEU"], [14, 16, "NEU"]], "pairs": [["Robert DeNiro", "NEU"], ["Al Pacino", "NEU"], ["Godfather II", "NEU"]], "raw": "[{\"aspect\": \"Robert DeNiro\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Al Pacino\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Godfather II\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 8, "NEU"]], "pairs": [["The March on Washington", "NEU"]], "raw": "[{\"aspect\": \"The March on Washington\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[1, 3, "NEU"]], "pairs": [["Joe LoPresti", "NEU"]], "raw": "[{\"aspect\": \"Joe LoPresti\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["Daria", "NEU"]], "raw": "[{\"aspect\": \"Daria\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[13, 16, "NEU"]], "pairs": [["Taiji Whale Museum", "NEU"]], "raw": "[{\"aspect\": \"Taiji Whale Museum\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 9, "NEU"]], "pairs": [["Marina Cano", "NEU"]], "raw": "[{\"aspect\": \"Marina Cano\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "NEG"]], "pairs": [["Syria", "NEU"]], "raw": "[{\"aspect\": \"Syria\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[12, 13, "NEU"]], "pairs": [["London", "NEU"]], "raw": "[{\"aspect\": \"London\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 12, "NEU"]], "pairs": [["Emperor Palpatine", "NEU"]], "raw": "[{\"aspect\": \"Emperor Palpatine\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 10, "NEU"]], "pairs": [["Minecraft", "NEU"]], "raw": "[{\"aspect\": \"Minecraft\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "POS"]], "pairs": [["GO", "POS"], ["# APTA", "POS"], ["GO", "POS"]], "raw": "[{\"aspect\": \"GO\", \"sentiment\": \"positive\"}, {\"aspect\": \"# APTA\", \"sentiment\": \"positive\"}, {\"aspect\": \"GO\", \"sentiment\": \"positive\"}]"}
+{"gold": [[7, 8, "POS"]], "pairs": [["Toulouse", "POS"]], "raw": "[{\"aspect\": \"Toulouse\", \"sentiment\": \"positive\"}]"}
+{"gold": [[7, 8, "NEU"]], "pairs": [["Hayley", "NEU"]], "raw": "[{\"aspect\": \"Hayley\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[22, 24, "POS"]], "pairs": [["Frida Kahlo", "POS"]], "raw": "[{\"aspect\": \"Frida Kahlo\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["Nigeria", "NEU"]], "raw": "[{\"aspect\": \"Nigeria\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 12, "NEU"]], "pairs": [["New York Times", "NEG"]], "raw": "[{\"aspect\": \"New York Times\", \"sentiment\": \"negative\"}]"}
+{"gold": [[8, 9, "NEU"]], "pairs": [["Bradley", "NEU"]], "raw": "[{\"aspect\": \"Bradley\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 8, "NEU"]], "pairs": [["# Finland", "NEU"]], "raw": "[{\"aspect\": \"# Finland\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"], [6, 7, "NEU"]], "pairs": [["Dell", "NEU"], ["Intel", "NEU"]], "raw": "[{\"aspect\": \"Dell\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Intel\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 13, "NEU"]], "pairs": [["Hanson Mao", "NEU"]], "raw": "[{\"aspect\": \"Hanson Mao\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 9, "NEU"]], "pairs": [["Red Hot Chili Peppers", "NEU"]], "raw": "[{\"aspect\": \"Red Hot Chili Peppers\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 6, "NEU"], [8, 10, "NEU"]], "pairs": [["Beverly Hills", "NEU"]], "raw": "[{\"aspect\": \"Beverly Hills\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 6, "NEU"]], "pairs": [["Hubert", "NEU"]], "raw": "[{\"aspect\": \"Hubert\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[12, 13, "NEU"]], "pairs": [["Montrose", "NEU"]], "raw": "[{\"aspect\": \"Montrose\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 9, "NEU"]], "pairs": [["Dr", "NEU"]], "raw": "[{\"aspect\": \"Dr\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 11, "NEU"]], "pairs": [["UN Forum", "NEU"]], "raw": "[{\"aspect\": \"UN Forum\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 8, "POS"]], "pairs": [["Liverpool", "POS"]], "raw": "[{\"aspect\": \"Liverpool\", \"sentiment\": \"positive\"}]"}
+{"gold": [[1, 3, "POS"]], "pairs": [["EMC Isilon", "POS"]], "raw": "[{\"aspect\": \"EMC Isilon\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 2, "NEU"], [5, 7, "NEU"]], "pairs": [["Lincoln Memorial", "NEU"]], "raw": "[{\"aspect\": \"Lincoln Memorial\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 7, "NEU"]], "pairs": [["Olympus Air A01", "NEU"]], "raw": "[{\"aspect\": \"Olympus Air A01\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 10, "NEG"]], "pairs": [["Seahawks", "NEG"]], "raw": "[{\"aspect\": \"Seahawks\", \"sentiment\": \"negative\"}]"}
+{"gold": [[0, 2, "POS"]], "pairs": [["Amy Purdy", "POS"]], "raw": "[{\"aspect\": \"Amy Purdy\", \"sentiment\": \"positive\"}]"}
+{"gold": [[2, 4, "POS"]], "pairs": [["Bob Coontz", "POS"]], "raw": "[{\"aspect\": \"Bob Coontz\", \"sentiment\": \"positive\"}]"}
+{"gold": [[12, 13, "NEU"], [14, 15, "NEU"]], "pairs": [["EXO", "NEU"], ["MCM", "NEU"]], "raw": "[{\"aspect\": \"EXO\", \"sentiment\": \"neutral\"}, {\"aspect\": \"MCM\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 14, "NEU"]], "pairs": [["Kowloon Walled City", "NEG"]], "raw": "[{\"aspect\": \"Kowloon Walled City\", \"sentiment\": \"negative\"}]"}
+{"gold": [[7, 10, "POS"], [11, 12, "POS"]], "pairs": [["Passo Dello Stelvio", "POS"], ["Italy", "NEU"]], "raw": "[{\"aspect\": \"Passo Dello Stelvio\", \"sentiment\": \"positive\"}, {\"aspect\": \"Italy\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 8, "NEU"], [14, 15, "POS"]], "pairs": [["Ray - Ban", "POS"], ["Dana", "POS"]], "raw": "[{\"aspect\": \"Ray - Ban\", \"sentiment\": \"positive\"}, {\"aspect\": \"Dana\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "NEU"], [12, 13, "NEG"], [14, 16, "NEG"]], "pairs": [["Byron Allen", "NEU"], ["Comcast", "NEG"], ["Al Sharpton", "NEG"]], "raw": "[{\"aspect\": \"Byron Allen\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Comcast\", \"sentiment\": \"negative\"}, {\"aspect\": \"Al Sharpton\", \"sentiment\": \"negative\"}]"}
+{"gold": [[5, 6, "NEG"]], "pairs": [["Isis", "NEG"]], "raw": "[{\"aspect\": \"Isis\", \"sentiment\": \"negative\"}]"}
+{"gold": [[12, 14, "NEU"]], "pairs": [["Rome", "NEU"]], "raw": "[{\"aspect\": \"Rome\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[1, 2, "NEU"], [9, 10, "NEU"]], "pairs": [["W", "NEU"]], "raw": "[{\"aspect\": \"W\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["Food Administration", "POS"]], "raw": "[{\"aspect\": \"Food Administration\", \"sentiment\": \"positive\"}]"}
+{"gold": [[11, 13, "NEU"]], "pairs": [["Virgin Islands", "NEU"]], "raw": "[{\"aspect\": \"Virgin Islands\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 3, "NEG"], [4, 5, "NEG"], [16, 17, "NEU"]], "pairs": [["Spock", "NEU"], ["Vulcan", "NEG"], ["California", "NEU"]], "raw": "[{\"aspect\": \"Spock\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Vulcan\", \"sentiment\": \"negative\"}, {\"aspect\": \"California\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[17, 18, "NEU"]], "pairs": [["Janofest", "NEU"]], "raw": "[{\"aspect\": \"Janofest\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[13, 14, "NEU"], [18, 19, "NEU"]], "pairs": [["Hollywood", "NEU"], ["California", "NEU"]], "raw": "[{\"aspect\": \"Hollywood\", \"sentiment\": \"neutral\"}, {\"aspect\": \"California\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 9, "NEU"], [11, 12, "NEU"]], "pairs": [["Holland", "NEU"]], "raw": "[{\"aspect\": \"Holland\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 8, "NEU"], [14, 15, "NEG"]], "pairs": [["Albert Pujols", "NEU"], ["Cardinals", "NEG"]], "raw": "[{\"aspect\": \"Albert Pujols\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Cardinals\", \"sentiment\": \"negative\"}]"}
+{"gold": [[11, 15, "NEU"]], "pairs": [["the", "NEU"]], "raw": "[{\"aspect\": \"the\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 4, "NEG"], [8, 9, "NEU"]], "pairs": [["Nani", "NEG"], ["Fenerbache", "NEU"]], "raw": "[{\"aspect\": \"Nani\", \"sentiment\": \"negative\"}, {\"aspect\": \"Fenerbache\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEG"], [11, 12, "NEU"]], "pairs": [["Wall Street", "NEU"], ["Greek debt crisis", "NEG"]], "raw": "[{\"aspect\": \"Wall Street\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Greek debt crisis\", \"sentiment\": \"negative\"}]"}
+{"gold": [[3, 5, "NEU"]], "pairs": [["West Harlem", "NEU"]], "raw": "[{\"aspect\": \"West Harlem\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 13, "NEU"]], "pairs": [["# Rumi", "NEU"]], "raw": "[{\"aspect\": \"# Rumi\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "POS"], [2, 3, "NEU"], [11, 12, "NEU"]], "pairs": [["Apple", "NEU"], ["Nikon", "NEU"], ["Flickr", "NEU"]], "raw": "[{\"aspect\": \"Apple\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Nikon\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Flickr\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 9, "NEU"]], "pairs": [["Ryan Allis", "NEU"]], "raw": "[{\"aspect\": \"Ryan Allis\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 11, "POS"], [12, 14, "NEU"]], "pairs": [["New York", "POS"], ["New Years", "POS"]], "raw": "[{\"aspect\": \"New York\", \"sentiment\": \"positive\"}, {\"aspect\": \"New Years\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 8, "NEU"]], "pairs": [["Andy Cole", "NEU"]], "raw": "[{\"aspect\": \"Andy Cole\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[16, 17, "NEU"], [19, 23, "NEU"]], "pairs": [["# TAMUCC", "NEU"], ["BP", "NEU"], ["# Texas Gulf Research", "NEU"]], "raw": "[{\"aspect\": \"# TAMUCC\", \"sentiment\": \"neutral\"}, {\"aspect\": \"BP\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Texas Gulf Research\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"], [10, 11, "NEU"]], "pairs": [["Jared Leto", "NEU"], ["x 30 Seconds To Mars", "NEU"]], "raw": "[{\"aspect\": \"Jared Leto\", \"sentiment\": \"neutral\"}, {\"aspect\": \"x 30 Seconds To Mars\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 6, "NEG"], [7, 9, "POS"], [14, 16, "NEG"]], "pairs": [["Shaqiri", "NEG"], ["# LFC", "NEG"], ["Stoke City", "NEU"]], "raw": "[{\"aspect\": \"Shaqiri\", \"sentiment\": \"negative\"}, {\"aspect\": \"# LFC\", \"sentiment\": \"negative\"}, {\"aspect\": \"Stoke City\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"], [5, 7, "NEU"]], "pairs": [["Moscow", "NEU"], ["Sobyanin", "NEU"]], "raw": "[{\"aspect\": \"Moscow\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Sobyanin\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "NEU"], [7, 9, "NEU"]], "pairs": [["NILAY VARDAR", "NEU"], ["Soma District", "NEU"]], "raw": "[{\"aspect\": \"NILAY VARDAR\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Soma District\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "POS"]], "pairs": [["California", "POS"]], "raw": "[{\"aspect\": \"California\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["Michelle", "POS"]], "raw": "[{\"aspect\": \"Michelle\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 2, "NEU"]], "pairs": [["Odin Lloyd", "NEU"]], "raw": "[{\"aspect\": \"Odin Lloyd\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 9, "NEU"]], "pairs": [["Jimmy Carter", "NEU"], ["US", "NEU"], ["Cuba", "NEU"]], "raw": "[{\"aspect\": \"Jimmy Carter\", \"sentiment\": \"neutral\"}, {\"aspect\": \"US\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Cuba\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 9, "NEU"]], "pairs": [["Los Angeles", "NEU"]], "raw": "[{\"aspect\": \"Los Angeles\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "NEU"], [13, 15, "NEU"]], "pairs": [["Oscar Grant", "POS"], ["Oscar Grant", "POS"]], "raw": "[{\"aspect\": \"Oscar Grant\", \"sentiment\": \"positive\"}, {\"aspect\": \"Oscar Grant\", \"sentiment\": \"positive\"}]"}
+{"gold": [[10, 11, "NEG"]], "pairs": [["Michigan speedway", "NEU"]], "raw": "[{\"aspect\": \"Michigan speedway\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 4, "NEU"]], "pairs": [["Robert Moses", "NEU"]], "raw": "[{\"aspect\": \"Robert Moses\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[15, 16, "POS"]], "pairs": [["Teodora", "POS"]], "raw": "[{\"aspect\": \"Teodora\", \"sentiment\": \"positive\"}]"}
+{"gold": [[18, 20, "NEU"], [21, 22, "NEG"]], "pairs": [["Darfur", "NEU"]], "raw": "[{\"aspect\": \"Darfur\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 4, "NEU"], [6, 8, "NEU"]], "pairs": [["# Chicago", "NEU"], ["Rainbow Beach", "NEU"]], "raw": "[{\"aspect\": \"# Chicago\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Rainbow Beach\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEG"]], "pairs": [["Lucy Coffey", "NEG"]], "raw": "[{\"aspect\": \"Lucy Coffey\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 6, "NEG"]], "pairs": [["Louis CK", "NEU"]], "raw": "[{\"aspect\": \"Louis CK\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 10, "POS"]], "pairs": [["Eric Berry", "POS"]], "raw": "[{\"aspect\": \"Eric Berry\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 8, "NEU"]], "pairs": [["Michal Pudelka", "NEU"]], "raw": "[{\"aspect\": \"Michal Pudelka\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "POS"], [7, 8, "NEU"], [11, 13, "POS"]], "pairs": [["Megan Young", "NEU"], ["Philippines", "NEU"], ["Miss World", "NEU"]], "raw": "[{\"aspect\": \"Megan Young\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Philippines\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Miss World\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEG"], [6, 8, "NEG"]], "pairs": [["Netflix", "NEU"], ["Adam Sandler", "NEG"]], "raw": "[{\"aspect\": \"Netflix\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Adam Sandler\", \"sentiment\": \"negative\"}]"}
+{"gold": [[7, 9, "NEU"]], "pairs": [["South Carolina", "NEU"]], "raw": "[{\"aspect\": \"South Carolina\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[12, 13, "POS"], [15, 16, "POS"]], "pairs": [["Jersualem", "POS"], ["Chicagoans", "NEU"]], "raw": "[{\"aspect\": \"Jersualem\", \"sentiment\": \"positive\"}, {\"aspect\": \"Chicagoans\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["Austin", "NEU"]], "raw": "[{\"aspect\": \"Austin\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 12, "NEU"]], "pairs": [["Wessem Limburg", "NEU"]], "raw": "[{\"aspect\": \"Wessem Limburg\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 12, "NEU"], [18, 20, "POS"]], "pairs": [["# Dodgertown", "POS"]], "raw": "[{\"aspect\": \"# Dodgertown\", \"sentiment\": \"positive\"}]"}
+{"gold": [[7, 8, "POS"]], "pairs": [["Akron marathon", "POS"]], "raw": "[{\"aspect\": \"Akron marathon\", \"sentiment\": \"positive\"}]"}
+{"gold": [[9, 10, "NEG"]], "pairs": [["ATLANTA", "NEU"]], "raw": "[{\"aspect\": \"ATLANTA\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 5, "POS"]], "pairs": [["Edwin Chanas", "POS"]], "raw": "[{\"aspect\": \"Edwin Chanas\", \"sentiment\": \"positive\"}]"}
+{"gold": [[3, 5, "POS"], [10, 13, "NEU"], [13, 15, "NEU"]], "pairs": [["Voss Foundation", "NEU"], ["# Africa", "NEU"]], "raw": "[{\"aspect\": \"Voss Foundation\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Africa\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[18, 20, "NEU"]], "pairs": [["Pearl Harbor", "NEU"]], "raw": "[{\"aspect\": \"Pearl Harbor\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[18, 19, "NEG"]], "pairs": [["House", "NEU"], ["Senate", "NEG"]], "raw": "[{\"aspect\": \"House\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Senate\", \"sentiment\": \"negative\"}]"}
+{"gold": [[15, 17, "POS"]], "pairs": [["Nellie Bly", "POS"]], "raw": "[{\"aspect\": \"Nellie Bly\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "POS"], [6, 8, "POS"], [18, 19, "POS"]], "pairs": [["Bo", "POS"], ["Butch Ryan", "POS"], ["Final Four", "NEU"], ["Coach Williams", "POS"]], "raw": "[{\"aspect\": \"Bo\", \"sentiment\": \"positive\"}, {\"aspect\": \"Butch Ryan\", \"sentiment\": \"positive\"}, {\"aspect\": \"Final Four\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Coach Williams\", \"sentiment\": \"positive\"}]"}
+{"gold": [[3, 4, "NEU"]], "pairs": [["Baikal", "NEU"], ["Russia", "NEU"]], "raw": "[{\"aspect\": \"Baikal\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Russia\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"], [8, 9, "POS"]], "pairs": [["Denver Airport", "NEU"], ["Annabel", "POS"]], "raw": "[{\"aspect\": \"Denver Airport\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Annabel\", \"sentiment\": \"positive\"}]"}
+{"gold": [[13, 15, "NEU"]], "pairs": [["MN River", "NEU"]], "raw": "[{\"aspect\": \"MN River\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 9, "POS"]], "pairs": [["Sweden", "POS"]], "raw": "[{\"aspect\": \"Sweden\", \"sentiment\": \"positive\"}]"}
+{"gold": [[13, 16, "NEU"], [17, 19, "NEU"]], "pairs": [["NorthEast Animal Shelter", "NEU"], ["Lincoln Heights", "NEU"]], "raw": "[{\"aspect\": \"NorthEast Animal Shelter\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Lincoln Heights\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "NEU"]], "pairs": [["Lilian DeLauney", "NEU"]], "raw": "[{\"aspect\": \"Lilian DeLauney\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 12, "NEG"], [18, 20, "NEU"]], "pairs": [["Ted Cruz", "NEG"], ["Yik Yak", "NEU"]], "raw": "[{\"aspect\": \"Ted Cruz\", \"sentiment\": \"negative\"}, {\"aspect\": \"Yik Yak\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[1, 2, "POS"], [7, 11, "NEU"]], "pairs": [["Mohammad", "POS"], ["Dianne Leckie Memorial Scholarship", "NEU"]], "raw": "[{\"aspect\": \"Mohammad\", \"sentiment\": \"positive\"}, {\"aspect\": \"Dianne Leckie Memorial Scholarship\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[14, 16, "NEU"]], "pairs": [["Bradley Cooper", "NEU"]], "raw": "[{\"aspect\": \"Bradley Cooper\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 10, "NEU"]], "pairs": [["Mexico", "NEU"]], "raw": "[{\"aspect\": \"Mexico\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Karen Collins", "POS"]], "raw": "[{\"aspect\": \"Karen Collins\", \"sentiment\": \"positive\"}]"}
+{"gold": [[7, 9, "NEG"], [10, 11, "NEG"]], "pairs": [["Bhagat Singh", "POS"], ["Sukhdev", "POS"], ["Rajguru", "POS"]], "raw": "[{\"aspect\": \"Bhagat Singh\", \"sentiment\": \"positive\"}, {\"aspect\": \"Sukhdev\", \"sentiment\": \"positive\"}, {\"aspect\": \"Rajguru\", \"sentiment\": \"positive\"}]"}
+{"gold": [[13, 16, "NEU"]], "pairs": [["F - 15s", "NEU"]], "raw": "[{\"aspect\": \"F - 15s\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["LB DeAndre Levy", "POS"]], "raw": "[{\"aspect\": \"LB DeAndre Levy\", \"sentiment\": \"positive\"}]"}
+{"gold": [[17, 19, "NEU"]], "pairs": [["Walt Disney", "NEU"]], "raw": "[{\"aspect\": \"Walt Disney\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "POS"]], "pairs": [["Cason Olson", "POS"]], "raw": "[{\"aspect\": \"Cason Olson\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 2, "POS"], [6, 8, "POS"], [15, 16, "NEU"], [20, 22, "NEU"]], "pairs": [["Ortigas Greenways Walking Tour", "POS"], ["Paulo Alcazaren", "POS"], ["EDSA", "NEU"], ["Bank Dr", "NEU"], ["Opal Rd", "NEU"]], "raw": "[{\"aspect\": \"Ortigas Greenways Walking Tour\", \"sentiment\": \"positive\"}, {\"aspect\": \"Paulo Alcazaren\", \"sentiment\": \"positive\"}, {\"aspect\": \"EDSA\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Bank Dr\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Opal Rd\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"], [7, 8, "POS"]], "pairs": [["Mary Jane", "NEU"], ["Floyd", "NEU"]], "raw": "[{\"aspect\": \"Mary Jane\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Floyd\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 10, "POS"]], "pairs": [["Brandon Silva", "NEU"]], "raw": "[{\"aspect\": \"Brandon Silva\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "POS"]], "pairs": [["Wisconsin ice caves", "POS"]], "raw": "[{\"aspect\": \"Wisconsin ice caves\", \"sentiment\": \"positive\"}]"}
+{"gold": [[9, 10, "NEG"], [20, 21, "NEG"]], "pairs": [["Debbie", "NEG"], ["Iran deal", "NEU"]], "raw": "[{\"aspect\": \"Debbie\", \"sentiment\": \"negative\"}, {\"aspect\": \"Iran deal\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 3, "POS"]], "pairs": [["Brazil", "POS"]], "raw": "[{\"aspect\": \"Brazil\", \"sentiment\": \"positive\"}]"}
+{"gold": [[8, 9, "NEU"]], "pairs": [["Cleveland", "NEU"], ["Ohio", "NEU"]], "raw": "[{\"aspect\": \"Cleveland\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Ohio\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[13, 15, "NEG"], [18, 19, "NEU"]], "pairs": [["# Amtrak", "NEG"], ["Philadelphia", "NEG"]], "raw": "[{\"aspect\": \"# Amtrak\", \"sentiment\": \"negative\"}, {\"aspect\": \"Philadelphia\", \"sentiment\": \"negative\"}]"}
+{"gold": [[9, 11, "NEU"]], "pairs": [["Indiana Jones", "POS"]], "raw": "[{\"aspect\": \"Indiana Jones\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 8, "NEU"]], "pairs": [["SC Capitol", "NEU"], ["# Charleston", "NEU"]], "raw": "[{\"aspect\": \"SC Capitol\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Charleston\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 11, "NEG"]], "pairs": [["Sochi Olympic", "NEU"]], "raw": "[{\"aspect\": \"Sochi Olympic\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[19, 20, "POS"]], "pairs": [["Arctic", "NEU"]], "raw": "[{\"aspect\": \"Arctic\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 14, "POS"]], "pairs": [["Hollywood Walk of Fame", "POS"]], "raw": "[{\"aspect\": \"Hollywood Walk of Fame\", \"sentiment\": \"positive\"}]"}
+{"gold": [[12, 13, "NEU"]], "pairs": [["Poland", "NEU"]], "raw": "[{\"aspect\": \"Poland\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 3, "NEG"]], "pairs": [["BAE", "NEU"]], "raw": "[{\"aspect\": \"BAE\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 13, "NEU"], [15, 16, "NEU"]], "pairs": [["Silver Lake", "NEG"], ["KTLA", "NEU"]], "raw": "[{\"aspect\": \"Silver Lake\", \"sentiment\": \"negative\"}, {\"aspect\": \"KTLA\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 4, "POS"], [10, 14, "NEU"], [15, 18, "NEU"]], "pairs": [["Martha", "POS"], ["# Ebola", "NEU"], ["Lunsar Sierra Leone", "NEU"]], "raw": "[{\"aspect\": \"Martha\", \"sentiment\": \"positive\"}, {\"aspect\": \"# Ebola\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Lunsar Sierra Leone\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEG"]], "pairs": [["Spiderman", "NEG"]], "raw": "[{\"aspect\": \"Spiderman\", \"sentiment\": \"negative\"}]"}
+{"gold": [[6, 8, "POS"], [15, 18, "POS"]], "pairs": [["Jonathan Toews", "POS"], ["NHL", "NEU"]], "raw": "[{\"aspect\": \"Jonathan Toews\", \"sentiment\": \"positive\"}, {\"aspect\": \"NHL\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 12, "NEU"], [13, 14, "NEU"], [15, 16, "NEU"], [17, 18, "NEU"]], "pairs": [["Cardiff", "NEU"], ["Belfast", "NEU"], ["Edinburgh", "NEU"], ["London", "NEU"]], "raw": "[{\"aspect\": \"Cardiff\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Belfast\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Edinburgh\", \"sentiment\": \"neutral\"}, {\"aspect\": \"London\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 4, "POS"], [8, 10, "POS"]], "pairs": [["Emmy Award", "NEU"], ["Gary Panter", "POS"]], "raw": "[{\"aspect\": \"Emmy Award\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Gary Panter\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 8, "NEG"]], "pairs": [["Chrysler Building", "NEG"]], "raw": "[{\"aspect\": \"Chrysler Building\", \"sentiment\": \"negative\"}]"}
+{"gold": [[0, 1, "NEU"], [5, 6, "NEG"]], "pairs": [["APS", "NEU"], ["SRP", "NEG"]], "raw": "[{\"aspect\": \"APS\", \"sentiment\": \"neutral\"}, {\"aspect\": \"SRP\", \"sentiment\": \"negative\"}]"}
+{"gold": [[8, 10, "POS"]], "pairs": [["Malala Yousafzai", "POS"]], "raw": "[{\"aspect\": \"Malala Yousafzai\", \"sentiment\": \"positive\"}]"}
+{"gold": [[13, 15, "POS"]], "pairs": [["New Orleans", "NEU"]], "raw": "[{\"aspect\": \"New Orleans\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 9, "NEU"]], "pairs": [["Buddy", "NEU"], ["Michael Zhang", "NEU"]], "raw": "[{\"aspect\": \"Buddy\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Michael Zhang\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEG"]], "pairs": [["Charleston", "NEG"]], "raw": "[{\"aspect\": \"Charleston\", \"sentiment\": \"negative\"}]"}
+{"gold": [[10, 11, "POS"]], "pairs": [["BBC", "POS"]], "raw": "[{\"aspect\": \"BBC\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 7, "NEU"], [10, 12, "NEU"]], "pairs": [["Canadian International School", "NEU"]], "raw": "[{\"aspect\": \"Canadian International School\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 5, "POS"], [8, 10, "POS"]], "pairs": [["# Newquay", "POS"], ["# Cornwall", "POS"]], "raw": "[{\"aspect\": \"# Newquay\", \"sentiment\": \"positive\"}, {\"aspect\": \"# Cornwall\", \"sentiment\": \"positive\"}]"}
+{"gold": [[5, 7, "POS"], [9, 10, "NEU"]], "pairs": [["Tony DePina", "POS"]], "raw": "[{\"aspect\": \"Tony DePina\", \"sentiment\": \"positive\"}]"}
+{"gold": [[8, 9, "NEG"], [13, 14, "NEG"]], "pairs": [["Nasdaq", "NEG"]], "raw": "[{\"aspect\": \"Nasdaq\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["KFC", "NEU"]], "raw": "[{\"aspect\": \"KFC\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "NEU"]], "pairs": [["Fairfield County", "NEG"]], "raw": "[{\"aspect\": \"Fairfield County\", \"sentiment\": \"negative\"}]"}
+{"gold": [[7, 8, "NEU"]], "pairs": [["Greeks", "NEU"], ["Greece", "NEU"]], "raw": "[{\"aspect\": \"Greeks\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Greece\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "NEG"], [8, 9, "NEG"], [13, 15, "NEU"]], "pairs": [["Lorde", "NEG"], ["San Francisco", "NEU"]], "raw": "[{\"aspect\": \"Lorde\", \"sentiment\": \"negative\"}, {\"aspect\": \"San Francisco\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 12, "POS"]], "pairs": [["East Harlem", "POS"]], "raw": "[{\"aspect\": \"East Harlem\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 2, "NEU"]], "pairs": [["Lake Eola", "NEU"]], "raw": "[{\"aspect\": \"Lake Eola\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "NEG"]], "pairs": [["LeBron James", "NEG"], ["# Cavs", "NEU"]], "raw": "[{\"aspect\": \"LeBron James\", \"sentiment\": \"negative\"}, {\"aspect\": \"# Cavs\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[15, 16, "NEG"]], "pairs": [["Nairobi", "NEU"]], "raw": "[{\"aspect\": \"Nairobi\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEG"], [9, 10, "NEU"]], "pairs": [["Nigel Farage", "NEG"], ["Ukip", "NEU"]], "raw": "[{\"aspect\": \"Nigel Farage\", \"sentiment\": \"negative\"}, {\"aspect\": \"Ukip\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["TX", "NEU"]], "raw": "[{\"aspect\": \"TX\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 12, "POS"]], "pairs": [["# GERBRA", "POS"], ["USA", "POS"]], "raw": "[{\"aspect\": \"# GERBRA\", \"sentiment\": \"positive\"}, {\"aspect\": \"USA\", \"sentiment\": \"positive\"}]"}
+{"gold": [[2, 4, "POS"]], "pairs": [["James Foley", "POS"], ["Northwestern", "NEU"]], "raw": "[{\"aspect\": \"James Foley\", \"sentiment\": \"positive\"}, {\"aspect\": \"Northwestern\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 10, "NEG"], [11, 12, "NEG"], [13, 14, "NEG"]], "pairs": [["Gaston", "NEG"], ["York", "NEG"], ["Chester", "NEG"]], "raw": "[{\"aspect\": \"Gaston\", \"sentiment\": \"negative\"}, {\"aspect\": \"York\", \"sentiment\": \"negative\"}, {\"aspect\": \"Chester\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Central America", "NEU"]], "raw": "[{\"aspect\": \"Central America\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 3, "NEU"], [4, 6, "POS"], [12, 13, "NEU"]], "pairs": [["Michelle Gilbert", "POS"]], "raw": "[{\"aspect\": \"Michelle Gilbert\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "NEG"]], "pairs": [["Cynthia Hurd", "NEG"], ["Charleston libraries", "NEU"]], "raw": "[{\"aspect\": \"Cynthia Hurd\", \"sentiment\": \"negative\"}, {\"aspect\": \"Charleston libraries\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "POS"]], "pairs": [["Ed Westwick", "POS"]], "raw": "[{\"aspect\": \"Ed Westwick\", \"sentiment\": \"positive\"}]"}
+{"gold": [[1, 3, "NEU"], [6, 8, "NEU"]], "pairs": [["# Preds", "POS"], ["Calle Jarnkrok", "POS"]], "raw": "[{\"aspect\": \"# Preds\", \"sentiment\": \"positive\"}, {\"aspect\": \"Calle Jarnkrok\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "NEU"], [15, 16, "NEG"]], "pairs": [["NASA", "NEU"], ["Antarctica", "NEU"]], "raw": "[{\"aspect\": \"NASA\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Antarctica\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "NEU"], [5, 7, "NEU"]], "pairs": [["Suzy", "NEU"], ["New York", "NEU"]], "raw": "[{\"aspect\": \"Suzy\", \"sentiment\": \"neutral\"}, {\"aspect\": \"New York\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Nick Jonas", "NEU"]], "raw": "[{\"aspect\": \"Nick Jonas\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 11, "POS"]], "pairs": [["Dorcas Cassey", "POS"]], "raw": "[{\"aspect\": \"Dorcas Cassey\", \"sentiment\": \"positive\"}]"}
+{"gold": [[5, 7, "NEU"], [13, 15, "NEU"]], "pairs": [["Lauren Conrad", "NEU"], ["Laguna Beach", "NEU"]], "raw": "[{\"aspect\": \"Lauren Conrad\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Laguna Beach\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[17, 19, "NEU"]], "pairs": [["Tim Fargo", "NEU"]], "raw": "[{\"aspect\": \"Tim Fargo\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["Latina", "NEU"]], "raw": "[{\"aspect\": \"Latina\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 9, "NEU"]], "pairs": [["Thoreau", "NEU"]], "raw": "[{\"aspect\": \"Thoreau\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "NEU"], [6, 7, "NEU"]], "pairs": [["Antarctic", "NEU"]], "raw": "[{\"aspect\": \"Antarctic\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 5, "NEU"]], "pairs": [["Littlecote House", "NEU"]], "raw": "[{\"aspect\": \"Littlecote House\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "POS"], [13, 15, "NEU"], [16, 18, "NEU"]], "pairs": [["Robert O", "POS"], ["Hollywood Blvd", "NEU"], ["Diane Baker", "POS"], ["TCM fest", "NEU"]], "raw": "[{\"aspect\": \"Robert O\", \"sentiment\": \"positive\"}, {\"aspect\": \"Hollywood Blvd\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Diane Baker\", \"sentiment\": \"positive\"}, {\"aspect\": \"TCM fest\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "POS"]], "pairs": [["Infinity Pools", "NEU"]], "raw": "[{\"aspect\": \"Infinity Pools\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "NEU"], [13, 14, "POS"], [15, 16, "POS"]], "pairs": [["London", "NEU"], ["Wally", "POS"], ["Fry", "POS"]], "raw": "[{\"aspect\": \"London\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Wally\", \"sentiment\": \"positive\"}, {\"aspect\": \"Fry\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 8, "NEU"], [17, 19, "NEU"]], "pairs": [["Stanton Elementary", "NEU"], ["# anacostia", "NEU"]], "raw": "[{\"aspect\": \"Stanton Elementary\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# anacostia\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "POS"]], "pairs": [["Langkawi Island", "POS"]], "raw": "[{\"aspect\": \"Langkawi Island\", \"sentiment\": \"positive\"}]"}
+{"gold": [[5, 6, "POS"], [11, 12, "POS"]], "pairs": [["Kanye", "POS"], ["Kanye", "POS"]], "raw": "[{\"aspect\": \"Kanye\", \"sentiment\": \"positive\"}, {\"aspect\": \"Kanye\", \"sentiment\": \"positive\"}]"}
+{"gold": [[15, 16, "NEU"], [17, 18, "NEU"]], "pairs": [["Gracie", "NEU"], ["Lou", "NEU"]], "raw": "[{\"aspect\": \"Gracie\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Lou\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "NEU"], [2, 5, "NEU"]], "pairs": [["Atlantic Hotel Dubai Palm", "NEU"]], "raw": "[{\"aspect\": \"Atlantic Hotel Dubai Palm\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 9, "POS"], [10, 12, "NEU"], [13, 14, "NEU"]], "pairs": [["the", "NEU"], ["Summer Solstice", "POS"], ["Poland", "NEU"]], "raw": "[{\"aspect\": \"the\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Summer Solstice\", \"sentiment\": \"positive\"}, {\"aspect\": \"Poland\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "NEU"]], "pairs": [["AFSE", "NEU"]], "raw": "[{\"aspect\": \"AFSE\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEG"]], "pairs": [["Louis", "POS"]], "raw": "[{\"aspect\": \"Louis\", \"sentiment\": \"positive\"}]"}
+{"gold": [[8, 9, "POS"]], "pairs": [["Rihanna", "POS"]], "raw": "[{\"aspect\": \"Rihanna\", \"sentiment\": \"positive\"}]"}
+{"gold": [[5, 7, "NEU"], [7, 9, "NEU"]], "pairs": [["# Malbork", "NEU"], ["# Poland", "NEU"]], "raw": "[{\"aspect\": \"# Malbork\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Poland\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "NEU"], [2, 3, "NEU"], [6, 8, "NEU"]], "pairs": [["Amanda", "NEU"], ["Nikki", "NEU"], ["Pacific Ocean", "NEU"]], "raw": "[{\"aspect\": \"Amanda\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Nikki\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Pacific Ocean\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Windows 10", "NEU"]], "raw": "[{\"aspect\": \"Windows 10\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "NEU"], [8, 9, "NEU"], [11, 12, "NEU"]], "pairs": [["Emily", "NEG"], ["Spencer", "NEG"], ["# PLL", "NEU"]], "raw": "[{\"aspect\": \"Emily\", \"sentiment\": \"negative\"}, {\"aspect\": \"Spencer\", \"sentiment\": \"negative\"}, {\"aspect\": \"# PLL\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 10, "POS"], [11, 12, "POS"], [13, 14, "NEU"]], "pairs": [["Spessart Mountains", "POS"], ["Bavaria", "NEU"], ["Germany", "NEU"]], "raw": "[{\"aspect\": \"Spessart Mountains\", \"sentiment\": \"positive\"}, {\"aspect\": \"Bavaria\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Germany\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "POS"], [20, 22, "NEG"]], "pairs": [["HNLMS Van Amstel", "NEU"], ["# OTD", "NEU"]], "raw": "[{\"aspect\": \"HNLMS Van Amstel\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# OTD\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 8, "POS"]], "pairs": [["Kazakhstan", "POS"]], "raw": "[{\"aspect\": \"Kazakhstan\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 2, "NEU"]], "pairs": [["Ryszard Kapuscinski", "NEU"]], "raw": "[{\"aspect\": \"Ryszard Kapuscinski\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 6, "POS"], [7, 9, "POS"]], "pairs": [["VENICE", "POS"], ["THE GROVE", "POS"]], "raw": "[{\"aspect\": \"VENICE\", \"sentiment\": \"positive\"}, {\"aspect\": \"THE GROVE\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Dora Wheeler", "NEU"]], "raw": "[{\"aspect\": \"Dora Wheeler\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 10, "POS"]], "pairs": [["Niall Horan", "POS"]], "raw": "[{\"aspect\": \"Niall Horan\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 2, "POS"]], "pairs": [["Alex Chow", "POS"]], "raw": "[{\"aspect\": \"Alex Chow\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "NEG"], [7, 8, "NEU"]], "pairs": [["Stone Park", "NEU"], ["IL", "NEU"]], "raw": "[{\"aspect\": \"Stone Park\", \"sentiment\": \"neutral\"}, {\"aspect\": \"IL\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[15, 17, "NEU"]], "pairs": [["Gartner", "NEU"]], "raw": "[{\"aspect\": \"Gartner\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[1, 3, "POS"], [14, 15, "POS"]], "pairs": [["independence day", "POS"]], "raw": "[{\"aspect\": \"independence day\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "POS"], [11, 12, "NEU"]], "pairs": [["FTC", "POS"], ["ISO", "NEU"]], "raw": "[{\"aspect\": \"FTC\", \"sentiment\": \"positive\"}, {\"aspect\": \"ISO\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "NEU"], [19, 21, "NEU"]], "pairs": [["Burlington PD", "NEG"], ["Ireland", "NEU"], ["Washington St", "NEU"]], "raw": "[{\"aspect\": \"Burlington PD\", \"sentiment\": \"negative\"}, {\"aspect\": \"Ireland\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Washington St\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 12, "NEU"]], "pairs": [["Philadelphia", "NEU"]], "raw": "[{\"aspect\": \"Philadelphia\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[12, 14, "POS"]], "pairs": [["Supreme Court", "NEU"]], "raw": "[{\"aspect\": \"Supreme Court\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 6, "NEU"], [8, 9, "NEU"]], "pairs": [["Swift", "NEU"], ["JSON", "NEU"], ["# swiftlang", "NEU"]], "raw": "[{\"aspect\": \"Swift\", \"sentiment\": \"neutral\"}, {\"aspect\": \"JSON\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# swiftlang\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 13, "NEU"]], "pairs": [["# Venezuela", "NEU"], ["# Colombia", "NEU"]], "raw": "[{\"aspect\": \"# Venezuela\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Colombia\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "POS"], [4, 6, "POS"], [18, 19, "POS"]], "pairs": [["Steve Meyers", "POS"], ["Breakfast Tacos", "POS"], ["Armando", "POS"]], "raw": "[{\"aspect\": \"Steve Meyers\", \"sentiment\": \"positive\"}, {\"aspect\": \"Breakfast Tacos\", \"sentiment\": \"positive\"}, {\"aspect\": \"Armando\", \"sentiment\": \"positive\"}]"}
+{"gold": [[3, 6, "POS"], [18, 20, "NEU"]], "pairs": [["Pickens High School JROTC Raider And Drill", "POS"], ["Dorman High", "NEU"]], "raw": "[{\"aspect\": \"Pickens High School JROTC Raider And Drill\", \"sentiment\": \"positive\"}, {\"aspect\": \"Dorman High\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 9, "POS"]], "pairs": [["Roman Pierce Zamostny", "POS"]], "raw": "[{\"aspect\": \"Roman Pierce Zamostny\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 2, "NEU"], [13, 16, "NEU"]], "pairs": [["# UKZN", "NEU"], ["Palestinian Film Festival", "NEU"]], "raw": "[{\"aspect\": \"# UKZN\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Palestinian Film Festival\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 10, "POS"]], "pairs": [["Jesse Eisenberg", "POS"]], "raw": "[{\"aspect\": \"Jesse Eisenberg\", \"sentiment\": \"positive\"}]"}
+{"gold": [[7, 11, "NEU"]], "pairs": [["# Toyota Camry Hybrid", "NEU"]], "raw": "[{\"aspect\": \"# Toyota Camry Hybrid\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 12, "NEG"], [13, 14, "NEG"]], "pairs": [["Iraq", "NEG"], ["Syria", "NEG"]], "raw": "[{\"aspect\": \"Iraq\", \"sentiment\": \"negative\"}, {\"aspect\": \"Syria\", \"sentiment\": \"negative\"}]"}
+{"gold": [[12, 13, "NEU"]], "pairs": [["Fiji", "NEU"]], "raw": "[{\"aspect\": \"Fiji\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[21, 24, "NEU"]], "pairs": [["Fairhaven Ship Yard", "NEU"]], "raw": "[{\"aspect\": \"Fairhaven Ship Yard\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "NEU"], [8, 9, "NEU"]], "pairs": [["Lincoln Avenue", "NEU"], ["Chicago", "NEU"]], "raw": "[{\"aspect\": \"Lincoln Avenue\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Chicago\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"], [12, 13, "NEG"]], "pairs": [["Elon Musk", "NEU"], ["Skynet", "NEU"]], "raw": "[{\"aspect\": \"Elon Musk\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Skynet\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[14, 16, "NEU"]], "pairs": [["# SouthBend", "NEU"]], "raw": "[{\"aspect\": \"# SouthBend\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 12, "POS"]], "pairs": [["Tam Wilson", "POS"], ["Rich", "POS"], ["poor", "POS"], ["black", "POS"], ["white", "POS"]], "raw": "[{\"aspect\": \"Tam Wilson\", \"sentiment\": \"positive\"}, {\"aspect\": \"Rich\", \"sentiment\": \"positive\"}, {\"aspect\": \"poor\", \"sentiment\": \"positive\"}, {\"aspect\": \"black\", \"sentiment\": \"positive\"}, {\"aspect\": \"white\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 8, "NEU"]], "pairs": [["East Africa", "NEU"]], "raw": "[{\"aspect\": \"East Africa\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "POS"], [10, 12, "POS"]], "pairs": [["miley", "POS"], ["Miley Cyrus", "POS"]], "raw": "[{\"aspect\": \"miley\", \"sentiment\": \"positive\"}, {\"aspect\": \"Miley Cyrus\", \"sentiment\": \"positive\"}]"}
+{"gold": [[13, 14, "NEU"]], "pairs": [["London", "NEU"]], "raw": "[{\"aspect\": \"London\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[16, 17, "NEU"]], "pairs": [["Handford", "NEU"], ["California", "NEU"]], "raw": "[{\"aspect\": \"Handford\", \"sentiment\": \"neutral\"}, {\"aspect\": \"California\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 4, "NEU"]], "pairs": [["Davis", "POS"]], "raw": "[{\"aspect\": \"Davis\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 2, "POS"], [2, 4, "POS"], [13, 15, "NEU"]], "pairs": [["# Blackhawks", "POS"], ["Andrew Desjardins", "POS"], ["# Predators", "NEU"]], "raw": "[{\"aspect\": \"# Blackhawks\", \"sentiment\": \"positive\"}, {\"aspect\": \"Andrew Desjardins\", \"sentiment\": \"positive\"}, {\"aspect\": \"# Predators\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "POS"]], "pairs": [["Puerto Rico", "POS"]], "raw": "[{\"aspect\": \"Puerto Rico\", \"sentiment\": \"positive\"}]"}
+{"gold": [[12, 14, "NEU"]], "pairs": [["David Ramsay", "NEU"]], "raw": "[{\"aspect\": \"David Ramsay\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEG"], [11, 12, "NEU"]], "pairs": [["Emma", "NEG"], ["Lucy", "NEU"]], "raw": "[{\"aspect\": \"Emma\", \"sentiment\": \"negative\"}, {\"aspect\": \"Lucy\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[14, 16, "NEU"]], "pairs": [["# Australia", "NEU"], ["Rod Emmerson", "NEU"]], "raw": "[{\"aspect\": \"# Australia\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Rod Emmerson\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[1, 3, "NEG"], [7, 10, "NEU"]], "pairs": [["Jony Ive", "POS"], ["Apple Watch PLUS", "POS"]], "raw": "[{\"aspect\": \"Jony Ive\", \"sentiment\": \"positive\"}, {\"aspect\": \"Apple Watch PLUS\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "NEU"], [7, 10, "NEU"]], "pairs": [["Marc", "NEU"], ["# Chagall", "NEU"]], "raw": "[{\"aspect\": \"Marc\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Chagall\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"], [6, 7, "NEU"]], "pairs": [["Teagan", "NEU"], ["Harvey", "NEU"]], "raw": "[{\"aspect\": \"Teagan\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Harvey\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 10, "NEG"]], "pairs": [["Shandong", "NEG"]], "raw": "[{\"aspect\": \"Shandong\", \"sentiment\": \"negative\"}]"}
+{"gold": [[1, 2, "NEG"], [3, 4, "NEU"], [6, 7, "NEU"], [15, 16, "NEU"]], "pairs": [["OPEC", "NEG"], ["Iran", "NEU"], ["OPEC", "NEG"]], "raw": "[{\"aspect\": \"OPEC\", \"sentiment\": \"negative\"}, {\"aspect\": \"Iran\", \"sentiment\": \"neutral\"}, {\"aspect\": \"OPEC\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 7, "POS"]], "pairs": [["McLaren Mercedes SLR", "NEU"]], "raw": "[{\"aspect\": \"McLaren Mercedes SLR\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "NEU"]], "pairs": [["Mercedes Benz", "NEU"]], "raw": "[{\"aspect\": \"Mercedes Benz\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "POS"], [6, 8, "POS"], [20, 21, "NEU"]], "pairs": [["Terry Kiser", "POS"], ["Austin", "NEU"]], "raw": "[{\"aspect\": \"Terry Kiser\", \"sentiment\": \"positive\"}, {\"aspect\": \"Austin\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "POS"], [6, 7, "POS"]], "pairs": [["Danielle", "POS"], ["Melissa", "POS"]], "raw": "[{\"aspect\": \"Danielle\", \"sentiment\": \"positive\"}, {\"aspect\": \"Melissa\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 8, "NEG"]], "pairs": [["Stephen Curry", "NEG"]], "raw": "[{\"aspect\": \"Stephen Curry\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 6, "POS"]], "pairs": [["Curtis Johnson", "POS"]], "raw": "[{\"aspect\": \"Curtis Johnson\", \"sentiment\": \"positive\"}]"}
+{"gold": [[2, 4, "NEU"], [9, 12, "NEU"]], "pairs": [["Holy Name Cathedral", "NEU"]], "raw": "[{\"aspect\": \"Holy Name Cathedral\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[12, 14, "NEU"]], "pairs": [["# Kenya", "NEU"]], "raw": "[{\"aspect\": \"# Kenya\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 11, "POS"]], "pairs": [["Allen Iverson", "POS"]], "raw": "[{\"aspect\": \"Allen Iverson\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 5, "NEU"]], "pairs": [["University of North Texas", "NEU"]], "raw": "[{\"aspect\": \"University of North Texas\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 10, "NEU"]], "pairs": [["Kenya", "NEU"]], "raw": "[{\"aspect\": \"Kenya\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "NEU"], [8, 10, "NEU"]], "pairs": [["Inteligentsia Coffee", "NEU"], ["Venice Beach", "NEU"]], "raw": "[{\"aspect\": \"Inteligentsia Coffee\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Venice Beach\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[1, 3, "NEU"]], "pairs": [["# Malaysia", "NEU"]], "raw": "[{\"aspect\": \"# Malaysia\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "NEU"]], "pairs": [["Los Angeles", "NEU"]], "raw": "[{\"aspect\": \"Los Angeles\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 4, "NEU"]], "pairs": [["Washington dc", "NEU"]], "raw": "[{\"aspect\": \"Washington dc\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 9, "NEU"]], "pairs": [["Willis Tower", "NEU"]], "raw": "[{\"aspect\": \"Willis Tower\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "POS"]], "pairs": [["Omaha", "POS"]], "raw": "[{\"aspect\": \"Omaha\", \"sentiment\": \"positive\"}]"}
+{"gold": [[14, 18, "NEU"]], "pairs": [["Marthe Troly - Curtin", "NEU"]], "raw": "[{\"aspect\": \"Marthe Troly - Curtin\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "NEG"]], "pairs": [["Geneva", "NEG"], ["May", "NEU"]], "raw": "[{\"aspect\": \"Geneva\", \"sentiment\": \"negative\"}, {\"aspect\": \"May\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[14, 15, "NEU"]], "pairs": [["Pacific", "NEU"]], "raw": "[{\"aspect\": \"Pacific\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 10, "NEU"], [11, 12, "NEU"]], "pairs": [["BOSTON", "NEU"]], "raw": "[{\"aspect\": \"BOSTON\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 7, "NEU"]], "pairs": [["The Dark Knight", "NEU"]], "raw": "[{\"aspect\": \"The Dark Knight\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 12, "POS"]], "pairs": [["Skye", "POS"]], "raw": "[{\"aspect\": \"Skye\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "NEU"], [7, 8, "NEG"], [12, 13, "NEG"]], "pairs": [["Hillary Clinton", "NEU"], ["EU", "NEG"], ["Putin", "NEG"]], "raw": "[{\"aspect\": \"Hillary Clinton\", \"sentiment\": \"neutral\"}, {\"aspect\": \"EU\", \"sentiment\": \"negative\"}, {\"aspect\": \"Putin\", \"sentiment\": \"negative\"}]"}
+{"gold": [[9, 10, "NEG"], [12, 13, "NEG"], [15, 16, "NEU"]], "pairs": [["Westbrook", "POS"], ["Kobe", "POS"], ["Thunder", "NEU"]], "raw": "[{\"aspect\": \"Westbrook\", \"sentiment\": \"positive\"}, {\"aspect\": \"Kobe\", \"sentiment\": \"positive\"}, {\"aspect\": \"Thunder\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 7, "NEU"]], "pairs": [["Barry Manilow", "NEU"]], "raw": "[{\"aspect\": \"Barry Manilow\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 6, "NEG"], [7, 9, "POS"]], "pairs": [["Trump", "NEU"], ["# Hillary", "NEU"]], "raw": "[{\"aspect\": \"Trump\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Hillary\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 11, "NEU"], [21, 22, "POS"]], "pairs": [["Doug", "NEU"], ["Barbara", "NEG"]], "raw": "[{\"aspect\": \"Doug\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Barbara\", \"sentiment\": \"negative\"}]"}
+{"gold": [[9, 11, "POS"]], "pairs": [["# Aaron", "POS"]], "raw": "[{\"aspect\": \"# Aaron\", \"sentiment\": \"positive\"}]"}
+{"gold": [[5, 8, "NEU"], [9, 11, "NEU"], [12, 13, "NEU"]], "pairs": [["Kelimutu Crater Lakes", "NEU"], ["Flores Island", "NEU"], ["Indonesia", "NEU"]], "raw": "[{\"aspect\": \"Kelimutu Crater Lakes\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Flores Island\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Indonesia\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "POS"]], "pairs": [["Pam Crossland", "POS"]], "raw": "[{\"aspect\": \"Pam Crossland\", \"sentiment\": \"positive\"}]"}
+{"gold": [[3, 5, "POS"]], "pairs": [["Buckingham Palace", "NEU"]], "raw": "[{\"aspect\": \"Buckingham Palace\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEG"], [11, 12, "NEU"], [13, 14, "NEG"]], "pairs": [["Putin", "NEG"], ["Obama", "NEG"]], "raw": "[{\"aspect\": \"Putin\", \"sentiment\": \"negative\"}, {\"aspect\": \"Obama\", \"sentiment\": \"negative\"}]"}
+{"gold": [[9, 10, "NEU"]], "pairs": [["I78d", "NEU"], ["Young Deaf People", "NEU"]], "raw": "[{\"aspect\": \"I78d\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Young Deaf People\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 3, "POS"], [4, 5, "POS"]], "pairs": [["Tower of London", "NEU"], ["London", "POS"]], "raw": "[{\"aspect\": \"Tower of London\", \"sentiment\": \"neutral\"}, {\"aspect\": \"London\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "NEU"], [7, 8, "NEU"]], "pairs": [["Bill", "NEG"], ["Parliament", "NEU"]], "raw": "[{\"aspect\": \"Bill\", \"sentiment\": \"negative\"}, {\"aspect\": \"Parliament\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "NEU"]], "pairs": [["# DRC", "NEU"]], "raw": "[{\"aspect\": \"# DRC\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 6, "NEU"]], "pairs": [["Germany", "NEG"]], "raw": "[{\"aspect\": \"Germany\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 6, "POS"], [7, 9, "NEU"]], "pairs": [["Andy Murray", "POS"], ["Rafael Nadal", "NEU"]], "raw": "[{\"aspect\": \"Andy Murray\", \"sentiment\": \"positive\"}, {\"aspect\": \"Rafael Nadal\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"], [6, 8, "NEU"], [10, 11, "NEU"]], "pairs": [["# islam", "NEU"], ["# isis", "NEU"], ["Muhammad", "NEU"]], "raw": "[{\"aspect\": \"# islam\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# isis\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Muhammad\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["Guangzhou", "NEU"]], "raw": "[{\"aspect\": \"Guangzhou\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 13, "NEU"]], "pairs": [["Shivnarine Chanderpaul", "POS"]], "raw": "[{\"aspect\": \"Shivnarine Chanderpaul\", \"sentiment\": \"positive\"}]"}
+{"gold": [[14, 16, "NEU"]], "pairs": [["Jim Henson", "NEU"]], "raw": "[{\"aspect\": \"Jim Henson\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 12, "POS"]], "pairs": [["Kapetan Misin Breg", "NEU"]], "raw": "[{\"aspect\": \"Kapetan Misin Breg\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 8, "NEU"], [9, 10, "NEU"], [15, 16, "POS"]], "pairs": [["Rory", "POS"], ["Rickie", "POS"]], "raw": "[{\"aspect\": \"Rory\", \"sentiment\": \"positive\"}, {\"aspect\": \"Rickie\", \"sentiment\": \"positive\"}]"}
+{"gold": [[10, 12, "NEU"], [18, 19, "NEU"]], "pairs": [["Santiago Calatrava", "POS"], ["PATH station", "POS"], ["1WTC", "POS"]], "raw": "[{\"aspect\": \"Santiago Calatrava\", \"sentiment\": \"positive\"}, {\"aspect\": \"PATH station\", \"sentiment\": \"positive\"}, {\"aspect\": \"1WTC\", \"sentiment\": \"positive\"}]"}
+{"gold": [[8, 9, "NEU"]], "pairs": [["AAPL", "NEU"]], "raw": "[{\"aspect\": \"AAPL\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[15, 17, "POS"]], "pairs": [["NYC", "NEU"], ["El Cortez", "POS"]], "raw": "[{\"aspect\": \"NYC\", \"sentiment\": \"neutral\"}, {\"aspect\": \"El Cortez\", \"sentiment\": \"positive\"}]"}
+{"gold": [[9, 17, "NEU"], [23, 26, "POS"], [27, 29, "POS"]], "pairs": [["David de Gea", "POS"], ["# MUFC", "POS"]], "raw": "[{\"aspect\": \"David de Gea\", \"sentiment\": \"positive\"}, {\"aspect\": \"# MUFC\", \"sentiment\": \"positive\"}]"}
+{"gold": [[3, 5, "NEG"], [6, 7, "NEG"]], "pairs": [["Cardinals", "NEG"], ["NLDS", "NEU"]], "raw": "[{\"aspect\": \"Cardinals\", \"sentiment\": \"negative\"}, {\"aspect\": \"NLDS\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 4, "POS"], [8, 10, "NEU"], [10, 12, "NEU"]], "pairs": [["Alex Killorn", "NEU"], ["# Blackhawks", "NEU"], ["Corey Crawford", "NEU"]], "raw": "[{\"aspect\": \"Alex Killorn\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Blackhawks\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Corey Crawford\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[14, 16, "NEG"], [17, 19, "NEU"]], "pairs": [["Sandia Crest", "NEG"], ["# ABQ", "NEG"]], "raw": "[{\"aspect\": \"Sandia Crest\", \"sentiment\": \"negative\"}, {\"aspect\": \"# ABQ\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["Moscow", "NEU"]], "raw": "[{\"aspect\": \"Moscow\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "POS"], [8, 10, "POS"]], "pairs": [["Virginia", "POS"]], "raw": "[{\"aspect\": \"Virginia\", \"sentiment\": \"positive\"}]"}
+{"gold": [[14, 15, "NEU"], [18, 20, "NEU"]], "pairs": [["Scottsdale", "POS"], ["# AZ", "POS"]], "raw": "[{\"aspect\": \"Scottsdale\", \"sentiment\": \"positive\"}, {\"aspect\": \"# AZ\", \"sentiment\": \"positive\"}]"}
+{"gold": [[1, 2, "POS"], [9, 11, "NEU"]], "pairs": [["The Meltdown Snowboard", "POS"], ["Meltdown Park", "POS"]], "raw": "[{\"aspect\": \"The Meltdown Snowboard\", \"sentiment\": \"positive\"}, {\"aspect\": \"Meltdown Park\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 8, "NEU"], [9, 10, "NEU"]], "pairs": [["Red Mountain", "NEU"], ["Gilbert", "NEU"]], "raw": "[{\"aspect\": \"Red Mountain\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Gilbert\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 9, "NEU"]], "pairs": [["Zach Braff", "POS"], ["Sarah Chalke", "POS"]], "raw": "[{\"aspect\": \"Zach Braff\", \"sentiment\": \"positive\"}, {\"aspect\": \"Sarah Chalke\", \"sentiment\": \"positive\"}]"}
+{"gold": [[7, 10, "POS"]], "pairs": [["Lehwaila link rd", "NEG"]], "raw": "[{\"aspect\": \"Lehwaila link rd\", \"sentiment\": \"negative\"}]"}
+{"gold": [[15, 17, "NEU"]], "pairs": [["Sledge Hockey", "NEU"]], "raw": "[{\"aspect\": \"Sledge Hockey\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 11, "POS"]], "pairs": [["Dolphins", "POS"]], "raw": "[{\"aspect\": \"Dolphins\", \"sentiment\": \"positive\"}]"}
+{"gold": [[5, 7, "POS"]], "pairs": [["Essex County", "NEU"]], "raw": "[{\"aspect\": \"Essex County\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 12, "NEG"], [12, 14, "NEG"]], "pairs": [["# Liberia", "NEU"], ["# Ebola", "NEG"]], "raw": "[{\"aspect\": \"# Liberia\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Ebola\", \"sentiment\": \"negative\"}]"}
+{"gold": [[11, 13, "NEU"]], "pairs": [["Felix Hernandez", "NEU"]], "raw": "[{\"aspect\": \"Felix Hernandez\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "POS"]], "pairs": [["Spike", "POS"]], "raw": "[{\"aspect\": \"Spike\", \"sentiment\": \"positive\"}]"}
+{"gold": [[3, 4, "POS"]], "pairs": [["Twitter", "NEU"]], "raw": "[{\"aspect\": \"Twitter\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 5, "POS"], [11, 15, "NEU"]], "pairs": [["Pauline Quirke", "POS"], ["Birds of a Feather Tour", "NEU"]], "raw": "[{\"aspect\": \"Pauline Quirke\", \"sentiment\": \"positive\"}, {\"aspect\": \"Birds of a Feather Tour\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 11, "POS"], [12, 14, "POS"]], "pairs": [["# Bears", "NEU"], ["Kelvin Hayden", "POS"]], "raw": "[{\"aspect\": \"# Bears\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Kelvin Hayden\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 1, "NEU"], [15, 17, "NEU"]], "pairs": [["Facebook", "NEU"]], "raw": "[{\"aspect\": \"Facebook\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "NEU"], [13, 14, "NEU"], [18, 21, "POS"]], "pairs": [["Nyiragongo volcano", "NEU"], ["Tourism World Day", "POS"]], "raw": "[{\"aspect\": \"Nyiragongo volcano\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Tourism World Day\", \"sentiment\": \"positive\"}]"}
+{"gold": [[12, 14, "POS"]], "pairs": [["Doritos Pasta", "NEU"]], "raw": "[{\"aspect\": \"Doritos Pasta\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 9, "NEU"]], "pairs": [["Betty Boop", "NEU"]], "raw": "[{\"aspect\": \"Betty Boop\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[13, 15, "NEU"]], "pairs": [["Bernie Mac", "NEG"]], "raw": "[{\"aspect\": \"Bernie Mac\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 5, "NEG"], [6, 7, "NEG"]], "pairs": [["Bantman", "NEG"], ["Robin", "NEG"]], "raw": "[{\"aspect\": \"Bantman\", \"sentiment\": \"negative\"}, {\"aspect\": \"Robin\", \"sentiment\": \"negative\"}]"}
+{"gold": [[3, 4, "NEU"]], "pairs": [["Finn", "POS"]], "raw": "[{\"aspect\": \"Finn\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "NEU"], [8, 10, "NEG"], [13, 14, "NEU"]], "pairs": [["Seth Gilliam", "NEG"]], "raw": "[{\"aspect\": \"Seth Gilliam\", \"sentiment\": \"negative\"}]"}
+{"gold": [[13, 15, "NEU"]], "pairs": [["John Major", "POS"], ["United Kingdom", "NEU"]], "raw": "[{\"aspect\": \"John Major\", \"sentiment\": \"positive\"}, {\"aspect\": \"United Kingdom\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 10, "NEU"], [14, 16, "POS"]], "pairs": [["Cameron Zink", "POS"], ["CZ38 Special", "POS"]], "raw": "[{\"aspect\": \"Cameron Zink\", \"sentiment\": \"positive\"}, {\"aspect\": \"CZ38 Special\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "NEU"], [7, 11, "NEU"], [12, 13, "NEU"]], "pairs": [["Sean Pages", "NEU"], ["Dj Zan - D", "NEU"], ["Nveigh", "NEU"]], "raw": "[{\"aspect\": \"Sean Pages\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Dj Zan - D\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Nveigh\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Kim kardashian", "NEG"]], "raw": "[{\"aspect\": \"Kim kardashian\", \"sentiment\": \"negative\"}]"}
+{"gold": [[13, 15, "POS"]], "pairs": [["Ralph Wiggum", "POS"]], "raw": "[{\"aspect\": \"Ralph Wiggum\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 7, "NEG"]], "pairs": [["Al Jazeera English", "NEG"]], "raw": "[{\"aspect\": \"Al Jazeera English\", \"sentiment\": \"negative\"}]"}
+{"gold": [[9, 11, "NEG"]], "pairs": [["Balmoral Road", "NEG"]], "raw": "[{\"aspect\": \"Balmoral Road\", \"sentiment\": \"negative\"}]"}
+{"gold": [[3, 5, "NEG"]], "pairs": [["Derrick Rose", "NEG"]], "raw": "[{\"aspect\": \"Derrick Rose\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Marilyn Monroe", "NEU"]], "raw": "[{\"aspect\": \"Marilyn Monroe\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"], [6, 7, "NEU"], [8, 10, "POS"]], "pairs": [["Georgia", "NEU"], ["NFL", "NEU"], ["Eric Berry", "POS"]], "raw": "[{\"aspect\": \"Georgia\", \"sentiment\": \"neutral\"}, {\"aspect\": \"NFL\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Eric Berry\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 2, "NEG"]], "pairs": [["Tony Gwynn", "NEG"]], "raw": "[{\"aspect\": \"Tony Gwynn\", \"sentiment\": \"negative\"}]"}
+{"gold": [[0, 1, "NEU"]], "pairs": [["Sharks", "NEG"]], "raw": "[{\"aspect\": \"Sharks\", \"sentiment\": \"negative\"}]"}
+{"gold": [[5, 6, "NEU"]], "pairs": [["Taemin", "NEU"], ["American Eagle Outfitters", "NEU"]], "raw": "[{\"aspect\": \"Taemin\", \"sentiment\": \"neutral\"}, {\"aspect\": \"American Eagle Outfitters\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "POS"]], "pairs": [["BETA", "POS"]], "raw": "[{\"aspect\": \"BETA\", \"sentiment\": \"positive\"}]"}
+{"gold": [[12, 15, "POS"]], "pairs": [["Columbus Marketing Show", "POS"]], "raw": "[{\"aspect\": \"Columbus Marketing Show\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 7, "NEU"]], "pairs": [["Paul", "NEU"], ["Big Bang", "NEU"]], "raw": "[{\"aspect\": \"Paul\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Big Bang\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Florian Mueller", "POS"]], "raw": "[{\"aspect\": \"Florian Mueller\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "NEG"]], "pairs": [["Caribbean", "NEG"]], "raw": "[{\"aspect\": \"Caribbean\", \"sentiment\": \"negative\"}]"}
+{"gold": [[6, 7, "NEU"]], "pairs": [["Pilsen", "NEU"]], "raw": "[{\"aspect\": \"Pilsen\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "NEU"], [3, 5, "NEU"]], "pairs": [["AK Park", "NEU"], ["Wabash Ave", "NEU"]], "raw": "[{\"aspect\": \"AK Park\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Wabash Ave\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 2, "NEU"], [9, 10, "NEU"]], "pairs": [["Asala Nasri", "POS"], ["Saad Lamjerrd", "POS"], ["QNCC", "NEU"]], "raw": "[{\"aspect\": \"Asala Nasri\", \"sentiment\": \"positive\"}, {\"aspect\": \"Saad Lamjerrd\", \"sentiment\": \"positive\"}, {\"aspect\": \"QNCC\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEG"]], "pairs": [["George Galloway", "NEG"]], "raw": "[{\"aspect\": \"George Galloway\", \"sentiment\": \"negative\"}]"}
+{"gold": [[1, 2, "NEU"], [4, 6, "NEU"], [7, 9, "NEU"]], "pairs": [["Chicago", "NEU"], ["Obama Library", "POS"], ["New York", "NEU"], ["Columbia", "NEU"], ["West Harlem", "NEU"]], "raw": "[{\"aspect\": \"Chicago\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Obama Library\", \"sentiment\": \"positive\"}, {\"aspect\": \"New York\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Columbia\", \"sentiment\": \"neutral\"}, {\"aspect\": \"West Harlem\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 9, "NEU"]], "pairs": [["GM", "NEU"]], "raw": "[{\"aspect\": \"GM\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "POS"], [12, 14, "NEU"]], "pairs": [["Kanye", "POS"], ["# Grammys", "NEU"]], "raw": "[{\"aspect\": \"Kanye\", \"sentiment\": \"positive\"}, {\"aspect\": \"# Grammys\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Lieke Romeijn", "NEU"]], "raw": "[{\"aspect\": \"Lieke Romeijn\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "NEU"]], "pairs": [["Lena Dunham", "NEU"]], "raw": "[{\"aspect\": \"Lena Dunham\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"], [14, 16, "POS"]], "pairs": [["Pacers", "NEU"], ["Myles Turner", "NEU"]], "raw": "[{\"aspect\": \"Pacers\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Myles Turner\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Azealia Banks", "NEU"]], "raw": "[{\"aspect\": \"Azealia Banks\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[13, 15, "POS"]], "pairs": [["Fox News", "POS"]], "raw": "[{\"aspect\": \"Fox News\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "POS"], [12, 14, "NEU"], [15, 18, "NEU"], [20, 23, "NEU"]], "pairs": [["Laura Tuck", "POS"], ["# Europe", "NEU"], ["# Central Asia", "NEU"], ["# World Bank", "NEU"]], "raw": "[{\"aspect\": \"Laura Tuck\", \"sentiment\": \"positive\"}, {\"aspect\": \"# Europe\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Central Asia\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# World Bank\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 11, "NEU"]], "pairs": [["Barbara Dalton", "NEU"]], "raw": "[{\"aspect\": \"Barbara Dalton\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[21, 22, "NEU"]], "pairs": [["1 John", "NEU"]], "raw": "[{\"aspect\": \"1 John\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "POS"], [2, 3, "POS"], [17, 19, "NEU"]], "pairs": [["Toews", "POS"], ["Kane", "POS"], ["# Blackhawks", "POS"], ["Stanley Cup", "POS"]], "raw": "[{\"aspect\": \"Toews\", \"sentiment\": \"positive\"}, {\"aspect\": \"Kane\", \"sentiment\": \"positive\"}, {\"aspect\": \"# Blackhawks\", \"sentiment\": \"positive\"}, {\"aspect\": \"Stanley Cup\", \"sentiment\": \"positive\"}]"}
+{"gold": [[8, 9, "NEU"]], "pairs": [["Poland", "NEU"]], "raw": "[{\"aspect\": \"Poland\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "NEU"]], "pairs": [["Central Indiana", "NEU"]], "raw": "[{\"aspect\": \"Central Indiana\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 12, "NEU"]], "pairs": [["Helen Keller", "NEU"]], "raw": "[{\"aspect\": \"Helen Keller\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "NEU"]], "pairs": [["# NBA", "NEU"]], "raw": "[{\"aspect\": \"# NBA\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[12, 13, "NEG"]], "pairs": [["Baltimore", "NEG"]], "raw": "[{\"aspect\": \"Baltimore\", \"sentiment\": \"negative\"}]"}
+{"gold": [[0, 2, "NEG"]], "pairs": [["Lena Dunham", "NEG"]], "raw": "[{\"aspect\": \"Lena Dunham\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 5, "POS"]], "pairs": [["Olofspoort", "POS"]], "raw": "[{\"aspect\": \"Olofspoort\", \"sentiment\": \"positive\"}]"}
+{"gold": [[17, 19, "NEU"]], "pairs": [["PanAm Games", "NEU"]], "raw": "[{\"aspect\": \"PanAm Games\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEG"]], "pairs": [["Marc Jacobs", "NEG"]], "raw": "[{\"aspect\": \"Marc Jacobs\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 5, "NEU"], [9, 10, "NEU"]], "pairs": [["Bally", "POS"], ["London", "NEU"]], "raw": "[{\"aspect\": \"Bally\", \"sentiment\": \"positive\"}, {\"aspect\": \"London\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[1, 3, "NEU"], [3, 5, "NEU"]], "pairs": [["# IBM", "NEU"], ["# Watson", "NEU"]], "raw": "[{\"aspect\": \"# IBM\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Watson\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 12, "NEU"]], "pairs": [["Rome", "NEU"]], "raw": "[{\"aspect\": \"Rome\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "POS"], [9, 11, "NEU"]], "pairs": [["Caps", "POS"], ["Nats Park", "NEU"]], "raw": "[{\"aspect\": \"Caps\", \"sentiment\": \"positive\"}, {\"aspect\": \"Nats Park\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "NEU"]], "pairs": [["NASA", "NEU"]], "raw": "[{\"aspect\": \"NASA\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "POS"], [7, 13, "NEU"], [15, 18, "NEU"]], "pairs": [["Nick Nichols", "POS"], ["Wildlife Photographer of the Year", "NEU"]], "raw": "[{\"aspect\": \"Nick Nichols\", \"sentiment\": \"positive\"}, {\"aspect\": \"Wildlife Photographer of the Year\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "NEU"], [10, 12, "NEU"], [12, 14, "NEU"]], "pairs": [["Joseph", "POS"], ["# Nile", "NEU"]], "raw": "[{\"aspect\": \"Joseph\", \"sentiment\": \"positive\"}, {\"aspect\": \"# Nile\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 8, "POS"], [10, 12, "NEU"], [16, 17, "NEU"]], "pairs": [["Derrrrp Hemmings", "NEU"], ["Luke Hemmings", "NEU"], ["5SOS", "NEU"]], "raw": "[{\"aspect\": \"Derrrrp Hemmings\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Luke Hemmings\", \"sentiment\": \"neutral\"}, {\"aspect\": \"5SOS\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[16, 17, "NEU"]], "pairs": [["Germany", "NEU"]], "raw": "[{\"aspect\": \"Germany\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"], [6, 8, "NEU"], [12, 14, "NEG"], [15, 17, "NEU"]], "pairs": [["UAW", "NEU"], ["United Steelworkers", "NEU"], ["Alison Grimes", "POS"]], "raw": "[{\"aspect\": \"UAW\", \"sentiment\": \"neutral\"}, {\"aspect\": \"United Steelworkers\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Alison Grimes\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "POS"]], "pairs": [["Rihanna", "POS"]], "raw": "[{\"aspect\": \"Rihanna\", \"sentiment\": \"positive\"}]"}
+{"gold": [[2, 3, "POS"]], "pairs": [["Ellen", "POS"]], "raw": "[{\"aspect\": \"Ellen\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 7, "POS"], [8, 11, "POS"]], "pairs": [["Friends", "POS"], ["The Sims 4", "POS"]], "raw": "[{\"aspect\": \"Friends\", \"sentiment\": \"positive\"}, {\"aspect\": \"The Sims 4\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 1, "POS"]], "pairs": [["Simon", "POS"]], "raw": "[{\"aspect\": \"Simon\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "POS"], [7, 9, "POS"], [13, 14, "POS"]], "pairs": [["SOHP", "POS"], ["Della Pollock", "POS"], ["UNC", "NEU"]], "raw": "[{\"aspect\": \"SOHP\", \"sentiment\": \"positive\"}, {\"aspect\": \"Della Pollock\", \"sentiment\": \"positive\"}, {\"aspect\": \"UNC\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 12, "NEG"]], "pairs": [["David Carr", "NEG"]], "raw": "[{\"aspect\": \"David Carr\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["Taylor", "NEU"]], "raw": "[{\"aspect\": \"Taylor\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[14, 18, "NEU"]], "pairs": [["Rothbury", "NEU"]], "raw": "[{\"aspect\": \"Rothbury\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Nathan Scott", "POS"]], "raw": "[{\"aspect\": \"Nathan Scott\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Big L", "NEG"]], "raw": "[{\"aspect\": \"Big L\", \"sentiment\": \"negative\"}]"}
+{"gold": [[3, 5, "NEU"]], "pairs": [["Jay Young", "POS"]], "raw": "[{\"aspect\": \"Jay Young\", \"sentiment\": \"positive\"}]"}
+{"gold": [[1, 4, "POS"]], "pairs": [["Archbishop Blase Cupich", "POS"]], "raw": "[{\"aspect\": \"Archbishop Blase Cupich\", \"sentiment\": \"positive\"}]"}
+{"gold": [[3, 5, "POS"], [15, 17, "NEU"]], "pairs": [["Fredericksburg Area Realtors", "POS"], ["VRE", "NEU"]], "raw": "[{\"aspect\": \"Fredericksburg Area Realtors\", \"sentiment\": \"positive\"}, {\"aspect\": \"VRE\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[11, 13, "NEU"]], "pairs": [["New Orleans", "NEU"], ["Along the Road Home", "NEU"]], "raw": "[{\"aspect\": \"New Orleans\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Along the Road Home\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "POS"], [10, 12, "POS"]], "pairs": [["Kenny", "POS"], ["Funny Gloves", "POS"]], "raw": "[{\"aspect\": \"Kenny\", \"sentiment\": \"positive\"}, {\"aspect\": \"Funny Gloves\", \"sentiment\": \"positive\"}]"}
+{"gold": [[9, 10, "POS"]], "pairs": [["Oasis", "POS"]], "raw": "[{\"aspect\": \"Oasis\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["# Afghan", "NEU"], ["# Pashto", "NEU"]], "raw": "[{\"aspect\": \"# Afghan\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Pashto\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 5, "POS"], [12, 14, "POS"]], "pairs": [["Cape Town", "POS"], ["Regardt Stander", "NEU"]], "raw": "[{\"aspect\": \"Cape Town\", \"sentiment\": \"positive\"}, {\"aspect\": \"Regardt Stander\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"], [6, 8, "NEU"], [12, 15, "NEU"]], "pairs": [["Maryland", "NEU"], ["Confederate", "NEU"]], "raw": "[{\"aspect\": \"Maryland\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Confederate\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "POS"]], "pairs": [["Harley", "POS"]], "raw": "[{\"aspect\": \"Harley\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "POS"]], "pairs": [["Elena Gilbert", "POS"]], "raw": "[{\"aspect\": \"Elena Gilbert\", \"sentiment\": \"positive\"}]"}
+{"gold": [[13, 15, "POS"]], "pairs": [["Bob Staake", "NEU"]], "raw": "[{\"aspect\": \"Bob Staake\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 7, "POS"], [10, 12, "POS"], [14, 15, "NEU"], [21, 23, "NEU"]], "pairs": [["Deval Patrick", "POS"], ["# Tibet Day", "POS"], ["Massachusetts", "NEU"], ["# Boston", "NEU"]], "raw": "[{\"aspect\": \"Deval Patrick\", \"sentiment\": \"positive\"}, {\"aspect\": \"# Tibet Day\", \"sentiment\": \"positive\"}, {\"aspect\": \"Massachusetts\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Boston\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[13, 14, "NEU"]], "pairs": [["USDA", "NEU"], ["IAH", "NEU"]], "raw": "[{\"aspect\": \"USDA\", \"sentiment\": \"neutral\"}, {\"aspect\": \"IAH\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 3, "NEU"], [5, 7, "NEU"]], "pairs": [["IPC", "POS"], ["Philip Craven", "POS"]], "raw": "[{\"aspect\": \"IPC\", \"sentiment\": \"positive\"}, {\"aspect\": \"Philip Craven\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 8, "POS"], [9, 12, "POS"], [13, 15, "POS"], [19, 20, "POS"]], "pairs": [["Independence Day", "POS"], ["New York City", "NEU"], ["# Ukraine", "POS"], ["We", "POS"], ["Ukrainians", "POS"]], "raw": "[{\"aspect\": \"Independence Day\", \"sentiment\": \"positive\"}, {\"aspect\": \"New York City\", \"sentiment\": \"neutral\"}, {\"aspect\": \"# Ukraine\", \"sentiment\": \"positive\"}, {\"aspect\": \"We\", \"sentiment\": \"positive\"}, {\"aspect\": \"Ukrainians\", \"sentiment\": \"positive\"}]"}
+{"gold": [[5, 7, "NEU"]], "pairs": [["John McAfee", "NEG"]], "raw": "[{\"aspect\": \"John McAfee\", \"sentiment\": \"negative\"}]"}
+{"gold": [[0, 2, "NEU"], [3, 4, "NEU"], [8, 10, "POS"], [11, 12, "POS"], [18, 20, "POS"]], "pairs": [["PSPA", "NEU"], ["Harrisburg", "NEU"], ["Rick Brooks", "POS"], ["# Jostens", "POS"]], "raw": "[{\"aspect\": \"PSPA\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Harrisburg\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Rick Brooks\", \"sentiment\": \"positive\"}, {\"aspect\": \"# Jostens\", \"sentiment\": \"positive\"}]"}
+{"gold": [[6, 8, "NEU"]], "pairs": [["Camille Cosby", "NEU"]], "raw": "[{\"aspect\": \"Camille Cosby\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "POS"]], "pairs": [["Wyoming", "POS"]], "raw": "[{\"aspect\": \"Wyoming\", \"sentiment\": \"positive\"}]"}
+{"gold": [[3, 4, "NEU"]], "pairs": [["Dekalb", "POS"]], "raw": "[{\"aspect\": \"Dekalb\", \"sentiment\": \"positive\"}]"}
+{"gold": [[12, 14, "NEU"]], "pairs": [["# Mildura", "NEU"]], "raw": "[{\"aspect\": \"# Mildura\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 4, "NEU"], [8, 11, "POS"]], "pairs": [["Hizaifa Chaudhary", "POS"], ["Hero Ma", "POS"]], "raw": "[{\"aspect\": \"Hizaifa Chaudhary\", \"sentiment\": \"positive\"}, {\"aspect\": \"Hero Ma\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Practical Magic", "NEU"]], "raw": "[{\"aspect\": \"Practical Magic\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 13, "POS"]], "pairs": [["Anthony Douglas Williams", "POS"]], "raw": "[{\"aspect\": \"Anthony Douglas Williams\", \"sentiment\": \"positive\"}]"}
+{"gold": [[20, 21, "NEU"]], "pairs": [["Phoenix", "NEU"]], "raw": "[{\"aspect\": \"Phoenix\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "POS"], [1, 2, "POS"]], "pairs": [["US", "NEU"]], "raw": "[{\"aspect\": \"US\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "POS"]], "pairs": [["California", "POS"]], "raw": "[{\"aspect\": \"California\", \"sentiment\": \"positive\"}]"}
+{"gold": [[14, 15, "POS"]], "pairs": [["Riley", "POS"], ["# IntelSSD", "POS"]], "raw": "[{\"aspect\": \"Riley\", \"sentiment\": \"positive\"}, {\"aspect\": \"# IntelSSD\", \"sentiment\": \"positive\"}]"}
+{"gold": [[10, 12, "NEU"]], "pairs": [["Paige Bradley", "NEU"]], "raw": "[{\"aspect\": \"Paige Bradley\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Kurt Sutter", "NEU"], ["Mayans", "NEU"]], "raw": "[{\"aspect\": \"Kurt Sutter\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Mayans\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 4, "POS"]], "pairs": [["Quebec City", "POS"]], "raw": "[{\"aspect\": \"Quebec City\", \"sentiment\": \"positive\"}]"}
+{"gold": [[14, 16, "POS"]], "pairs": [["NorthGate Mall", "POS"]], "raw": "[{\"aspect\": \"NorthGate Mall\", \"sentiment\": \"positive\"}]"}
+{"gold": [[13, 15, "NEU"]], "pairs": [["Library Display", "NEU"], ["Louise Taylor", "NEU"]], "raw": "[{\"aspect\": \"Library Display\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Louise Taylor\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 6, "NEU"]], "pairs": [["Boston", "NEU"]], "raw": "[{\"aspect\": \"Boston\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "POS"], [19, 20, "POS"]], "pairs": [["Nick", "POS"], ["Nick", "POS"]], "raw": "[{\"aspect\": \"Nick\", \"sentiment\": \"positive\"}, {\"aspect\": \"Nick\", \"sentiment\": \"positive\"}]"}
+{"gold": [[9, 10, "NEU"], [12, 14, "POS"], [17, 20, "NEU"]], "pairs": [["Flora Robson", "POS"], ["THE SEA HAWK", "POS"]], "raw": "[{\"aspect\": \"Flora Robson\", \"sentiment\": \"positive\"}, {\"aspect\": \"THE SEA HAWK\", \"sentiment\": \"positive\"}]"}
+{"gold": [[5, 7, "NEU"]], "pairs": [["Roseanne Barr", "NEG"]], "raw": "[{\"aspect\": \"Roseanne Barr\", \"sentiment\": \"negative\"}]"}
+{"gold": [[0, 1, "NEU"]], "pairs": [["Tokyo", "NEU"]], "raw": "[{\"aspect\": \"Tokyo\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 3, "NEU"]], "pairs": [["Scovill Zoo", "NEU"]], "raw": "[{\"aspect\": \"Scovill Zoo\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "NEU"]], "pairs": [["Listo", "NEU"]], "raw": "[{\"aspect\": \"Listo\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[12, 14, "NEU"]], "pairs": [["Hudson River", "NEU"]], "raw": "[{\"aspect\": \"Hudson River\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "NEU"]], "pairs": [["SANUK", "NEU"]], "raw": "[{\"aspect\": \"SANUK\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "POS"]], "pairs": [["IKEA", "POS"]], "raw": "[{\"aspect\": \"IKEA\", \"sentiment\": \"positive\"}]"}
+{"gold": [[10, 11, "POS"]], "pairs": [["Amazon", "POS"]], "raw": "[{\"aspect\": \"Amazon\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["Manziel", "POS"], ["Twitterverse", "NEU"]], "raw": "[{\"aspect\": \"Manziel\", \"sentiment\": \"positive\"}, {\"aspect\": \"Twitterverse\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 10, "POS"]], "pairs": [["Steelers", "NEU"]], "raw": "[{\"aspect\": \"Steelers\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[17, 18, "NEG"]], "pairs": [["Chelsea", "NEG"]], "raw": "[{\"aspect\": \"Chelsea\", \"sentiment\": \"negative\"}]"}
+{"gold": [[6, 7, "NEU"], [8, 9, "NEU"], [12, 14, "POS"]], "pairs": [["China", "NEU"], ["Taiwan", "NEU"]], "raw": "[{\"aspect\": \"China\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Taiwan\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 8, "NEU"], [9, 10, "NEU"]], "pairs": [["Meek", "NEU"], ["Nicki", "NEU"]], "raw": "[{\"aspect\": \"Meek\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Nicki\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 5, "NEU"]], "pairs": [["David Cameron", "NEU"]], "raw": "[{\"aspect\": \"David Cameron\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 5, "POS"], [6, 8, "POS"]], "pairs": [["Dame Dash", "POS"], ["Kanye West", "POS"]], "raw": "[{\"aspect\": \"Dame Dash\", \"sentiment\": \"positive\"}, {\"aspect\": \"Kanye West\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 2, "NEU"], [4, 5, "NEU"]], "pairs": [["Google Maps", "NEU"]], "raw": "[{\"aspect\": \"Google Maps\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 3, "NEU"], [9, 10, "NEU"], [11, 13, "NEU"]], "pairs": [["The White House", "NEU"], ["Supreme Court", "NEU"]], "raw": "[{\"aspect\": \"The White House\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Supreme Court\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "POS"], [2, 3, "POS"]], "pairs": [["Taha", "POS"], ["Alex", "POS"]], "raw": "[{\"aspect\": \"Taha\", \"sentiment\": \"positive\"}, {\"aspect\": \"Alex\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "POS"], [14, 16, "POS"]], "pairs": [["Broadway", "POS"], ["Andy Karl", "POS"]], "raw": "[{\"aspect\": \"Broadway\", \"sentiment\": \"positive\"}, {\"aspect\": \"Andy Karl\", \"sentiment\": \"positive\"}]"}
+{"gold": [[11, 13, "NEU"]], "pairs": [["San Jose", "NEU"], ["Calif", "NEU"]], "raw": "[{\"aspect\": \"San Jose\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Calif\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[22, 24, "NEU"]], "pairs": [["Harriet Tubman", "NEU"]], "raw": "[{\"aspect\": \"Harriet Tubman\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[5, 6, "NEG"], [6, 8, "NEU"]], "pairs": [["London Startup Alley", "NEU"]], "raw": "[{\"aspect\": \"London Startup Alley\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 4, "NEU"], [7, 9, "NEG"], [16, 17, "NEU"], [21, 22, "NEU"]], "pairs": [["AP", "NEU"], ["Hillary Clinton", "NEU"], ["iPad", "NEU"], ["BlackBerry", "NEU"]], "raw": "[{\"aspect\": \"AP\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Hillary Clinton\", \"sentiment\": \"neutral\"}, {\"aspect\": \"iPad\", \"sentiment\": \"neutral\"}, {\"aspect\": \"BlackBerry\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"], [6, 7, "NEG"]], "pairs": [["Kanye", "NEU"], ["KIM", "NEG"]], "raw": "[{\"aspect\": \"Kanye\", \"sentiment\": \"neutral\"}, {\"aspect\": \"KIM\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 5, "NEU"]], "pairs": [["Nana", "NEG"]], "raw": "[{\"aspect\": \"Nana\", \"sentiment\": \"negative\"}]"}
+{"gold": [[1, 3, "NEU"]], "pairs": [["Tom Huck", "NEU"]], "raw": "[{\"aspect\": \"Tom Huck\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 5, "POS"], [11, 13, "POS"]], "pairs": [["East Coast", "POS"], ["# Massachusetts", "NEU"]], "raw": "[{\"aspect\": \"East Coast\", \"sentiment\": \"positive\"}, {\"aspect\": \"# Massachusetts\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[15, 17, "NEU"]], "pairs": [["Dalai Lama", "NEU"]], "raw": "[{\"aspect\": \"Dalai Lama\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEG"], [8, 9, "NEG"], [15, 16, "NEU"]], "pairs": [["Sophie", "NEG"], ["Duchess of Hohenburg", "NEG"], ["Sarajevo", "NEU"]], "raw": "[{\"aspect\": \"Sophie\", \"sentiment\": \"negative\"}, {\"aspect\": \"Duchess of Hohenburg\", \"sentiment\": \"negative\"}, {\"aspect\": \"Sarajevo\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 9, "POS"], [11, 12, "NEG"]], "pairs": [["Facebook", "POS"], ["YouTube", "NEU"]], "raw": "[{\"aspect\": \"Facebook\", \"sentiment\": \"positive\"}, {\"aspect\": \"YouTube\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "NEU"]], "pairs": [["Harvard", "NEU"]], "raw": "[{\"aspect\": \"Harvard\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEG"], [6, 7, "NEG"]], "pairs": [["Kobe", "POS"], ["Shaq", "POS"]], "raw": "[{\"aspect\": \"Kobe\", \"sentiment\": \"positive\"}, {\"aspect\": \"Shaq\", \"sentiment\": \"positive\"}]"}
+{"gold": [[7, 8, "NEU"]], "pairs": [["Zayn", "NEU"]], "raw": "[{\"aspect\": \"Zayn\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 12, "POS"]], "pairs": [["Jean Seberg", "POS"], ["Breathless", "POS"]], "raw": "[{\"aspect\": \"Jean Seberg\", \"sentiment\": \"positive\"}, {\"aspect\": \"Breathless\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "NEG"], [10, 11, "NEG"]], "pairs": [["Joe", "NEG"], ["Biden", "NEG"]], "raw": "[{\"aspect\": \"Joe\", \"sentiment\": \"negative\"}, {\"aspect\": \"Biden\", \"sentiment\": \"negative\"}]"}
+{"gold": [[6, 9, "POS"]], "pairs": [["Poudre High School", "POS"]], "raw": "[{\"aspect\": \"Poudre High School\", \"sentiment\": \"positive\"}]"}
+{"gold": [[5, 6, "NEU"]], "pairs": [["Duncan", "NEU"]], "raw": "[{\"aspect\": \"Duncan\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[1, 3, "NEU"]], "pairs": [["# Myanmar", "NEU"]], "raw": "[{\"aspect\": \"# Myanmar\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "POS"]], "pairs": [["Tex", "POS"]], "raw": "[{\"aspect\": \"Tex\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 6, "POS"]], "pairs": [["Lily Collins", "POS"]], "raw": "[{\"aspect\": \"Lily Collins\", \"sentiment\": \"positive\"}]"}
+{"gold": [[1, 2, "NEU"], [3, 5, "NEU"], [13, 15, "NEU"]], "pairs": [["Chicago", "NEU"], ["Trib Tower", "NEU"], ["Mich Ave", "NEU"]], "raw": "[{\"aspect\": \"Chicago\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Trib Tower\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Mich Ave\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[8, 10, "NEU"], [11, 12, "NEG"]], "pairs": [["Harper Lee", "NEU"], ["Esquire", "NEG"]], "raw": "[{\"aspect\": \"Harper Lee\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Esquire\", \"sentiment\": \"negative\"}]"}
+{"gold": [[4, 7, "NEU"]], "pairs": [["Amsterdam", "POS"]], "raw": "[{\"aspect\": \"Amsterdam\", \"sentiment\": \"positive\"}]"}
+{"gold": [[7, 9, "NEU"], [14, 15, "NEU"]], "pairs": [["US Navy", "NEU"]], "raw": "[{\"aspect\": \"US Navy\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 11, "NEU"]], "pairs": [["Golden State Warriors", "NEU"], ["Cleveland Cavaliers", "NEU"]], "raw": "[{\"aspect\": \"Golden State Warriors\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Cleveland Cavaliers\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 5, "NEU"], [12, 13, "NEU"]], "pairs": [["Banksy", "NEU"], ["Gaza", "NEU"]], "raw": "[{\"aspect\": \"Banksy\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Gaza\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "POS"]], "pairs": [["Zayn Malik", "POS"]], "raw": "[{\"aspect\": \"Zayn Malik\", \"sentiment\": \"positive\"}]"}
+{"gold": [[27, 29, "NEU"]], "pairs": [["John Muir", "NEU"]], "raw": "[{\"aspect\": \"John Muir\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[4, 6, "POS"], [11, 13, "POS"], [14, 16, "POS"]], "pairs": [["Taylor Beck", "POS"], ["Taylor Beck", "POS"], ["# Preds", "NEU"]], "raw": "[{\"aspect\": \"Taylor Beck\", \"sentiment\": \"positive\"}, {\"aspect\": \"Taylor Beck\", \"sentiment\": \"positive\"}, {\"aspect\": \"# Preds\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[1, 2, "NEU"]], "pairs": [["Brittany", "POS"]], "raw": "[{\"aspect\": \"Brittany\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 7, "POS"]], "pairs": [["Neil deGrasse Tyson", "NEU"]], "raw": "[{\"aspect\": \"Neil deGrasse Tyson\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 10, "POS"], [11, 12, "NEU"]], "pairs": [["Katy Perry", "POS"], ["Justin", "POS"]], "raw": "[{\"aspect\": \"Katy Perry\", \"sentiment\": \"positive\"}, {\"aspect\": \"Justin\", \"sentiment\": \"positive\"}]"}
+{"gold": [[4, 5, "NEU"], [6, 7, "NEU"], [9, 10, "NEU"]], "pairs": [["Niall", "NEU"], ["Liam", "NEU"], ["Pleasanton", "NEU"]], "raw": "[{\"aspect\": \"Niall\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Liam\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Pleasanton\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[10, 12, "NEU"]], "pairs": [["UTEP", "NEG"], ["Florida Atlantic", "NEU"]], "raw": "[{\"aspect\": \"UTEP\", \"sentiment\": \"negative\"}, {\"aspect\": \"Florida Atlantic\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[3, 4, "NEU"]], "pairs": [["Kirsten Sims", "POS"]], "raw": "[{\"aspect\": \"Kirsten Sims\", \"sentiment\": \"positive\"}]"}
+{"gold": [[0, 1, "NEU"], [11, 12, "NEU"]], "pairs": [["MCSO", "NEU"], ["Guadalupe", "NEU"]], "raw": "[{\"aspect\": \"MCSO\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Guadalupe\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[9, 11, "NEG"], [15, 16, "NEU"]], "pairs": [["Syrian", "NEG"], ["Turkish", "NEU"]], "raw": "[{\"aspect\": \"Syrian\", \"sentiment\": \"negative\"}, {\"aspect\": \"Turkish\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[2, 3, "NEU"], [4, 6, "NEU"]], "pairs": [["# Blackhawks", "NEU"], ["Shaw", "NEU"]], "raw": "[{\"aspect\": \"# Blackhawks\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Shaw\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[18, 20, "NEU"]], "pairs": [["Simon Scarrow", "NEU"]], "raw": "[{\"aspect\": \"Simon Scarrow\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "POS"], [10, 11, "POS"]], "pairs": [["Hogmanay", "NEU"], ["Edinburgh", "NEU"]], "raw": "[{\"aspect\": \"Hogmanay\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Edinburgh\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[6, 7, "POS"]], "pairs": [["Keystone pipeline", "POS"]], "raw": "[{\"aspect\": \"Keystone pipeline\", \"sentiment\": \"positive\"}]"}
+{"gold": [[5, 7, "NEU"]], "pairs": [["Rosemary Lane", "NEU"]], "raw": "[{\"aspect\": \"Rosemary Lane\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 9, "POS"]], "pairs": [["Del Ray", "NEU"]], "raw": "[{\"aspect\": \"Del Ray\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[0, 1, "POS"]], "pairs": [], "raw": "[{\"aspect\": \"Selena\", \"sentiment\": \"happy\"}]"}
+{"gold": [[6, 8, "NEU"], [9, 11, "NEU"]], "pairs": [["Jay Z", "NEU"], ["Kanye West", "NEU"]], "raw": "[{\"aspect\": \"Jay Z\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Kanye West\", \"sentiment\": \"neutral\"}]"}
+{"gold": [[7, 9, "NEG"]], "pairs": [["Russell Brand", "NEG"]], "raw": "[{\"aspect\": \"Russell Brand\", \"sentiment\": \"negative\"}]"}
+{"gold": [[2, 5, "NEU"], [10, 12, "NEU"]], "pairs": [["London Guarantee Building", "NEU"], ["Chicago River", "NEU"]], "raw": "[{\"aspect\": \"London Guarantee Building\", \"sentiment\": \"neutral\"}, {\"aspect\": \"Chicago River\", \"sentiment\": \"neutral\"}]"}

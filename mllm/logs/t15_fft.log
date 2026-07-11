@@ -1,0 +1,113 @@
+############ TRAIN t15_fft (full-FT, convention prompt) ############
+The image processor of type `Qwen2VLImageProcessor` is now loaded as a fast processor by default, even if the model checkpoint was saved with a slow processor. This is a breaking change and may produce slightly different outputs. To continue using the slow processor, instantiate this class with `use_fast=False`. Note that this behavior will be extended to all models in a future release.
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:00<00:02,  1.59it/s]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:01,  1.65it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:01<00:01,  1.67it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:02<00:00,  1.68it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  2.29it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  1.96it/s]
+full-FT: trainable 7.62B params (vision frozen)
+/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+ep0 it100/2101 loss0.2860 lr4.00e-06 0.4m
+ep0 it200/2101 loss0.2227 lr8.00e-06 0.9m
+ep0 it300/2101 loss0.1921 lr1.00e-05 1.3m
+ep0 it400/2101 loss0.1712 lr9.99e-06 1.7m
+ep0 it500/2101 loss0.1572 lr9.98e-06 2.1m
+ep0 it600/2101 loss0.1472 lr9.95e-06 2.5m
+ep0 it700/2101 loss0.1375 lr9.93e-06 2.9m
+ep0 it800/2101 loss0.1321 lr9.89e-06 3.3m
+ep0 it900/2101 loss0.1255 lr9.84e-06 3.7m
+ep0 it1000/2101 loss0.1198 lr9.79e-06 4.1m
+ep0 it1100/2101 loss0.1178 lr9.74e-06 4.5m
+ep0 it1200/2101 loss0.1163 lr9.67e-06 4.9m
+ep0 it1300/2101 loss0.1130 lr9.60e-06 5.3m
+ep0 it1400/2101 loss0.1100 lr9.52e-06 5.8m
+ep0 it1500/2101 loss0.1077 lr9.44e-06 6.2m
+ep0 it1600/2101 loss0.1063 lr9.34e-06 6.6m
+ep0 it1700/2101 loss0.1046 lr9.24e-06 7.0m
+ep0 it1800/2101 loss0.1031 lr9.14e-06 7.4m
+ep0 it1900/2101 loss0.1014 lr9.04e-06 7.8m
+ep0 it2000/2101 loss0.1001 lr8.91e-06 8.2m
+ep0 it2100/2101 loss0.0991 lr8.79e-06 8.6m
+== ep0 DEV joint_F 60.05 mate_F 80.07 masc_acc 75.00 (14.1m) ==
+   -> new best dev joint_F 60.05 saved
+ep1 it100/2101 loss0.0601 lr8.65e-06 14.8m
+ep1 it200/2101 loss0.0558 lr8.52e-06 15.2m
+ep1 it300/2101 loss0.0579 lr8.39e-06 15.6m
+ep1 it400/2101 loss0.0567 lr8.23e-06 16.0m
+ep1 it500/2101 loss0.0568 lr8.08e-06 16.4m
+ep1 it600/2101 loss0.0554 lr7.94e-06 16.8m
+ep1 it700/2101 loss0.0549 lr7.79e-06 17.2m
+ep1 it800/2101 loss0.0553 lr7.61e-06 17.6m
+ep1 it900/2101 loss0.0548 lr7.45e-06 18.0m
+ep1 it1000/2101 loss0.0550 lr7.28e-06 18.4m
+ep1 it1100/2101 loss0.0541 lr7.12e-06 18.8m
+ep1 it1200/2101 loss0.0538 lr6.92e-06 19.2m
+ep1 it1300/2101 loss0.0537 lr6.75e-06 19.6m
+ep1 it1400/2101 loss0.0539 lr6.58e-06 20.0m
+ep1 it1500/2101 loss0.0542 lr6.40e-06 20.4m
+ep1 it1600/2101 loss0.0539 lr6.20e-06 20.8m
+ep1 it1700/2101 loss0.0544 lr6.02e-06 21.2m
+ep1 it1800/2101 loss0.0540 lr5.84e-06 21.6m
+ep1 it1900/2101 loss0.0538 lr5.66e-06 22.0m
+ep1 it2000/2101 loss0.0538 lr5.44e-06 22.4m
+ep1 it2100/2101 loss0.0534 lr5.26e-06 22.8m
+== ep1 DEV joint_F 61.89 mate_F 81.01 masc_acc 76.39 (28.2m) ==
+   -> new best dev joint_F 61.89 saved
+ep2 it100/2101 loss0.0375 lr5.05e-06 29.0m
+ep2 it200/2101 loss0.0338 lr4.86e-06 29.4m
+ep2 it300/2101 loss0.0320 lr4.68e-06 29.8m
+ep2 it400/2101 loss0.0343 lr4.47e-06 30.2m
+ep2 it500/2101 loss0.0335 lr4.28e-06 30.6m
+ep2 it600/2101 loss0.0341 lr4.10e-06 31.0m
+ep2 it700/2101 loss0.0341 lr3.92e-06 31.4m
+ep2 it800/2101 loss0.0345 lr3.71e-06 31.8m
+ep2 it900/2101 loss0.0350 lr3.54e-06 32.2m
+ep2 it1000/2101 loss0.0347 lr3.36e-06 32.6m
+ep2 it1100/2101 loss0.0340 lr3.19e-06 33.0m
+ep2 it1200/2101 loss0.0341 lr2.99e-06 33.4m
+ep2 it1300/2101 loss0.0345 lr2.82e-06 33.8m
+ep2 it1400/2101 loss0.0343 lr2.66e-06 34.2m
+ep2 it1500/2101 loss0.0342 lr2.50e-06 34.6m
+ep2 it1600/2101 loss0.0337 lr2.32e-06 35.0m
+ep2 it1700/2101 loss0.0333 lr2.16e-06 35.4m
+ep2 it1800/2101 loss0.0331 lr2.01e-06 35.8m
+ep2 it1900/2101 loss0.0329 lr1.87e-06 36.2m
+ep2 it2000/2101 loss0.0332 lr1.70e-06 36.6m
+ep2 it2100/2101 loss0.0332 lr1.57e-06 37.0m
+== ep2 DEV joint_F 63.00 mate_F 81.61 masc_acc 77.20 (42.5m) ==
+   -> new best dev joint_F 63.00 saved
+ep3 it100/2101 loss0.0245 lr1.42e-06 43.3m
+ep3 it200/2101 loss0.0231 lr1.29e-06 43.7m
+ep3 it300/2101 loss0.0228 lr1.17e-06 44.1m
+ep3 it400/2101 loss0.0245 lr1.04e-06 44.5m
+ep3 it500/2101 loss0.0241 lr9.26e-07 44.9m
+ep3 it600/2101 loss0.0247 lr8.23e-07 45.3m
+ep3 it700/2101 loss0.0240 lr7.24e-07 45.7m
+ep3 it800/2101 loss0.0248 lr6.17e-07 46.1m
+ep3 it900/2101 loss0.0250 lr5.32e-07 46.5m
+ep3 it1000/2101 loss0.0248 lr4.52e-07 46.9m
+ep3 it1100/2101 loss0.0247 lr3.79e-07 47.3m
+ep3 it1200/2101 loss0.0249 lr3.02e-07 47.8m
+ep3 it1300/2101 loss0.0249 lr2.42e-07 48.2m
+ep3 it1400/2101 loss0.0249 lr1.89e-07 48.6m
+ep3 it1500/2101 loss0.0249 lr1.42e-07 49.0m
+ep3 it1600/2101 loss0.0251 lr9.57e-08 49.4m
+ep3 it1700/2101 loss0.0252 lr6.32e-08 49.8m
+ep3 it1800/2101 loss0.0251 lr3.75e-08 50.2m
+ep3 it1900/2101 loss0.0253 lr1.84e-08 50.6m
+ep3 it2000/2101 loss0.0256 lr4.59e-09 51.0m
+ep3 it2100/2101 loss0.0259 lr9.38e-11 51.4m
+== ep3 DEV joint_F 63.62 mate_F 81.70 masc_acc 77.87 (56.9m) ==
+   -> new best dev joint_F 63.62 saved
+DONE best_dev_joint_F 63.62 adapter=mllm/runs/t15_fft/best total 57.6m
+############ TEST EVAL t15_fft ############
+The tokenizer you are loading from 'mllm/runs/t15_fft/best' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:02,  1.14it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:01<00:01,  1.17it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:02<00:00,  1.17it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:02<00:00,  1.58it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:02<00:00,  1.40it/s]
+[twitter2015/test n=674] JOINT P62.69 R63.84 F63.26 | MATE F80.75 | MASC acc78.34 macF173.56
+{"joint_P": 62.689393939393945, "joint_R": 63.837994214079075, "joint_F": 63.258480649780005, "mate_P": 80.01893939393939, "mate_R": 81.4850530376085, "mate_F": 80.74534161490185, "masc_acc": 78.34319526627218, "masc_macF1": 73.55734212876567, "masc_n": 845}
+############ DEV EVAL t15_fft ############
+The tokenizer you are loading from 'mllm/runs/t15_fft/best' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:02,  1.35it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:01<00:01,  1.39it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:02<00:00,  1.41it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:02<00:00,  1.91it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:02<00:00,  1.68it/s]
+[twitter2015/dev n=727] JOINT P63.26 R63.99 F63.62 | MATE F81.70 | MASC acc77.87 macF173.38
+{"joint_P": 63.259911894273124, "joint_R": 63.992869875222816, "joint_F": 63.62428001771764, "mate_P": 81.23348017621146, "mate_R": 82.174688057041, "mate_F": 81.70137350464721, "masc_acc": 77.87418655097613, "masc_macF1": 73.37659991328256, "masc_n": 922}
+############ DONE t15_fft ############

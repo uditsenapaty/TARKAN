@@ -1,0 +1,42 @@
+############ TRAIN t17_qwen7b (twitter2017) NVIDIA RTX PRO 6000 Blackwell Server Edition ############
+The image processor of type `Qwen2VLImageProcessor` is now loaded as a fast processor by default, even if the model checkpoint was saved with a slow processor. This is a breaking change and may produce slightly different outputs. To continue using the slow processor, instantiate this class with `use_fast=False`. Note that this behavior will be extended to all models in a future release.
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:00<00:02,  1.61it/s]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:01,  1.70it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:01<00:01,  1.72it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:02<00:00,  1.73it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  2.35it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  2.01it/s]
+trainable params: 47,589,376 || all params: 8,339,756,032 || trainable%: 0.5706
+ep0 it100/1746 loss0.3107 lr7.50e-05 0.4m
+ep0 it200/1746 loss0.2310 lr1.50e-04 0.9m
+ep0 it300/1746 loss0.1883 lr2.00e-04 1.3m
+ep0 it400/1746 loss0.1635 lr2.00e-04 1.8m
+ep0 it500/1746 loss0.1458 lr2.00e-04 2.2m
+ep0 it600/1746 loss0.1340 lr1.99e-04 2.6m
+ep0 it700/1746 loss0.1256 lr1.99e-04 3.1m
+ep0 it800/1746 loss0.1202 lr1.98e-04 3.5m
+ep0 it900/1746 loss0.1144 lr1.97e-04 4.0m
+ep0 it1000/1746 loss0.1096 lr1.96e-04 4.4m
+ep0 it1100/1746 loss0.1048 lr1.95e-04 4.9m
+ep0 it1200/1746 loss0.1018 lr1.94e-04 5.3m
+ep0 it1300/1746 loss0.0990 lr1.93e-04 5.8m
+ep0 it1400/1746 loss0.0971 lr1.91e-04 6.2m
+ep0 it1500/1746 loss0.0942 lr1.90e-04 6.7m
+ep0 it1600/1746 loss0.0926 lr1.88e-04 7.1m
+ep0 it1700/1746 loss0.0904 lr1.86e-04 7.5m
+== ep0 DEV joint_F 64.05 mate_F 89.40 masc_acc 71.64 (17.1m) ==
+   -> new best dev joint_F 64.05 saved
+ep1 it100/1746 loss0.0460 lr1.83e-04 17.5m
+ep1 it200/1746 loss0.0462 lr1.81e-04 17.9m
+ep1 it300/1746 loss0.0454 lr1.79e-04 18.4m
+ep1 it400/1746 loss0.0454 lr1.76e-04 18.8m
+ep1 it500/1746 loss0.0441 lr1.74e-04 19.3m
+ep1 it600/1746 loss0.0438 lr1.72e-04 19.7m
+ep1 it700/1746 loss0.0432 lr1.69e-04 20.1m
+ep1 it800/1746 loss0.0427 lr1.66e-04 20.6m
+ep1 it900/1746 loss0.0425 lr1.64e-04 21.0m
+ep1 it1000/1746 loss0.0428 lr1.61e-04 21.4m
+ep1 it1100/1746 loss0.0418 lr1.58e-04 21.9m
+ep1 it1200/1746 loss0.0420 lr1.55e-04 22.3m
+ep1 it1300/1746 loss0.0418 lr1.52e-04 22.7m
+ep1 it1400/1746 loss0.0415 lr1.48e-04 23.2m
+ep1 it1500/1746 loss0.0411 lr1.45e-04 23.6m
+ep1 it1600/1746 loss0.0406 lr1.42e-04 24.0m
+ep1 it1700/1746 loss0.0408 lr1.38e-04 24.5m
+Terminated

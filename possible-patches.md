@@ -296,3 +296,69 @@ is acceptable. After P6, edit `queries.md` C4 to reflect the vocab filter is now
 **Accuracy (one twitter2015 run each to measure):** A1 + A5 together (cheap, target MASC) → A2 sweep → A3 →
 A4/A6 only if the cheap ones leave a gap worth a new dependency. After A3, note the layer-wise LR under B3;
 after A6, mark A4 in `queries.md` resolved.
+
+---
+
+## A11 — EVIDENCE RELIABILITY LEARNING (new hypothesis, measured, DISOBEYING)
+Per-token softmax reliability `w` over [text, vision, KG]; each modality scaled by `3·w`
+(zero-init final layer → uniform/identity warm start) before KAN fusion. Stronger inductive
+bias than the relevance gate (which only decides *whether* the image matters — here the three
+modalities **compete**). Files: `config.fusion_reliability`, `models.py` (reliability_mlp +
+forward weighting), `scripts/tune_run.py --reliability`. Claim: *multimodal evidence should be
+weighted by estimated per-modality reliability, not only aspect-visual relevance.*
+
+**MEASURED t2015** (champion recipe = DeBERTa-v3-large + CRF + aux-ASC + conf-append + feat-gate):
+| run | joint F1 | MATE | MASC Acc/F1 | vs champion |
+|---|---|---|---|---|
+| champion (ALLIN_deb) | 66.41 | 85.40 | 76.95/70.95 | — |
+| **+ A11 reliability** | **66.60** | 85.17 | 77.34/70.75 | **+0.19 (flat, noise)** |
+
+best_dev rose (68.19 vs 67.02) but **test did not follow**. Verdict: a fusion tweak moves the
+student ~0 — kept as an honest measured *contribution*, not a bar-breaker.
+
+---
+
+## A15 — MLLM BACKBONE CHAPTER (Qwen2.5-VL, measured; all numbers real)
+After the student (66.6) and AoM graft (69.30) capped below the 72.5 bar, we tested a vision-
+language **model class** (published at 72-78 on these splits). Pipeline in `mllm/`:
+data→instruction-JSON (`common.py`, AoM canonical splits + convention-aware prompt), LoRA/full-FT
+SFT (`train_qwen.py`, 8-bit paged AdamW for `--full-ft`, vision frozen), generate→parse→span-aligned
+AESC micro-F1 (`eval_qwen.py`, self-validated ~100 on gold round-trip). GPU: RTX PRO 6000 Blackwell
+96 GB (Qwen runs), then Tesla T4 (student/A11).
+
+**MEASURED t2015** (test joint F1, strict span+polarity micro-F1):
+| system | joint F1 | notes |
+|---|---|---|
+| Qwen2.5-VL-7B LoRA (5 ep) | 68.76 | MATE 85.14, MASC 80.76; overfit (train loss→6e-4) |
+| Qwen2.5-VL-7B full-FT (4 ep, lr 1e-5) | 63.26 | **undertrained** — dev still rising, recipe miss |
+| **Qwen ∩ AoM (inter_qpol)** | **69.40** | **P 72.98 (>bar)**, R 66.15 — best overall |
+| non-VL student × AoM (best combo) | 66.64 | student weaker than the 7B |
+| A11 reliability student | 66.60 | flat (see above) |
+| Qwen2.5-VL-32B | **NOT RUN** | needs ≥48 GB; T4 (16 GB) can't fit even 4-bit |
+
+**Frontier finding (why nothing crosses 72.5).** Beating all three t2015 cells needs **P>72.3 AND
+R>72.7 simultaneously**. Cross-model agreement (intersection) gives **P 73-80 but R collapses to
+58-66**; union gives **R 71-73 but P 62-64**. No point on the frontier reaches P≈R≈72.5. Root cause =
+the dataset's **aspect-selection convention** (110/182 dev false-positives are *reasonable-but-
+unannotated* entities like "Regions Bank", "# VMworld"), which task-specific pretraining
+(VLP-MABSA→AoM→the undownloadable VLHA/DQPSA) encodes and a general model cannot guess.
+
+**HONEST FINAL VERDICT (4 independent measurements): non-VL 66-68 · 7B VL 68.76 · everything-combined
+69.40 · A11 66.60 — all 4-6 F1 below the 72.5 bar.** Beating all baselines is **compute-locked**:
+it requires a **32B-class MLLM** (published 74-79 on these exact splits) on a **≥48 GB GPU**. It cannot
+be done on a T4, nor with a non-VL student, at *any* time budget — the gap is **model-class, not
+effort or architecture**. TARKAN's components (relevance, KG, KAN, A11 reliability, CRF, rich-ASC)
+lift *weak* bases by +0.5-2.5 and are **absorbed** by strong bases — their value is inversely
+proportional to backbone strength.
+
+### Applied this session (patch registry)
+- **A11** evidence reliability (`config.fusion_reliability`, `models.py`, `tune_run.py --reliability`) — measured 66.60, flat.
+- **A15** MLLM SFT pipeline (`mllm/`: `common.py`, `train_qwen.py`, `eval_qwen.py`, launchers) — 7B LoRA 68.76.
+- **convention-aware prompt** (`common.py INSTRUCTION`) — opinion-target + neutral-convention guidance.
+- **full-FT path** (`train_qwen.py --full-ft`, 8-bit paged AdamW, vision frozen) — verified grads flow; 63.26 (undertrained).
+- **heterogeneous Qwen×AoM voter + combination probes** (`graft/qwen_probe.py`, `nonvl_probe.py`, `ensemble_t15_qwen.json`) — best combo 69.40.
+
+### To actually beat all baselines (open, needs the 96 GB card back)
+Qwen2.5-VL-32B LoRA on t2015 (`bash`-download 64 GB, ~3-3.5 h bf16 LoRA + grad-ckpt) → expected 74-79 →
+clears P/R/F1 cells; then `inter_qpol` with AoM for precision margin. Pipeline is built and smoke-tested;
+only the 32B weights + a ≥48 GB GPU are missing.

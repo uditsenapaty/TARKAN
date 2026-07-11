@@ -46,6 +46,7 @@ def main():
     ap.add_argument("--crf", action="store_true", help="A4: word-level linear-chain CRF for L_tag + Viterbi decode")
     ap.add_argument("--conf-append", action="store_true", help="A9: append [r, mean(s), max(s)] to KAN input")
     ap.add_argument("--feat-gate", action="store_true", help="A10: learnable (1+γ)⊙v, (1+δ)⊙g evidence gates")
+    ap.add_argument("--reliability", action="store_true", help="A11: evidence reliability learning (softmax MoE over [t,v,g])")
     ap.add_argument("--text-model", default=None, help="A8: text encoder HF id (e.g. vinai/bertweet-large)")
     ap.add_argument("--batch-size", type=int, default=None)
     ap.add_argument("--grad-accum", type=int, default=None, help="A8: grad accumulation steps")
@@ -80,6 +81,7 @@ def main():
     CONFIG.use_crf = bool(args.crf)                            # A4
     CONFIG.fusion_conf_append = bool(args.conf_append)         # A9
     CONFIG.fusion_feat_gate = bool(args.feat_gate)             # A10
+    CONFIG.fusion_reliability = bool(args.reliability)         # A11
     if args.text_model:
         CONFIG.text_model_id = args.text_model                 # A8
     if args.batch_size:

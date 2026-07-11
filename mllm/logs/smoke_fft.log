@@ -1,0 +1,9 @@
+The image processor of type `Qwen2VLImageProcessor` is now loaded as a fast processor by default, even if the model checkpoint was saved with a slow processor. This is a breaking change and may produce slightly different outputs. To continue using the slow processor, instantiate this class with `use_fast=False`. Note that this behavior will be extended to all models in a future release.
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:00<00:02,  1.58it/s]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:01,  1.65it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:01<00:01,  1.66it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:02<00:00,  1.65it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  2.24it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  1.93it/s]
+full-FT: trainable 7.62B params (vision frozen)
+/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+== ep0 DEV joint_F 12.50 mate_F 62.50 masc_acc 20.00 (0.1m) ==
+   -> new best dev joint_F 12.50 saved
+DONE best_dev_joint_F 12.50 adapter=mllm/runs/smoke_fft/best total 0.6m

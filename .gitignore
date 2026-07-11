@@ -70,3 +70,9 @@ graft/aom_assets/
 graft/vlpenv/
 graft/AoM_full/
 graft/*.log
+
+# ── MLLM (A15) weights + fine-tune outputs (heavy; keep mllm/*.py, launchers, preds, logs) ──
+mllm/qwen2_5_vl_7b/
+mllm/qwen2_5_vl_32b/
+mllm/runs/
+# data/ is ignored above; the one required KG file is force-added: data/senticnet/senticnet_en.parquet

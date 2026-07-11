@@ -1,0 +1,10 @@
+{
+  "dataset_dir": "/teamspace/studios/this_studio/graft/AoM_full/src/data/twitter2015",
+  "tag": "t15",
+  "members": [
+    {"name": "qwen",     "kind": "word", "dev": "/teamspace/studios/this_studio/graft/qwen_t15_dev.json",  "test": "/teamspace/studios/this_studio/graft/qwen_t15_test.json"},
+    {"name": "official", "kind": "aom",  "dev": "/teamspace/studios/this_studio/graft/dump_t15_dev.jsonl", "test": "/teamspace/studios/this_studio/graft/dump_t15_test.jsonl"},
+    {"name": "control",  "kind": "aom",  "dev": "/teamspace/studios/this_studio/graft/dump_t15_control_dev.jsonl", "test": "/teamspace/studios/this_studio/graft/dump_t15_control_test.jsonl"},
+    {"name": "graft",    "kind": "aom",  "dev": "/teamspace/studios/this_studio/graft/dump_t15_graft_dev.jsonl",   "test": "/teamspace/studios/this_studio/graft/dump_t15_graft_test.jsonl"}
+  ]
+}

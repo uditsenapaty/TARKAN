@@ -162,6 +162,12 @@ class TarkanConfig:
     # A10 (DISOBEYING, opt-in): learnable feature-wise evidence gates v'=(1+γ)⊙v, g'=(1+δ)⊙g
     # (γ, δ ∈ R^d, init 0 = identity) applied before fusion.
     fusion_feat_gate: bool = False
+    # A11 EVIDENCE RELIABILITY LEARNING (NEW HYPOTHESIS, DISOBEYING, opt-in): a small MLP predicts a
+    # per-token reliability distribution w=softmax over [text, vision, KG]; each modality is scaled by
+    # 3·w (uniform init ≈ identity) before KAN fusion. Hypothesis: multimodal evidence should be
+    # weighted by *estimated per-modality reliability*, not only aspect-visual relevance. Stronger than
+    # the relevance gate (which only decides IF the image matters) — here the modalities compete.
+    fusion_reliability: bool = False
     # ---- neurosymbolic inference layer (A12-A14, DISOBEYING, inference-only, see neurosymbolic.py) ----
     ns_bio_rules: bool = False        # A12: hard BIO-transition logic in CRF Viterbi
     ns_lexicon_alpha: float = 0.0     # A13: product-of-experts weight for the SenticNet polarity prior (0=off)

@@ -85,6 +85,16 @@ class TarkanStudent(nn.Module):
         else:
             self.gate_gamma = None
             self.gate_delta = None
+        # A11 Evidence Reliability Learning: per-token softmax reliability over [text, vision, KG].
+        # Final layer zero-init so w≈uniform (identity-ish) at start → stable warm start.
+        if getattr(config, "fusion_reliability", False):
+            self.reliability_mlp = nn.Sequential(
+                nn.Linear(3 * d, d), nn.GELU(), nn.Dropout(dp), nn.Linear(d, 3)
+            )
+            nn.init.zeros_(self.reliability_mlp[-1].weight)
+            nn.init.zeros_(self.reliability_mlp[-1].bias)
+        else:
+            self.reliability_mlp = None
         self.tag_norm = nn.LayerNorm(d)  # stabilizes the residual KAN-enhanced token rep h̃
         self.bio_head = BIOTaggingHead(d, dropout=dp)
         # A7 (DISOBEYING, opt-in): dedicated 3-way polarity head on a RICH aspect rep of h̃
@@ -235,16 +245,26 @@ class TarkanStudent(nn.Module):
             if self.gate_gamma is not None:  # A10: (1+γ)⊙v, (1+δ)⊙g — identity at init, zeros stay zeros
                 v_tok = v_tok * (1 + self.gate_gamma)
                 g_tok = g_tok * (1 + self.gate_delta)
+            # A11: reliability-weight the KAN modality INPUTS (residual text stays intact so
+            # extraction is unharmed). w=softmax over [t,v,g]; ×3 keeps uniform-init ≈ identity.
+            text_k = text_feats
+            if self.reliability_mlp is not None:
+                w = torch.softmax(
+                    self.reliability_mlp(torch.cat([text_feats, v_tok, g_tok], dim=-1)), dim=-1
+                )  # [B, n, 3]
+                text_k = text_feats * (3.0 * w[..., 0:1])
+                v_tok = v_tok * (3.0 * w[..., 1:2])
+                g_tok = g_tok * (3.0 * w[..., 2:3])
             if conf_tok is not None:
                 fused = self.fusion(
-                    text_feats.reshape(B * n, d),
+                    text_k.reshape(B * n, d),
                     v_tok.reshape(B * n, d),
                     g_tok.reshape(B * n, d),
                     conf=conf_tok.reshape(B * n, 3),
                 ).reshape(B, n, d)
             else:
                 fused = self.fusion(
-                    text_feats.reshape(B * n, d),
+                    text_k.reshape(B * n, d),
                     v_tok.reshape(B * n, d),
                     g_tok.reshape(B * n, d),
                 ).reshape(B, n, d)
