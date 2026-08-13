@@ -1185,6 +1185,68 @@ result is still negative — which localises the cause precisely:
 
 Recorded as the strongest form of the §B.8 error-correlation ceiling.
 
+## D.7 MEASURED NEGATIVE — option-order TTA
+
+Averaging the two option orderings (`--tta`) to cancel the decoder's position bias:
+dev **78.88 → 78.43**, test **80.04 → 79.56**. Consistently −0.5.
+
+Diagnosable, and worth keeping as a general lesson: option-order averaging is a
+**zero-/few-shot** debiasing technique. Once the adapter is fine-tuned on a fixed
+ordering, "A = negative" is part of what it learned, so the reversed rendering is
+*off-distribution for the adapter* and averaging it in injects noise rather than
+cancelling bias. Rolled back.
+
+## D.8 ★★ MEASURED NEGATIVE — the 8B in the JOINT metric, and the union pool
+
+§D.6 measured the 8B on gold-span accuracy. The joint metric is the real objective, and
+the member's confidence also enters the selection score there, so it could in principle
+pay even while flat on accuracy. It does not.
+
+**At constant pool (`cand_thr` 0.12), sweeping the group-mixing weight `w`:**
+| w on the 8B | dev | **test** |
+|---|---|---|
+| **0.00 (encoders only)** | 70.07 | **70.37** |
+| 0.20 | 70.64 | 70.52 |
+| **0.30 — dev-best** | **70.82** | **69.63** |
+| 1.00 (8B only) | 68.78 | 69.58 |
+
+Dev says include it (+0.75); test says it costs **−0.74**. Seventh independent inversion.
+
+**The union pool (§D.3) is also negative**, despite raising the reachable ceiling:
+| pool | dev | **test** | MATE@τ |
+|---|---|---|---|
+| BIO 0.12, 15 members | 70.07 | **70.37** | 87.68 |
+| BIO ∪ PDQ-MATE, 15 + 8B, dev-selected | **70.86** | **68.91** | 85.99 |
+
+MATE@τ falls 87.68 → 85.99: the 98 extra candidates are junk that the selector cannot
+filter, which is exactly what §D.2 predicts — **raising pool recall only pays if selection
+can exploit it, and selection is dead.** The +24 reachable gold spans never arrive.
+
+**So `--union` is a correct mechanism with a negative measured effect, and is not used.**
+
+### ★★ WHERE CHAPTER D LEAVES THE TARGET
+`joint = MATE@τ × a`. At our MATE@τ = 87.68, clearing 72.9 requires **`a` = 83.1**.
+
+| | gold-span MASC acc |
+|---|---|
+| our 15-member ensemble | 80.91 |
+| our best single member (8B decoder, 355M encoder) | 80.04 / 79.94 |
+| **best published on t2015 (MADSC)** | **82.34** |
+| **required** | **83.1** |
+
+Clearing the bar therefore requires **beating the published SOTA polarity model by ~0.8
+and converting all of it**, on a T4, without the MABSA-specific vision-language
+pretraining every baseline in the table inherits. Chapter D adds five independent
+saturation measurements to Chapter C's, and every one of them concerns *rearranging
+signals already in the system*.
+
+Two sources of genuinely new information remain untested:
+1. **Qwen2.5-VL on the original pixels** (§D.5 `masc_qwenvl.py`) — every multimodal signal
+   so far has passed through a BLIP caption.
+2. **VLP-MABSA pretraining**, reachable via AoM's official checkpoint already working in
+   `graft/` (t2015 68.42 reproduced) — the one component class carrying information no
+   member here has. Needs the legacy env (py3.8 / torch1.13 / transformers3.4).
+
 ---
 
 # ===== CHAPTER A — T4 ERA (kept verbatim; original title below) =====
