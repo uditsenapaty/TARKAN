@@ -190,6 +190,9 @@ def main():
     ap.add_argument("--adapter", default=None,
                     help="load the LoRA adapter from here instead of <out>/adapter, so one "
                          "trained member can be re-scored into a separate member dir")
+    ap.add_argument("--init-adapter", default=None,
+                    help="start TRAINING from this adapter instead of a fresh LoRA init, "
+                         "i.e. continue a run that was still improving, into a new --out")
     ap.add_argument("--limit-steps", type=int, default=0, help="benchmark mode")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
@@ -229,11 +232,14 @@ def main():
         model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
         model.gradient_checkpointing_enable()
         model.enable_input_require_grads()
-        model = get_peft_model(model, LoraConfig(
-            r=args.lora_r, lora_alpha=2 * args.lora_r, lora_dropout=0.05,
-            bias="none", task_type="CAUSAL_LM",
-            target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
-                            "gate_proj", "up_proj", "down_proj"]))
+        if args.init_adapter:
+            model = PeftModel.from_pretrained(model, args.init_adapter, is_trainable=True)
+        else:
+            model = get_peft_model(model, LoraConfig(
+                r=args.lora_r, lora_alpha=2 * args.lora_r, lora_dropout=0.05,
+                bias="none", task_type="CAUSAL_LM",
+                target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
+                                "gate_proj", "up_proj", "down_proj"]))
         model.print_trainable_parameters()
 
     dev_loader = mk(ex["dev"], args.eval_batch, False)
