@@ -55,18 +55,23 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from experts.common import (DATA, POLARITIES, load, masc_examples,  # noqa: E402
                             masc_examples_for_spans, set_seed)
 
-LETTERS = ["A", "B", "C"]                       # A=negative, B=neutral, C=positive
-LETTER2POL = [POLARITIES.index("NEG"), POLARITIES.index("NEU"), POLARITIES.index("POS")]
+LETTERS = ["A", "B", "C"]
+NAMES = {POLARITIES.index("NEG"): "negative", POLARITIES.index("NEU"): "neutral",
+         POLARITIES.index("POS"): "positive"}
+# Which polarity each letter denotes. Decoders carry a real position bias over lettered
+# options, so scoring the same example under the reversed order and averaging the two
+# distributions cancels the part of the answer that depends on where an option was listed
+# rather than on the tweet (--tta). Costs one extra forward pass, no extra training.
+ORDERS = {"fwd": [POLARITIES.index(x) for x in ("NEG", "NEU", "POS")],
+          "rev": [POLARITIES.index(x) for x in ("POS", "NEU", "NEG")]}
+LETTER2POL = ORDERS["fwd"]
 
 TEMPLATE = """Tweet: {text}
 Image: {caption}
 Target: "{term}"
 {siblings}
 What sentiment does the tweet express toward the target?
-A. negative
-B. neutral
-C. positive
-
+{options}
 Answer with one letter."""
 
 # §C.10 tried aspect-conditioning by bracketing the OTHER aspects with < > and POS recall
@@ -83,9 +88,9 @@ SIBLING_LINE = ('Other targets in this tweet: {others}\n'
 
 
 class PromptDS(Dataset):
-    def __init__(self, ex, tok, caps, max_len, siblings=False):
+    def __init__(self, ex, tok, caps, max_len, siblings=False, order="fwd"):
         self.ex, self.tok, self.caps, self.max_len = ex, tok, caps, max_len
-        self.siblings = siblings
+        self.siblings, self.order = siblings, ORDERS[order]
 
     def __len__(self):
         return len(self.ex)
@@ -96,13 +101,13 @@ class PromptDS(Dataset):
         if self.siblings and e.siblings:
             others = ", ".join(f'"{" ".join(e.tokens[a:b])}"' for (a, b) in e.siblings)
             sib = SIBLING_LINE.format(others=others)
-        msg = TEMPLATE.format(text=e.marked_text(), term=e.term, siblings=sib,
+        opts = "\n".join(f"{L}. {NAMES[p]}" for L, p in zip(LETTERS, self.order)) + "\n"
+        msg = TEMPLATE.format(text=e.marked_text(), term=e.term, siblings=sib, options=opts,
                               caption=self.caps.get(e.image_id, "an image"))
         s = self.tok.apply_chat_template([{"role": "user", "content": msg}],
                                          tokenize=False, add_generation_prompt=True)
         ids = self.tok(s, truncation=True, max_length=self.max_len)["input_ids"]
-        # POLARITIES index -> option index (inverse of LETTER2POL)
-        y = LETTER2POL.index(POLARITIES.index(e.polarity))
+        y = self.order.index(POLARITIES.index(e.polarity))   # gold as an OPTION index
         return {"ids": ids, "y": y, "key": e.key}
 
 
@@ -127,7 +132,8 @@ def option_logits(model, ids, mask, opt_ids):
 
 
 @torch.no_grad()
-def evaluate(model, loader, opt_ids, device):
+def evaluate(model, loader, opt_ids, device, order="fwd"):
+    """Returns (accuracy, probs in POLARITIES column order, keys)."""
     model.eval()
     P, Y, K = [], [], []
     for b in loader:
@@ -138,11 +144,26 @@ def evaluate(model, loader, opt_ids, device):
         K.extend(b["key"])
     P = np.concatenate(P) if P else np.zeros((0, 3))
     acc = 100.0 * float((P.argmax(1) == np.array(Y)).mean()) if Y else 0.0
-    # reorder option-space columns into POLARITIES order before anything downstream sees it
     out = np.zeros_like(P)
-    for oi, pi in enumerate(LETTER2POL):
+    for oi, pi in enumerate(ORDERS[order]):     # option space -> POLARITIES space
         out[:, pi] = P[:, oi]
     return acc, out, K
+
+
+def evaluate_tta(model, mkl, ex, opt_ids, device, orders, gold=None):
+    """Average the POLARITIES-space distributions over option orderings (see ORDERS)."""
+    acc, P, K = None, None, None
+    for o in orders:
+        a, p, k = evaluate(model, mkl(ex, o), opt_ids, device, o)
+        P = p if P is None else P + p
+        K = k
+        if len(orders) == 1:
+            acc = a
+    P /= len(orders)
+    if acc is None:
+        y = np.array([POLARITIES.index(e.polarity) for e in ex])
+        acc = 100.0 * float((P.argmax(1) == y).mean()) if len(y) else 0.0
+    return acc, P, K
 
 
 def main():
@@ -160,6 +181,9 @@ def main():
     ap.add_argument("--no-caption", action="store_true")
     ap.add_argument("--siblings", action="store_true",
                     help="name the tweet's OTHER aspects in the prompt (see SIBLING_LINE)")
+    ap.add_argument("--tta", action="store_true",
+                    help="average over both option orderings at scoring time (see ORDERS); "
+                         "training is unaffected")
     ap.add_argument("--spans", default=None,
                     help="dir with spans_{dev,test}.json; also score those candidate anchors")
     ap.add_argument("--score-only", action="store_true")
@@ -184,9 +208,11 @@ def main():
             else json.load(open(DATA / "aadg" / args.dataset / "captions.json")))
     insts = {s: load(args.dataset, s) for s in ("train", "dev", "test")}
     ex = {s: masc_examples(v) for s, v in insts.items()}
-    mk = lambda e, bs, sh: DataLoader(
-        PromptDS(e, tok, caps, args.max_len, args.siblings), batch_size=bs, shuffle=sh,
+    mk = lambda e, bs, sh, o="fwd": DataLoader(
+        PromptDS(e, tok, caps, args.max_len, args.siblings, o), batch_size=bs, shuffle=sh,
         num_workers=2, collate_fn=lambda b: collate(b, tok.pad_token_id))
+    orders = ["fwd", "rev"] if args.tta else ["fwd"]
+    mkl = lambda e, o: mk(e, args.eval_batch, False, o)
 
     bnb = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4",
                              bnb_4bit_compute_dtype=torch.float16,
@@ -253,7 +279,7 @@ def main():
 
     res = {"model": args.model, "best_dev_acc": best, "seed": args.seed}
     for s in ("dev", "test"):
-        acc, P, K = evaluate(model, mk(ex[s], args.eval_batch, False), opt_ids, device)
+        acc, P, K = evaluate_tta(model, mkl, ex[s], opt_ids, device, orders)
         res[f"{s}_acc"] = acc
         np.savez_compressed(out / f"probs_{s}.npz", probs=P,
                             keys=np.array(K, dtype=np.int64))
@@ -262,7 +288,7 @@ def main():
         for s in ("dev", "test"):
             sp = json.load(open(Path(args.spans) / f"spans_{s}.json"))
             e2 = masc_examples_for_spans(insts[s], [[tuple(x) for x in i] for i in sp])
-            _, P2, K2 = evaluate(model, mk(e2, args.eval_batch, False), opt_ids, device)
+            _, P2, K2 = evaluate_tta(model, mkl, e2, opt_ids, device, orders)
             np.savez_compressed(out / f"probs_span_{s}.npz", probs=P2,
                                 keys=np.array(K2, dtype=np.int64))
             print(f"[{s}] scored {len(K2)} candidate anchors", flush=True)
