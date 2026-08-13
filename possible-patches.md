@@ -1287,10 +1287,48 @@ was partly a virtue — abstaining is what kept its 25% of direction labels clea
 evidence teacher's value is set by the precision of its non-abstentions, not by its
 coverage.
 
-`--shift-floor` / `--shift-temp` were first guesses and the floor is the obvious suspect;
-a sweep at 0.20 / 0.35 is queued (`runs/queue30.sh`). `masc_qwenvl.py` now caches the raw
-arms `p_img` / `p_txt` so `experts/remap_direction.py` can re-threshold on CPU — the first
-run saved only the mapped labels, which cost one extra teacher pass.
+## D.10 ★ THE FLOOR SWEEP FALSIFIES THE ABSTENTION FIX — the route is closed
+
+Prediction registered before running: if abstention is what keeps direction labels clean,
+raising `--shift-floor` until the no-shift rate matches the caption teacher's 75% should
+recover the loss. **It does not.** bertweet-large, identical recipe throughout:
+
+| shift-floor | no-shift rate | POS:NEG | test gold-span |
+|---|---|---|---|
+| 0.05 | 36% | 2.16 : 1 | 77.24 |
+| **0.20** | 56% | 2.06 : 1 | **77.53** |
+| 0.35 | **71%** | 1.95 : 1 | 77.34 |
+| **caption teacher (§C.27)** | 75% | 6.8 : 1 | **78.50** |
+
+Non-monotonic, spanning 0.29, and every cell ~1 point below the caption teacher — including
+the cell that matches its abstention rate almost exactly while carrying a **far better**
+POS:NEG balance. So the deficit is not thresholding, and it is not the skew either.
+
+**The likely cause, and the lesson worth keeping: a counterfactual delta is the difference
+of two noisy estimates.** Qwen's own polarity distributions are only ~80% accurate, so
+`P(y | ..., IMAGE) - P(y | ...)` carries roughly √2 times the noise of either arm while the
+quantity being extracted — the image's marginal effect — is small relative to both. The
+caption teacher was *asked the shift question directly* and returned a single noisy answer;
+the counterfactual construction is strictly more principled and empirically noisier. **An
+intervention estimated by differencing a weak model against itself is not automatically
+better supervision than asking a weak model the question outright.**
+
+**Ensemble effect: nil, as §D.8 predicts.** Swapping all three caption-teacher PDS members
+for image-teacher ones changes the joint by −0.03; using all six changes it by +0.04:
+
+| PDS members in the ensemble | dev | test | `a` |
+|---|---|---|---|
+| caption teacher (15 members) | 70.07 | **70.37** | 80.26 |
+| image teacher (15 members) | 70.00 | 70.34 | 80.24 |
+| both (18 members) | 70.00 | **70.41** | 80.42 |
+
+A **1.1-point** difference in individual member quality produces **zero** ensemble
+difference — the third independent demonstration that the ensemble is saturated rather
+than under-supplied.
+
+`masc_qwenvl.py` now caches the raw arms `p_img` / `p_txt` and `experts/remap_direction.py`
+re-thresholds on CPU, so any future sweep is free; the first run saved only the mapped
+labels and cost one extra teacher pass.
 
 Two sources of genuinely new information remain untested:
 1. **Qwen2.5-VL on the original pixels** (§D.5 `masc_qwenvl.py`) — every multimodal signal
