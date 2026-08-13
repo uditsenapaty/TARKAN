@@ -1330,6 +1330,54 @@ than under-supplied.
 re-thresholds on CPU, so any future sweep is free; the first run saved only the mapped
 labels and cost one extra teacher pass.
 
+## D.11 ★★★ WHY IT SATURATES — the residual errors are CONSENSUS errors
+
+The "you only need 27 flips" framing is arithmetically correct and empirically unreachable,
+and this section closes the polarity axis rigorously. At the operating point (1032 kept =
+728 correct + 179 gold-span/wrong-polarity + 125 non-gold):
+
+**(a) The 8B's flips are a coin toss at every confidence level.** Net gain from N flips at
+precision p is `N(2p-1)`:
+| 8B conf > | flips N | right | wrong | **p** | net |
+|---|---|---|---|---|---|
+| 0.00 | 97 | 45 | 52 | **0.464** | −7 |
+| 0.70 | 68 | 31 | 37 | 0.456 | −6 |
+| 0.90 | 35 | 18 | 17 | **0.514** | +1 |
+| 0.95 | 18 | 8 | 10 | 0.444 | −2 |
+
+Every rule is net negative except one cell at p = 0.514, which would need **945 flips to
+net +27** — and only 97 disagreements exist in total. Base rates say the same thing: the 8B
+fixes **45 of 179** wrong cases (25.1%) and breaks **47 of 728** correct ones (6.5%), net
+**−2**. Restricting to the diagnosed NEU→minority direction does not change it (p = 0.468).
+
+**(b) The wrong cases are ones the whole member pool gets wrong together.** Polling all 19
+members on the 179:
+| | n | % |
+|---|---|---|
+| ≥1 member right | 140 | 78.2 |
+| ≥3 members right | 102 | 57.0 |
+| **MAJORITY right** | **7** | **3.9** |
+| **no member right** | 39 | 21.8 |
+
+Mean members correct: **17.4 / 19 on the already-correct cases vs 3.9 / 19 on the wrong
+ones.** The distribution is bimodal — the pool is not split on the failures, it is
+*confidently wrong together*.
+
+**This is the whole saturation result in one number: only 7 of 179 residual errors are
+recoverable by any unweighted voting rule** — worth **+0.62 F1** (70.43 → ~71.05), still
+1.85 short of the bar. The other 133 recoverable-in-principle cases require knowing, per
+example, which minority of 1–5 members happens to be right. That is exactly the per-example
+selection §D.2 measured as unavailable from every signal the system produces (a selector
+fitted ON TEST could not beat the honest one).
+
+**So the ceiling is not "more members" and not "a better combiner" — it is that adding a
+19th voice to a pool that is confidently wrong together changes nothing.** Every Chapter
+C/D negative (§C.7, §C.17, §C.21, §C.24, §D.6, §D.8, §D.10) is a corollary of this.
+
+The member-oracle ceiling — fixing all 140 — would be F1 **83.9**, which is the same
+84.5-ish perfect-selector ceiling §D.1 found from the other direction. The entire 70.4 → 84
+gap is per-example model selection, and it is inaccessible.
+
 ## ★★★ CHAPTER D FINAL RESULT (t2015 test)
 
 **The only rule with no fitted weights — every available member, equal weight, τ tuned on
