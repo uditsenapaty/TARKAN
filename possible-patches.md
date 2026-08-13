@@ -1248,6 +1248,50 @@ pretraining every baseline in the table inherits. Chapter D adds five independen
 saturation measurements to Chapter C's, and every one of them concerns *rearranging
 signals already in the system*.
 
+## D.9 ★★ THE IMAGE CARRIES 3× THE SIGNAL AND MAKES THE MEMBER WORSE
+
+`experts/masc_qwenvl.py --counterfactual`. Qwen2.5-VL-7B (4-bit, T4) sees the **original
+image**, and the teacher performs the intervention itself rather than being asked to judge
+it: `delta = P(y | tweet, aspect, IMAGE) - P(y | tweet, aspect)`, sign only (§C.27).
+
+**The pixels do carry far more signal than the caption.** Same 3179 training aspects:
+
+| teacher | POS-shift | NEG-shift | no-shift | POS:NEG skew | aspects moved |
+|---|---|---|---|---|---|
+| Llama-3.1-8B on BLIP captions (§C.25) | 687 | 101 | **2391 (75%)** | **6.8 : 1** | 25% |
+| **Qwen2.5-VL on pixels** | 1394 | 644 | 1141 (36%) | **2.16 : 1** | **76%** |
+
+Both numbers move the right way. The near-3× increase in evidence-bearing aspects confirms
+the caption was the bottleneck, and the collapse of the POS:NEG skew from 6.8:1 to 2.16:1
+answers §C.25's own objection to the old teacher (a 6.8:1 skew "would teach *images make
+things positive* — a bias, not a mechanism").
+
+**And every member trained on it is worse.** Identical recipe, identical loss, identical
+hyperparameters — only the teacher's direction labels differ:
+
+| PDS member (test gold-span) | caption teacher | **Qwen-VL, shift-floor 0.05** | Δ |
+|---|---|---|---|
+| bertweet-large | 78.50 | 77.24 | **−1.26** |
+| deberta-v3-large | 76.76 | 75.60 | **−1.16** |
+| roberta-large | 79.27 | 78.21 | **−1.06** |
+
+A uniform **≈ −1.1 across three architectures** is a property of the labels, not of any
+tower. Reading: **76% of aspects "moving" is too many.** Much of `delta` is the model
+reacting to an image being present at all rather than to aspect-specific sentiment
+evidence, so a 0.05 floor promotes noise to direction — and §C.27 already measured that bad
+direction supervision actively hurts (that is exactly why `w_none = 0` won).
+
+**Generalisable lesson, and the sharpest one in Chapter D:** *more teacher signal is not
+better teacher signal.* The caption teacher's 75% abstention rate looked like a defect and
+was partly a virtue — abstaining is what kept its 25% of direction labels clean. An
+evidence teacher's value is set by the precision of its non-abstentions, not by its
+coverage.
+
+`--shift-floor` / `--shift-temp` were first guesses and the floor is the obvious suspect;
+a sweep at 0.20 / 0.35 is queued (`runs/queue30.sh`). `masc_qwenvl.py` now caches the raw
+arms `p_img` / `p_txt` so `experts/remap_direction.py` can re-threshold on CPU — the first
+run saved only the mapped labels, which cost one extra teacher pass.
+
 Two sources of genuinely new information remain untested:
 1. **Qwen2.5-VL on the original pixels** (§D.5 `masc_qwenvl.py`) — every multimodal signal
    so far has passed through a BLIP caption.
