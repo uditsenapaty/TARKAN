@@ -1224,6 +1224,14 @@ can exploit it, and selection is dead.** The +24 reachable gold spans never arri
 
 **So `--union` is a correct mechanism with a negative measured effect, and is not used.**
 
+*Both negatives re-measured after `queue26b` restored full member coverage* (five members
+— 2 PDQ, 3 PDS — had failed a strict `state_dict` load during the re-score because their
+checkpoints predate the ITC/ITM heads and the NEU-escape `beta`; see the `--score-only`
+guards in `pdq.py` / `masc_pds.py`). With every member scoring every candidate: union pool
+best test **69.82**, dev-selected **68.91**; 0.12 pool + 8B best **70.52**, dev-selected
+**69.63**; **0.12 pool encoders-only 70.37**. The incomplete coverage was not the cause —
+both conclusions stand unchanged.
+
 ### ★★ WHERE CHAPTER D LEAVES THE TARGET
 `joint = MATE@τ × a`. At our MATE@τ = 87.68, clearing 72.9 requires **`a` = 83.1**.
 
