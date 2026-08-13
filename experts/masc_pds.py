@@ -277,6 +277,9 @@ def main():
     ap.add_argument("--lr", type=float, default=1e-5)
     ap.add_argument("--head-lr", type=float, default=1e-3)
     ap.add_argument("--patience", type=int, default=3)
+    ap.add_argument("--score-only", action="store_true",
+                    help="skip training, load <out>/best.pt and just (re-)score, so the "
+                         "candidate anchor set can change without retraining the member")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
 
@@ -318,7 +321,7 @@ def main():
     ce = nn.CrossEntropyLoss()
 
     best, best_ep, bad, t0 = -1.0, -1, 0, time.time()
-    for ep in range(1, args.epochs + 1):
+    for ep in range(1, (0 if args.score_only else args.epochs) + 1):
         model.train(); tot = tpds = 0.0
         for b in dl["train"]:
             opt.zero_grad(set_to_none=True)

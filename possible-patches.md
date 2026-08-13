@@ -974,6 +974,155 @@ the levers Chapter B never pulled.**
 
 ---
 
+# ===== CHAPTER D — THE FROZEN POOL (2026-08-13) =====
+
+Chapter C ended with "every axis is saturated", which was true of everything it measured
+but rested on a diagnosis that turns out to be **wrong in its most important claim**.
+Chapter D re-derives the target from a pool that is built once and never rebuilt, so that a
+negative result can finally be attributed to the *selector* rather than to a pool that
+silently changed underneath it.
+
+New code: `experts/pool.py` (materialise the pool + every decision signal + the gold label
+into one flat table) and `experts/anatomy.py` (read that table; measure what is reachable).
+This also discharges the standing "fold the evidence product into a single command" debt —
+the §C.23 product is now `anatomy.py`'s printed baseline, not a transcript script.
+
+## D.1 ★★★ THE LOSS DECOMPOSITION — polarity loses TWICE what extraction loses
+
+Frozen pool = 5 MATE members, `cand_thr` 0.12, 15 MASC members log-averaged, C4 judge,
+PDQ-MATE span evidence. Of the **1037 t2015 test gold pairs**:
+
+| | n | |
+|---|---|---|
+| span never entered the candidate pool | **92** | extraction loss |
+| span in the pool, **polarity wrong** | **186** | polarity loss |
+| recoverable (span present, polarity right) | **759** | pool ceiling R 73.19, perfect-selector F1 **84.52** |
+
+**This reverses §C.19 and §C.21**, which concluded "the remaining route runs through MATE
+precision, not polarity" and drove eight subsequent experiments. That conclusion came from
+the identity `joint = MATE@τ × a` plus the observation that our gold-span `a` (81.20) is
+already 3rd-best published — true, but it prices the two losses as if they were comparable.
+Counted directly they are not: **polarity throws away 2.02× more gold pairs than extraction
+does.** Every §C.24 selection experiment was therefore aimed at the smaller of the two pots.
+
+Confusion on the 945 in-pool gold spans is not diffuse either — it is one direction:
+
+| gold | n | →NEG | →NEU | →POS | recall |
+|---|---|---|---|---|---|
+| NEG | 101 | **58** | 37 | 6 | **57.4** |
+| NEU | 552 | 19 | **487** | 46 | 88.2 |
+| POS | 292 | 3 | 75 | **214** | 73.3 |
+
+**158 of the 186 polarity errors are minority↔NEU.** NEG recall 57.4 is the single worst
+number in the campaign.
+
+## D.2 ★★ THE FEATURES ARE EXHAUSTED — proved by letting a selector CHEAT
+
+§C.24 called selection saturated from four dev-fitted negatives, leaving open the reading
+that dev noise (σ ≈ 1.2 at n=1122) was the culprit and more fitting data would fix it. It
+is not. A logistic regression over 11 features (tagger conf, judge, PDQ-MATE, MASC max /
+margin / entropy / argmax, sentence-relative score, candidate count, span length, overlap),
+**fitted directly on the test set**:
+
+| selector | dev | **test F1** |
+|---|---|---|
+| §C.23 equal-weight geometric product | 70.07 | **70.37** |
+| logistic fitted on DEV (honest) | 70.21 | 70.83 |
+| **logistic fitted on TEST (cheating — an upper bound)** | 69.65 | **70.77** |
+
+**Cheating does not beat the honest fit.** The ceiling of these features is ~70.8 against a
+perfect-selector ceiling of 84.52, so 13.7 points of the gap are invisible to every signal
+the system currently produces. No amount of extra fitting data, calibration, or combiner
+sophistication recovers them. **Selection is closed for a reason stronger than dev noise:
+the information is absent, not merely hard to estimate.** Signal AUCs on test for
+"is this pair correct" — tagger .689, judge .671, PDQ-MATE .681, MASC max .659 — and note
+MASC max is AUC **.513** for "is this a gold span", i.e. polarity confidence carries almost
+no validity information, which is exactly why the geometric product plateaus.
+
+**Also measured and dead (free, CPU-only):**
+* **Decode-time class bias.** Multiplying the NEU column by β before argmax, dev-selected:
+  dev is flat at 69.8–70.15 across β ∈ [0.2, 1.0] while test wanders 70.1–71.0. The 2-D
+  version (separate NEG/POS boosts) is the same story. Dev cannot select it; the honest
+  reading is ±0. This closes the last cheap route at the minority↔NEU boundary that §C.12
+  and §C.20 attacked from the training side.
+* **Overlap filtering.** Zero overlapping candidates exist — BIO decoding cannot produce
+  them. The check is void, not negative.
+* **Longer-span filtering.** Dropping len≥4 candidates removes 22 spans of which 15 are
+  correct. Strictly harmful.
+
+## D.3 ★ POOL RECALL — 0.12 is already the optimum, but a SECOND MECHANISM adds real spans
+
+Lowering `cand_thr` below 0.12 does **not** buy recall — it merges adjacent spans into
+wrong longer ones, so recall *falls* while the pool inflates:
+
+| cand_thr | test cand | pool P | pool R |
+|---|---|---|---|
+| 0.00 (argmax) | 1087 | 85.00 | 89.10 |
+| **0.12** | 1178 | 80.22 | **91.13** |
+| 0.05 | 1218 | 77.09 | 90.55 |
+| 0.01 | 1362 | 68.87 | 90.45 |
+
+What *does* work is a **different extraction mechanism** proposing candidates the BIO
+marginals cannot express. §C.23 established PDQ-MATE must not enter as an averaging member
+(its hard `O`=1.0 abstentions become vetoes) and works as evidence instead; this is its
+**third role — a candidate source**:
+
+| pool | test cand | pool P | pool R |
+|---|---|---|---|
+| BIO 0.12 | 1178 | 80.22 | 91.13 |
+| **BIO 0.12 ∪ PDQ-MATE (2 towers)** | **1276** | 75.94 | **93.44** |
+
+**+24 gold spans reachable for 98 junk candidates.** Precision of the pool is irrelevant —
+selection is downstream — so this strictly raises the ceiling. `experts/emit_spans.py`
+gained `--union`.
+
+## D.4 THE ARITHMETIC, RESTATED HONESTLY
+
+At the frozen operating point: 1032 kept = 728 correct + 179 gold-span/wrong-polarity + 125
+non-gold. To reach **72.9** from there, exactly one of:
+
+* **drop 72 of the 304 false positives** at zero cost to true positives (a 24% FP cut — but
+  D.2 says no available signal ranks them), **or**
+* **flip 27 of the 186 wrong polarities** (a 15% error cut on that subpopulation).
+
+Flipping is worth ~2.7× dropping, because a flip fixes precision *and* recall. And the
+polarity pot is the larger one (D.1). So **the entire remaining campaign should be aimed at
+`a`, which is where Chapter C stopped aiming after §C.19.**
+
+Required `a` ≈ **83.5**. Published t2015 gold-span MASC: MADSC 82.34 · DEQA 82.10 · VLHA
+81.50 · DQPSA/CORSA 81.10 · **ours 81.20**. So the bar is above every published number, and
+Chapter C already measured that no rearrangement of ~200M-parameter encoders reaches it:
+class-balanced CE (§C.20), minority margins (§C.12), sibling conditioning (§C.10/C13), PDS
+(§C.25/C.27), ITC/ITM (§C.25), 15-member ensembling, gating (§C.7), kNN memory (§C.15).
+Every one of those is a re-arrangement of the same model class — and every baseline in the
+table additionally carries MABSA-specific vision-language pretraining this pipeline lacks.
+
+**Conclusion: the only honest lever left is a stronger model class, disclosed as such.**
+
+## D.5 PATCH D1 — MASC as a QLoRA'd 8B decoder (`experts/masc_llm.py`)
+
+*Status: running.* PAPER-DISOBEYING and explicitly labelled so. Not copied from DQPSA,
+CORSA or MADSC — none of them use a decoder LLM for polarity.
+
+Llama-3.1-8B-Instruct, 4-bit NF4, LoRA r=16 on all seven projections (42M trainable,
+0.52%). Two choices make it a classifier rather than a generator:
+
+* **Restricted-vocab scoring in TRAINING as well as inference.** One forward pass; read the
+  logits of the single-token options A/B/C at the final position and softmax over just
+  those three. The training objective is *literally the inference computation* — no
+  generation, no format drift — and the output is a calibrated 3-way distribution that
+  drops into the existing log-average ensemble unchanged (`probs_*.npz`, same keys/shape).
+  This is the same scored-not-generated trick §C.25 used for the PDS teacher, promoted from
+  offline labelling to the student itself.
+* **Aspect marked in place** with `[ ]` (Chapter B, B2) — t2015 has tweets where one
+  surface form appears twice with different gold polarity, so "Target: X" is ambiguous.
+
+The image enters as its BLIP caption, exactly as the teacher sees it, so no new vision
+weights enter the system. Measured cost on the T4: **11.2 s/opt-step at batch 2 × accum 8,
+597 steps → 1.86 h** for 3 epochs.
+
+---
+
 # ===== CHAPTER A — T4 ERA (kept verbatim; original title below) =====
 
 Performance patches for the full experiment sweep on a single **T4**. Split into
