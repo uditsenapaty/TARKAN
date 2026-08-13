@@ -1,0 +1,147 @@
+=== [1/4] MATE probe A: lr 1e-5, head-lr 1e-4, dropout 0.3, 16ep ===
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights:   1%|          | 3/390 [00:00<01:33,  4.14it/s]Loading weights:  95%|█████████▍| 369/390 [00:00<00:00, 552.39it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 426.37it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep1 loss 7.7252 | dev MATE P 76.98 R 78.70 F1 77.83 | 81s
+ep2 loss 1.9141 | dev MATE P 81.64 R 84.40 F1 83.00 | 161s
+ep3 loss 1.2021 | dev MATE P 82.85 R 88.24 F1 85.46 | 244s
+ep4 loss 0.7358 | dev MATE P 82.60 R 87.17 F1 84.82 | 328s
+ep5 loss 0.4505 | dev MATE P 84.08 R 87.52 F1 85.76 | 404s
+ep6 loss 0.2801 | dev MATE P 82.94 R 87.97 F1 85.38 | 488s
+ep7 loss 0.1655 | dev MATE P 84.57 R 87.43 F1 85.98 | 563s
+ep8 loss 0.1212 | dev MATE P 83.21 R 87.43 F1 85.27 | 647s
+ep9 loss 0.1092 | dev MATE P 83.71 R 85.65 F1 84.67 | 722s
+ep10 loss 0.0725 | dev MATE P 84.03 R 88.15 F1 86.04 | 798s
+ep11 loss 0.0317 | dev MATE P 84.36 R 87.97 F1 86.13 | 881s
+ep12 loss 0.0223 | dev MATE P 84.04 R 87.79 F1 85.88 | 964s
+ep13 loss 0.0184 | dev MATE P 83.68 R 86.81 F1 85.21 | 1040s
+ep14 loss 0.0175 | dev MATE P 84.14 R 86.99 F1 85.54 | 1116s
+ep15 loss 0.0137 | dev MATE P 84.02 R 86.72 F1 85.35 | 1192s
+ep16 loss 0.0060 | dev MATE P 83.79 R 87.08 F1 85.40 | 1268s
+early stop (patience 5)
+[dev] MATE P 84.36 R 87.97 F1 86.13
+[test] MATE P 83.96 R 88.33 F1 86.09
+{
+  "model": "microsoft/deberta-v3-large",
+  "seed": 42,
+  "best_dev_F1": 86.12565445026179,
+  "best_epoch": 11,
+  "dev": {
+    "P": 84.35897435897436,
+    "R": 87.96791443850267,
+    "F1": 86.12565445026179
+  },
+  "test": {
+    "P": 83.95967002749771,
+    "R": 88.33172613307619,
+    "F1": 86.09022556390978
+  }
+}
+=== [2/4] MATE probe B: lr 2e-5, head-lr 1e-4, dropout 0.1, 16ep ===
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights:   1%|          | 3/390 [00:00<01:09,  5.56it/s]Loading weights:  91%|█████████ | 353/390 [00:00<00:00, 705.00it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 559.90it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep1 loss 6.1123 | dev MATE P 79.78 R 85.47 F1 82.53 | 76s
+ep2 loss 1.6517 | dev MATE P 81.73 R 85.29 F1 83.47 | 158s
+ep3 loss 0.9189 | dev MATE P 83.90 R 88.24 F1 86.01 | 241s
+ep4 loss 0.4771 | dev MATE P 84.03 R 87.25 F1 85.61 | 327s
+ep5 loss 0.2668 | dev MATE P 84.71 R 84.94 F1 84.82 | 403s
+ep6 loss 0.1549 | dev MATE P 83.90 R 87.79 F1 85.80 | 478s
+ep7 loss 0.0903 | dev MATE P 84.54 R 88.68 F1 86.56 | 554s
+ep8 loss 0.0801 | dev MATE P 83.81 R 86.72 F1 85.24 | 636s
+ep9 loss 0.0543 | dev MATE P 84.50 R 88.41 F1 86.41 | 712s
+ep10 loss 0.0112 | dev MATE P 85.13 R 85.74 F1 85.44 | 787s
+ep11 loss 0.0091 | dev MATE P 84.02 R 87.17 F1 85.56 | 862s
+ep12 loss 0.0167 | dev MATE P 84.85 R 87.34 F1 86.08 | 937s
+early stop (patience 5)
+[dev] MATE P 84.54 R 88.68 F1 86.56
+[test] MATE P 83.82 R 87.95 F1 85.84
+{
+  "model": "microsoft/deberta-v3-large",
+  "seed": 42,
+  "best_dev_F1": 86.55937364071336,
+  "best_epoch": 7,
+  "dev": {
+    "P": 84.53695836873408,
+    "R": 88.68092691622104,
+    "F1": 86.55937364071336
+  },
+  "test": {
+    "P": 83.82352941176471,
+    "R": 87.94599807135968,
+    "F1": 85.83529411764707
+  }
+}
+=== [3/4] MASC: bertweet-large (OOM'd in queue5) ===
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 21191.61it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+ep1 loss 0.8409 | dev acc 71.39 | 99s
+ep2 loss 0.6026 | dev acc 72.73 | 198s
+ep3 loss 0.4156 | dev acc 75.76 | 299s
+ep4 loss 0.3011 | dev acc 77.01 | 399s
+ep5 loss 0.1899 | dev acc 74.96 | 501s
+ep6 loss 0.1127 | dev acc 75.13 | 597s
+ep7 loss 0.0507 | dev acc 76.56 | 692s
+early stop
+[dev] gold-span MASC acc 77.01 (n=1122)
+[dev] scored 1156 predicted spans
+[test] gold-span MASC acc 79.75 (n=1037)
+[test] scored 1090 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 45,
+  "best_dev_acc": 77.00534759358288,
+  "best_epoch": 4,
+  "dev_acc_goldspan": 77.00534759358288,
+  "test_acc_goldspan": 79.74927675988428
+}
+=== [4/4] report MATE probe outcomes ===
+runs/mate_deb_s42          dev 86.86  test P 84.14 R 87.46 F1 85.77
+runs/mate_probeA           dev 86.13  test P 83.96 R 88.33 F1 86.09
+runs/mate_probeB           dev 86.56  test P 83.82 R 87.95 F1 85.84
+=== QUEUE6 DONE ===

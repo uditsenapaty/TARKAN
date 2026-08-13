@@ -1,0 +1,287 @@
+=== [1/5] OOF: bertweet-large ===
+fold 0/2: train 1600 held-out 1579
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 13023.81it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+ep1 loss 0.9083 | dev acc 66.67 | 49s
+ep2 loss 0.6495 | dev acc 70.86 | 100s
+ep3 loss 0.4035 | dev acc 72.99 | 155s
+ep4 loss 0.2802 | dev acc 73.17 | 211s
+ep5 loss 0.1538 | dev acc 74.06 | 266s
+ep6 loss 0.0803 | dev acc 74.78 | 321s
+[oof0] n=1579 acc 75.49
+[dev] gold-span MASC acc 74.78 (n=1122)
+[test] gold-span MASC acc 78.01 (n=1037)
+{
+  "model": "vinai/bertweet-large",
+  "seed": 60,
+  "best_dev_acc": 74.77718360071302,
+  "best_epoch": 6,
+  "oof0_acc": 75.49081697276758,
+  "dev_acc_goldspan": 74.77718360071302,
+  "test_acc_goldspan": 78.01350048216008
+}
+fold 1/2: train 1579 held-out 1600
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 28469.45it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+ep1 loss 0.9176 | dev acc 48.22 | 49s
+ep2 loss 0.6473 | dev acc 70.05 | 100s
+ep3 loss 0.4063 | dev acc 74.51 | 155s
+ep4 loss 0.2713 | dev acc 73.80 | 209s
+ep5 loss 0.1319 | dev acc 74.15 | 258s
+ep6 loss 0.0419 | dev acc 76.02 | 306s
+[oof1] n=1600 acc 75.50
+[dev] gold-span MASC acc 76.02 (n=1122)
+[test] gold-span MASC acc 76.37 (n=1037)
+{
+  "model": "vinai/bertweet-large",
+  "seed": 60,
+  "best_dev_acc": 76.02495543672015,
+  "best_epoch": 6,
+  "oof1_acc": 75.5,
+  "dev_acc_goldspan": 76.02495543672015,
+  "test_acc_goldspan": 76.374156219865
+}
+=== [2/5] OOF: bertweet-base ===
+fold 0/2: train 1600 held-out 1579
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 14380.88it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-base
+Key                       | Status     |  | 
+--------------------------+------------+--+-
+lm_head.decoder.weight    | UNEXPECTED |  | 
+lm_head.decoder.bias      | UNEXPECTED |  | 
+lm_head.bias              | UNEXPECTED |  | 
+lm_head.layer_norm.bias   | UNEXPECTED |  | 
+lm_head.layer_norm.weight | UNEXPECTED |  | 
+lm_head.dense.weight      | UNEXPECTED |  | 
+lm_head.dense.bias        | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep1 loss 0.9262 | dev acc 66.49 | 13s
+ep2 loss 0.6243 | dev acc 67.56 | 26s
+ep3 loss 0.4236 | dev acc 70.68 | 39s
+ep4 loss 0.3043 | dev acc 70.86 | 53s
+ep5 loss 0.1716 | dev acc 69.70 | 67s
+ep6 loss 0.1076 | dev acc 70.05 | 80s
+[oof0] n=1579 acc 73.02
+[dev] gold-span MASC acc 70.86 (n=1122)
+[test] gold-span MASC acc 75.51 (n=1037)
+{
+  "model": "vinai/bertweet-base",
+  "seed": 60,
+  "best_dev_acc": 70.85561497326202,
+  "best_epoch": 4,
+  "oof0_acc": 73.02089930335656,
+  "dev_acc_goldspan": 70.85561497326202,
+  "test_acc_goldspan": 75.50626808100289
+}
+fold 1/2: train 1579 held-out 1600
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 24461.24it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-base
+Key                       | Status     |  | 
+--------------------------+------------+--+-
+lm_head.dense.bias        | UNEXPECTED |  | 
+lm_head.bias              | UNEXPECTED |  | 
+lm_head.layer_norm.bias   | UNEXPECTED |  | 
+lm_head.decoder.bias      | UNEXPECTED |  | 
+lm_head.decoder.weight    | UNEXPECTED |  | 
+lm_head.dense.weight      | UNEXPECTED |  | 
+lm_head.layer_norm.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep1 loss 0.9254 | dev acc 67.02 | 12s
+ep2 loss 0.6154 | dev acc 71.39 | 25s
+ep3 loss 0.4111 | dev acc 72.28 | 39s
+ep4 loss 0.2720 | dev acc 70.77 | 53s
+ep5 loss 0.1948 | dev acc 71.57 | 65s
+ep6 loss 0.1279 | dev acc 68.81 | 77s
+early stop
+[oof1] n=1600 acc 72.69
+[dev] gold-span MASC acc 72.28 (n=1122)
+[test] gold-span MASC acc 72.81 (n=1037)
+{
+  "model": "vinai/bertweet-base",
+  "seed": 60,
+  "best_dev_acc": 72.28163992869875,
+  "best_epoch": 3,
+  "oof1_acc": 72.6875,
+  "dev_acc_goldspan": 72.28163992869875,
+  "test_acc_goldspan": 72.80617164898746
+}
+=== [3/5] OOF: twitter-roberta ===
+fold 0/2: train 1600 held-out 1579
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 10861.97it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: cardiffnlp/twitter-roberta-base-sentiment-latest
+Key                        | Status     |  | 
+---------------------------+------------+--+-
+classifier.out_proj.weight | UNEXPECTED |  | 
+classifier.dense.bias      | UNEXPECTED |  | 
+classifier.out_proj.bias   | UNEXPECTED |  | 
+classifier.dense.weight    | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep1 loss 0.7911 | dev acc 68.54 | 12s
+ep2 loss 0.5796 | dev acc 71.84 | 24s
+ep3 loss 0.3755 | dev acc 75.40 | 37s
+ep4 loss 0.2527 | dev acc 71.57 | 50s
+ep5 loss 0.1382 | dev acc 73.26 | 62s
+ep6 loss 0.0951 | dev acc 74.33 | 74s
+early stop
+[oof0] n=1579 acc 74.60
+[dev] gold-span MASC acc 75.40 (n=1122)
+[test] gold-span MASC acc 76.95 (n=1037)
+{
+  "model": "cardiffnlp/twitter-roberta-base-sentiment-latest",
+  "seed": 60,
+  "best_dev_acc": 75.40106951871658,
+  "best_epoch": 3,
+  "oof0_acc": 74.60417986067131,
+  "dev_acc_goldspan": 75.40106951871658,
+  "test_acc_goldspan": 76.95274831243974
+}
+fold 1/2: train 1579 held-out 1600
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 14718.15it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: cardiffnlp/twitter-roberta-base-sentiment-latest
+Key                        | Status     |  | 
+---------------------------+------------+--+-
+classifier.dense.weight    | UNEXPECTED |  | 
+classifier.dense.bias      | UNEXPECTED |  | 
+classifier.out_proj.bias   | UNEXPECTED |  | 
+classifier.out_proj.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep1 loss 0.7673 | dev acc 70.05 | 12s
+ep2 loss 0.5526 | dev acc 70.41 | 24s
+ep3 loss 0.3882 | dev acc 71.57 | 37s
+ep4 loss 0.2750 | dev acc 74.78 | 50s
+ep5 loss 0.1808 | dev acc 73.35 | 63s
+ep6 loss 0.1129 | dev acc 72.99 | 75s
+[oof1] n=1600 acc 73.25
+[dev] gold-span MASC acc 74.78 (n=1122)
+[test] gold-span MASC acc 77.24 (n=1037)
+{
+  "model": "cardiffnlp/twitter-roberta-base-sentiment-latest",
+  "seed": 60,
+  "best_dev_acc": 74.77718360071302,
+  "best_epoch": 4,
+  "oof1_acc": 73.25,
+  "dev_acc_goldspan": 74.77718360071302,
+  "test_acc_goldspan": 77.2420443587271
+}
+=== [4/5] OOF: deberta-v3-large ===
+fold 0/2: train 1600 held-out 1579
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights:   1%|          | 3/390 [00:01<02:31,  2.55it/s]Loading weights:  44%|████▍     | 173/390 [00:01<00:01, 185.63it/s]Loading weights:  86%|████████▋ | 337/390 [00:01<00:00, 348.93it/s]Loading weights: 100%|██████████| 390/390 [00:01<00:00, 244.53it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep1 loss 0.9659 | dev acc 58.56 | 75s
+ep2 loss 0.7344 | dev acc 68.81 | 151s
+ep3 loss 0.4322 | dev acc 71.84 | 233s
+ep4 loss 0.2367 | dev acc 73.26 | 314s
+ep5 loss 0.0998 | dev acc 72.64 | 394s
+ep6 loss 0.0282 | dev acc 74.51 | 467s
+[oof0] n=1579 acc 72.13
+[dev] gold-span MASC acc 74.51 (n=1122)
+[test] gold-span MASC acc 74.83 (n=1037)
+{
+  "model": "microsoft/deberta-v3-large",
+  "seed": 60,
+  "best_dev_acc": 74.50980392156863,
+  "best_epoch": 6,
+  "oof0_acc": 72.13426219126029,
+  "dev_acc_goldspan": 74.50980392156863,
+  "test_acc_goldspan": 74.83124397299903
+}
+fold 1/2: train 1579 held-out 1600
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights:   1%|          | 3/390 [00:00<00:23, 16.59it/s]Loading weights:  59%|█████▊    | 229/390 [00:00<00:00, 956.44it/s]Loading weights:  89%|████████▉ | 349/390 [00:00<00:00, 658.18it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 622.57it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep1 loss 0.9795 | dev acc 46.61 | 74s
+ep2 loss 0.7218 | dev acc 70.23 | 152s
+ep3 loss 0.4655 | dev acc 74.42 | 233s
+ep4 loss 0.2374 | dev acc 75.40 | 314s
+ep5 loss 0.1193 | dev acc 76.02 | 395s
+ep6 loss 0.0244 | dev acc 76.29 | 475s
+[oof1] n=1600 acc 74.06
+[dev] gold-span MASC acc 76.29 (n=1122)
+[test] gold-span MASC acc 75.60 (n=1037)
+{
+  "model": "microsoft/deberta-v3-large",
+  "seed": 60,
+  "best_dev_acc": 76.29233511586453,
+  "best_epoch": 6,
+  "oof1_acc": 74.0625,
+  "dev_acc_goldspan": 76.29233511586453,
+  "test_acc_goldspan": 75.60270009643202
+}
+=== [5/5] fit stacker + assemble ===
+4 members with OOF: ['masc_btwL_s45', 'masc_btw_s43', 'masc_twrob_s42', 'masc_deb_s44']
+Traceback (most recent call last):
+  File "/teamspace/studios/this_studio/experts/stack.py", line 122, in <module>
+    main()
+  File "/teamspace/studios/this_studio/experts/stack.py", line 84, in main
+    gold_tr = {e.key: POL2ID[e.polarity] for e in tr_ex}
+                      ^^^^^^
+NameError: name 'POL2ID' is not defined

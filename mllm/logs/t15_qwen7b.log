@@ -1,0 +1,133 @@
+############ TRAIN t15_qwen7b (twitter2015) NVIDIA RTX PRO 6000 Blackwell Server Edition ############
+The image processor of type `Qwen2VLImageProcessor` is now loaded as a fast processor by default, even if the model checkpoint was saved with a slow processor. This is a breaking change and may produce slightly different outputs. To continue using the slow processor, instantiate this class with `use_fast=False`. Note that this behavior will be extended to all models in a future release.
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:00<00:02,  1.64it/s]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:01,  1.72it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:01<00:01,  1.71it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:02<00:00,  1.72it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  2.34it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  2.01it/s]
+trainable params: 47,589,376 || all params: 8,339,756,032 || trainable%: 0.5706
+ep0 it100/2101 loss0.3438 lr6.32e-05 0.4m
+ep0 it200/2101 loss0.2590 lr1.26e-04 0.8m
+ep0 it300/2101 loss0.2207 lr1.89e-04 1.2m
+ep0 it400/2101 loss0.1942 lr2.00e-04 1.7m
+ep0 it500/2101 loss0.1757 lr2.00e-04 2.1m
+ep0 it600/2101 loss0.1649 lr2.00e-04 2.5m
+ep0 it700/2101 loss0.1527 lr1.99e-04 2.9m
+ep0 it800/2101 loss0.1453 lr1.99e-04 3.3m
+ep0 it900/2101 loss0.1374 lr1.98e-04 3.7m
+ep0 it1000/2101 loss0.1301 lr1.98e-04 4.1m
+ep0 it1100/2101 loss0.1260 lr1.97e-04 4.5m
+ep0 it1200/2101 loss0.1232 lr1.96e-04 4.9m
+ep0 it1300/2101 loss0.1193 lr1.95e-04 5.3m
+ep0 it1400/2101 loss0.1156 lr1.94e-04 5.7m
+ep0 it1500/2101 loss0.1132 lr1.93e-04 6.1m
+ep0 it1600/2101 loss0.1116 lr1.92e-04 6.5m
+ep0 it1700/2101 loss0.1099 lr1.91e-04 6.9m
+ep0 it1800/2101 loss0.1081 lr1.90e-04 7.3m
+ep0 it1900/2101 loss0.1060 lr1.88e-04 7.7m
+ep0 it2000/2101 loss0.1044 lr1.87e-04 8.1m
+ep0 it2100/2101 loss0.1030 lr1.85e-04 8.5m
+== ep0 DEV joint_F 62.29 mate_F 82.66 masc_acc 75.36 (17.9m) ==
+   -> new best dev joint_F 62.29 saved
+ep1 it100/2101 loss0.0558 lr1.83e-04 18.3m
+ep1 it200/2101 loss0.0543 lr1.82e-04 18.7m
+ep1 it300/2101 loss0.0546 lr1.80e-04 19.1m
+ep1 it400/2101 loss0.0535 lr1.78e-04 19.5m
+ep1 it500/2101 loss0.0531 lr1.76e-04 19.9m
+ep1 it600/2101 loss0.0514 lr1.74e-04 20.3m
+ep1 it700/2101 loss0.0500 lr1.72e-04 20.7m
+ep1 it800/2101 loss0.0499 lr1.70e-04 21.1m
+ep1 it900/2101 loss0.0495 lr1.68e-04 21.5m
+ep1 it1000/2101 loss0.0492 lr1.65e-04 21.9m
+ep1 it1100/2101 loss0.0484 lr1.63e-04 22.3m
+ep1 it1200/2101 loss0.0481 lr1.60e-04 22.7m
+ep1 it1300/2101 loss0.0477 lr1.58e-04 23.1m
+ep1 it1400/2101 loss0.0479 lr1.56e-04 23.5m
+ep1 it1500/2101 loss0.0479 lr1.53e-04 23.9m
+ep1 it1600/2101 loss0.0480 lr1.50e-04 24.3m
+ep1 it1700/2101 loss0.0482 lr1.48e-04 24.8m
+ep1 it1800/2101 loss0.0480 lr1.45e-04 25.2m
+ep1 it1900/2101 loss0.0480 lr1.42e-04 25.6m
+ep1 it2000/2101 loss0.0478 lr1.39e-04 26.0m
+ep1 it2100/2101 loss0.0475 lr1.37e-04 26.4m
+== ep1 DEV joint_F 66.37 mate_F 83.90 masc_acc 79.11 (35.9m) ==
+   -> new best dev joint_F 66.37 saved
+ep2 it100/2101 loss0.0208 lr1.33e-04 36.3m
+ep2 it200/2101 loss0.0167 lr1.31e-04 36.7m
+ep2 it300/2101 loss0.0145 lr1.28e-04 37.1m
+ep2 it400/2101 loss0.0166 lr1.24e-04 37.5m
+ep2 it500/2101 loss0.0156 lr1.22e-04 37.9m
+ep2 it600/2101 loss0.0165 lr1.19e-04 38.3m
+ep2 it700/2101 loss0.0165 lr1.16e-04 38.8m
+ep2 it800/2101 loss0.0163 lr1.12e-04 39.2m
+ep2 it900/2101 loss0.0159 lr1.10e-04 39.6m
+ep2 it1000/2101 loss0.0162 lr1.07e-04 40.0m
+ep2 it1100/2101 loss0.0158 lr1.04e-04 40.4m
+ep2 it1200/2101 loss0.0159 lr1.00e-04 40.8m
+ep2 it1300/2101 loss0.0160 lr9.73e-05 41.2m
+ep2 it1400/2101 loss0.0162 lr9.44e-05 41.6m
+ep2 it1500/2101 loss0.0161 lr9.14e-05 42.0m
+ep2 it1600/2101 loss0.0157 lr8.80e-05 42.4m
+ep2 it1700/2101 loss0.0154 lr8.51e-05 42.8m
+ep2 it1800/2101 loss0.0155 lr8.22e-05 43.2m
+ep2 it1900/2101 loss0.0156 lr7.93e-05 43.6m
+ep2 it2000/2101 loss0.0157 lr7.60e-05 44.0m
+ep2 it2100/2101 loss0.0158 lr7.31e-05 44.4m
+== ep2 DEV joint_F 64.21 mate_F 85.06 masc_acc 75.48 (54.6m) ==
+ep3 it100/2101 loss0.0056 lr6.98e-05 55.0m
+ep3 it200/2101 loss0.0045 lr6.71e-05 55.4m
+ep3 it300/2101 loss0.0043 lr6.43e-05 55.8m
+ep3 it400/2101 loss0.0039 lr6.11e-05 56.2m
+ep3 it500/2101 loss0.0039 lr5.84e-05 56.6m
+ep3 it600/2101 loss0.0038 lr5.58e-05 57.0m
+ep3 it700/2101 loss0.0037 lr5.31e-05 57.4m
+ep3 it800/2101 loss0.0035 lr5.01e-05 57.8m
+ep3 it900/2101 loss0.0033 lr4.76e-05 58.3m
+ep3 it1000/2101 loss0.0032 lr4.51e-05 58.7m
+ep3 it1100/2101 loss0.0031 lr4.27e-05 59.1m
+ep3 it1200/2101 loss0.0031 lr3.99e-05 59.5m
+ep3 it1300/2101 loss0.0030 lr3.76e-05 59.9m
+ep3 it1400/2101 loss0.0031 lr3.53e-05 60.3m
+ep3 it1500/2101 loss0.0031 lr3.31e-05 60.7m
+ep3 it1600/2101 loss0.0030 lr3.06e-05 61.1m
+ep3 it1700/2101 loss0.0030 lr2.85e-05 61.5m
+ep3 it1800/2101 loss0.0030 lr2.65e-05 61.9m
+ep3 it1900/2101 loss0.0031 lr2.45e-05 62.3m
+ep3 it2000/2101 loss0.0031 lr2.23e-05 62.7m
+ep3 it2100/2101 loss0.0032 lr2.05e-05 63.1m
+== ep3 DEV joint_F 66.96 mate_F 84.88 masc_acc 78.89 (72.8m) ==
+   -> new best dev joint_F 66.96 saved
+ep4 it100/2101 loss0.0004 lr1.85e-05 73.2m
+ep4 it200/2101 loss0.0004 lr1.68e-05 73.6m
+ep4 it300/2101 loss0.0005 lr1.52e-05 74.0m
+ep4 it400/2101 loss0.0006 lr1.34e-05 74.4m
+ep4 it500/2101 loss0.0006 lr1.20e-05 74.8m
+ep4 it600/2101 loss0.0006 lr1.06e-05 75.2m
+ep4 it700/2101 loss0.0007 lr9.36e-06 75.7m
+ep4 it800/2101 loss0.0009 lr7.97e-06 76.1m
+ep4 it900/2101 loss0.0008 lr6.86e-06 76.5m
+ep4 it1000/2101 loss0.0008 lr5.83e-06 76.9m
+ep4 it1100/2101 loss0.0008 lr4.88e-06 77.3m
+ep4 it1200/2101 loss0.0008 lr3.88e-06 77.7m
+ep4 it1300/2101 loss0.0008 lr3.11e-06 78.1m
+ep4 it1400/2101 loss0.0007 lr2.42e-06 78.5m
+ep4 it1500/2101 loss0.0007 lr1.82e-06 78.9m
+ep4 it1600/2101 loss0.0007 lr1.23e-06 79.3m
+ep4 it1700/2101 loss0.0007 lr8.11e-07 79.7m
+ep4 it1800/2101 loss0.0007 lr4.80e-07 80.1m
+ep4 it1900/2101 loss0.0006 lr2.35e-07 80.5m
+ep4 it2000/2101 loss0.0006 lr5.88e-08 80.9m
+ep4 it2100/2101 loss0.0006 lr1.20e-09 81.3m
+== ep4 DEV joint_F 67.31 mate_F 85.11 masc_acc 79.09 (91.1m) ==
+   -> new best dev joint_F 67.31 saved
+DONE best_dev_joint_F 67.31 adapter=mllm/runs/t15_qwen7b/best total 91.1m
+############ TEST EVAL t15_qwen7b ############
+The image processor of type `Qwen2VLImageProcessor` is now loaded as a fast processor by default, even if the model checkpoint was saved with a slow processor. This is a breaking change and may produce slightly different outputs. To continue using the slow processor, instantiate this class with `use_fast=False`. Note that this behavior will be extended to all models in a future release.
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:00<00:02,  1.64it/s]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:01,  1.71it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:01<00:01,  1.73it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:02<00:00,  1.74it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  2.36it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  2.02it/s]
+[twitter2015/test n=674] JOINT P67.92 R69.62 F68.76 | MATE F85.14 | MASC acc80.76 macF177.11
+{"joint_P": 67.92097836312324, "joint_R": 69.62391513982642, "joint_F": 68.76190476189977, "mate_P": 84.10159924741298, "mate_R": 86.21022179363548, "mate_F": 85.14285714285215, "masc_acc": 80.76062639821028, "masc_macF1": 77.11243500549436, "masc_n": 894}
+############ DEV EVAL t15_qwen7b ############
+The image processor of type `Qwen2VLImageProcessor` is now loaded as a fast processor by default, even if the model checkpoint was saved with a slow processor. This is a breaking change and may produce slightly different outputs. To continue using the slow processor, instantiate this class with `use_fast=False`. Note that this behavior will be extended to all models in a future release.
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:00<00:02,  1.64it/s]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:01,  1.72it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:01<00:01,  1.74it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:02<00:00,  1.74it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  2.37it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  2.03it/s]
+[twitter2015/dev n=727] JOINT P66.55 R68.09 F67.31 | MATE F85.11 | MASC acc79.09 macF175.33
+{"joint_P": 66.55052264808361, "joint_R": 68.09269162210339, "joint_F": 67.31277533039149, "mate_P": 84.14634146341463, "mate_R": 86.09625668449198, "mate_F": 85.11013215858532, "masc_acc": 79.08902691511386, "masc_macF1": 75.33163563480201, "masc_n": 966}
+############ DONE t15_qwen7b ############

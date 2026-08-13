@@ -1,0 +1,115 @@
+=== [1/4] text MASC member: twitter-roberta ===
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 23871.49it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: cardiffnlp/twitter-roberta-base-sentiment-latest
+Key                        | Status     |  | 
+---------------------------+------------+--+-
+classifier.dense.bias      | UNEXPECTED |  | 
+classifier.out_proj.weight | UNEXPECTED |  | 
+classifier.dense.weight    | UNEXPECTED |  | 
+classifier.out_proj.bias   | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep1 loss 0.7393 | dev acc 69.61 | 26s
+ep2 loss 0.5379 | dev acc 71.03 | 51s
+ep3 loss 0.3644 | dev acc 76.56 | 77s
+ep4 loss 0.2117 | dev acc 77.09 | 103s
+ep5 loss 0.1359 | dev acc 74.15 | 128s
+ep6 loss 0.0872 | dev acc 75.31 | 150s
+[dev] gold-span MASC acc 77.09 (n=1122)
+[dev] scored 1153 predicted spans
+[test] gold-span MASC acc 77.34 (n=1037)
+[test] scored 1078 predicted spans
+{
+  "model": "cardiffnlp/twitter-roberta-base-sentiment-latest",
+  "seed": 42,
+  "best_dev_acc": 77.09447415329768,
+  "best_epoch": 4,
+  "dev_acc_goldspan": 77.09447415329768,
+  "test_acc_goldspan": 77.33847637415622
+}
+=== [2/4] text MASC member: bertweet (architecture diversity) ===
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 17733.96it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-base
+Key                       | Status     |  | 
+--------------------------+------------+--+-
+lm_head.layer_norm.bias   | UNEXPECTED |  | 
+lm_head.dense.weight      | UNEXPECTED |  | 
+lm_head.bias              | UNEXPECTED |  | 
+lm_head.dense.bias        | UNEXPECTED |  | 
+lm_head.decoder.bias      | UNEXPECTED |  | 
+lm_head.layer_norm.weight | UNEXPECTED |  | 
+lm_head.decoder.weight    | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep1 loss 0.8398 | dev acc 68.98 | 28s
+ep2 loss 0.5691 | dev acc 72.82 | 57s
+ep3 loss 0.3765 | dev acc 75.31 | 84s
+ep4 loss 0.2367 | dev acc 72.46 | 111s
+ep5 loss 0.1517 | dev acc 74.87 | 134s
+ep6 loss 0.0882 | dev acc 73.98 | 156s
+early stop
+[dev] gold-span MASC acc 75.31 (n=1122)
+[dev] scored 1153 predicted spans
+[test] gold-span MASC acc 78.11 (n=1037)
+[test] scored 1078 predicted spans
+{
+  "model": "vinai/bertweet-base",
+  "seed": 43,
+  "best_dev_acc": 75.31194295900178,
+  "best_epoch": 3,
+  "dev_acc_goldspan": 75.31194295900178,
+  "test_acc_goldspan": 78.1099324975892
+}
+=== [3/4] PDQ member (BLIP-2 Q-Former, the decorrelation test) ===
+{'train': 3179, 'dev': 1122, 'test': 1037}
+Loading weights:   0%|          | 0/809 [00:00<?, ?it/s]Loading weights:  24%|██▍       | 193/809 [00:00<00:00, 1916.70it/s]Loading weights:  48%|████▊     | 385/809 [00:00<00:00, 1752.66it/s]Loading weights:  69%|██████▉   | 562/809 [00:00<00:00, 1653.34it/s]Loading weights: 100%|██████████| 809/809 [00:00<00:00, 2304.78it/s]
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 3035.98it/s]
+[transformers] [1mBertModel LOAD REPORT[0m from: bert-base-uncased
+Key                                        | Status     |  | 
+-------------------------------------------+------------+--+-
+cls.seq_relationship.bias                  | UNEXPECTED |  | 
+cls.predictions.transform.LayerNorm.bias   | UNEXPECTED |  | 
+cls.predictions.transform.LayerNorm.weight | UNEXPECTED |  | 
+cls.predictions.bias                       | UNEXPECTED |  | 
+cls.predictions.transform.dense.weight     | UNEXPECTED |  | 
+cls.seq_relationship.weight                | UNEXPECTED |  | 
+cls.predictions.transform.dense.bias       | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep1 loss 0.5557 | dev MASC acc 64.71 | 68s
+ep2 loss 0.3955 | dev MASC acc 71.84 | 138s
+ep3 loss 0.2625 | dev MASC acc 73.26 | 211s
+ep4 loss 0.1768 | dev MASC acc 72.01 | 284s
+ep5 loss 0.1087 | dev MASC acc 73.44 | 352s
+ep6 loss 0.0711 | dev MASC acc 72.28 | 426s
+ep7 loss 0.0387 | dev MASC acc 73.71 | 494s
+ep8 loss 0.0230 | dev MASC acc 73.62 | 569s
+[dev] gold-span MASC acc 73.71 (n=1122)
+[dev] scored 1153 predicted spans
+[test] gold-span MASC acc 76.37 (n=1037)
+[test] scored 1078 predicted spans
+{
+  "text_model": "bert-base-uncased",
+  "seed": 42,
+  "best_dev_acc": 73.70766488413547,
+  "best_epoch": 7,
+  "dev_acc": 73.70766488413547,
+  "test_acc": 76.374156219865
+}
+=== [4/4] assemble: Chapter-B span-tau vs C3 joint-product-tau ===
+tau=0.88 mode=span
+MATE   P=85.09 R=86.40 F1=85.74
+a (polarity on correctly-extracted) = 77.68
+JOINT  P=66.10 R=67.12 F1=66.60   (dev F1 64.74)
+identity check: 85.74 x 0.7768 = 66.60
+BAR P>72.8 R>73.1 F1>72.9  ->  worst margin -6.70
+tau=0.55 mode=joint
+MATE   P=84.47 R=87.08 F1=85.75
+a (polarity on correctly-extracted) = 77.85
+JOINT  P=65.76 R=67.79 F1=66.76   (dev F1 65.04)
+identity check: 85.75 x 0.7785 = 66.76
+BAR P>72.8 R>73.1 F1>72.9  ->  worst margin -7.04
+=== QUEUE DONE ===

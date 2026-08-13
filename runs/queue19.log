@@ -1,0 +1,75 @@
+=== [1/2] PDQ+ITC+ITM, bertweet-large ===
+{'train': 3179, 'dev': 1122, 'test': 1037}
+Loading weights:   0%|          | 0/809 [00:00<?, ?it/s]Loading weights:  85%|████████▌ | 691/809 [00:00<00:00, 6905.02it/s]Loading weights: 100%|██████████| 809/809 [00:00<00:00, 7430.80it/s]
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 7627.29it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+ep1 loss 1.0834 | dev MASC acc 59.71 | 169s
+ep2 loss 0.6420 | dev MASC acc 73.71 | 329s
+ep3 loss 0.3912 | dev MASC acc 71.21 | 491s
+ep4 loss 0.2676 | dev MASC acc 77.81 | 645s
+ep5 loss 0.1899 | dev MASC acc 76.65 | 807s
+ep6 loss 0.1363 | dev MASC acc 77.90 | 962s
+ep7 loss 0.0966 | dev MASC acc 77.18 | 1125s
+ep8 loss 0.0689 | dev MASC acc 77.01 | 1279s
+[dev] gold-span MASC acc 77.90 (n=1122)
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 77.53 (n=1037)
+[test] scored 1178 predicted spans
+{
+  "text_model": "vinai/bertweet-large",
+  "seed": 60,
+  "best_dev_acc": 77.89661319073083,
+  "best_epoch": 6,
+  "dev_acc": 77.89661319073083,
+  "test_acc": 77.53134040501446
+}
+=== [2/2] PDQ+ITC+ITM, twitter-roberta ===
+{'train': 3179, 'dev': 1122, 'test': 1037}
+Loading weights:   0%|          | 0/809 [00:00<?, ?it/s]Loading weights: 100%|██████████| 809/809 [00:00<00:00, 8215.98it/s]
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 12644.74it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: cardiffnlp/twitter-roberta-base-sentiment-latest
+Key                        | Status     |  | 
+---------------------------+------------+--+-
+classifier.dense.bias      | UNEXPECTED |  | 
+classifier.dense.weight    | UNEXPECTED |  | 
+classifier.out_proj.weight | UNEXPECTED |  | 
+classifier.out_proj.bias   | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep1 loss 0.9547 | dev MASC acc 69.70 | 108s
+ep2 loss 0.5238 | dev MASC acc 72.46 | 219s
+ep3 loss 0.3378 | dev MASC acc 74.78 | 335s
+ep4 loss 0.2425 | dev MASC acc 76.02 | 454s
+ep5 loss 0.1648 | dev MASC acc 75.49 | 569s
+ep6 loss 0.1161 | dev MASC acc 74.33 | 676s
+ep7 loss 0.0807 | dev MASC acc 75.67 | 783s
+early stop
+[dev] gold-span MASC acc 76.02 (n=1122)
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 76.57 (n=1037)
+[test] scored 1178 predicted spans
+{
+  "text_model": "cardiffnlp/twitter-roberta-base-sentiment-latest",
+  "seed": 61,
+  "best_dev_acc": 76.02495543672015,
+  "best_epoch": 4,
+  "dev_acc": 76.02495543672015,
+  "test_acc": 76.56702025072323
+}
+=== QUEUE19 DONE ===

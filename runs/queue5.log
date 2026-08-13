@@ -1,0 +1,61 @@
+=== [1/3] MASC: deberta-v3-large ===
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights:   1%|          | 3/390 [00:00<00:59,  6.55it/s]Loading weights:  31%|███       | 119/390 [00:00<00:00, 274.44it/s]Loading weights:  63%|██████▎   | 247/390 [00:00<00:00, 519.22it/s]Loading weights:  86%|████████▋ | 337/390 [00:00<00:00, 562.20it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 407.15it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when lep1 loss 0.9298 | dev acc 67.02 | 185s
+ep2 loss 0.6858 | dev acc 67.47 | 429s
+ep3 loss 0.4350 | dev acc 68.72 | 679s
+ep4 loss 0.2736 | dev acc 77.90 | 923s
+ep5 loss 0.1592 | dev acc 77.36 | 1163s
+ep6 loss 0.0700 | dev acc 77.27 | 1405s
+ep7 loss 0.0399 | dev acc 77.63 | 1645s
+early stop
+[dev] gold-span MASC acc 77.90 (n=1122)
+[dev] scored 1156 predicted spans
+[test] gold-span MASC acc 79.36 (n=1037)
+[test] scored 1090 predicted spans
+{
+  "model": "microsoft/deberta-v3-large",
+  "seed": 44,
+  "best_dev_acc": 77.89661319073083,
+  "best_epoch": 4,
+  "dev_acc_goldspan": 77.89661319073083,
+  "test_acc_goldspan": 79.36354869816779
+}
+^^^^
+  File "/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/torch/amp/grad_scaler.py", line 360, in _maybe_opt_step
+    retval = optimizer.step(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/torch/optim/lr_scheduler.py", line 133, in wrapper
+    return func.__get__(opt, opt.__class__)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/torch/optim/optimizer.py", line 516, in wrapper
+    out = func(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/torch/optim/optimizer.py", line 81, in _use_grad
+    ret = func(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/torch/optim/adam.py", line 237, in step
+    has_complex = self._init_group(
+                  ^^^^^^^^^^^^^^^^^
+  File "/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 929, in _fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/torch/optim/adam.py", line 181, in _init_group
+    state["exp_avg_sq"] = torch.zeros_like(
+                          ^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 16.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 6.75 MiB is free. Process 408799 has 8.68 GiB memory in use. Including non-PyTorch memory, this process has 5.88 GiB memory in use. Of the allocated memory 5.59 GiB is allocated by PyTorch, and 152.81 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

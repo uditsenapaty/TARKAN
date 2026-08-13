@@ -1,0 +1,8 @@
+dataset,error_type,count
+twitter2015,incorrect KG evidence,258
+twitter2015,aspect boundary error,66
+twitter2015,implicit sentiment without clear cue,17
+twitter2015,ambiguous / sarcastic text,13
+twitter2017,incorrect KG evidence,270
+twitter2017,aspect boundary error,37
+twitter2017,ambiguous / sarcastic text,14

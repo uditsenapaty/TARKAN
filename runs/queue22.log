@@ -1,0 +1,30 @@
+=== [1/3] PDS residual, bertweet-large, w_none 0.05 ===
+PDS labels 3179 | POS-shift 687 NEG-shift 101 no-shift 2391
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 21810.29it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.bias              | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+/teamspace/studios/this_studio/experts/masc_pds.py:303: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)
+  tot += loss.item(); tpds += float(lp)
+ep1 loss 1.2569 (pds 0.0286) | dev acc 69.34 | 104s
+Traceback (most recent call last):
+  File "/teamspace/studios/this_studio/experts/masc_pds.py", line 338, in <module>
+    main()
+  File "/teamspace/studios/this_studio/experts/masc_pds.py", line 309, in main
+    torch.save(model.state_dict(), out / "best.pt")
+                                   ~~~~^~~~~~~~~~~
+TypeError: unsupported operand type(s) for /: 'tuple' and 'str'

@@ -1,0 +1,8 @@
+{
+  "text_model": "bert-base-uncased",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc": 73.70766488413547,
+  "test_acc": 76.374156219865
+}

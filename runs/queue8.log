@@ -1,0 +1,30 @@
+=== [1/5] captions (BLIP) ===
+Loading weights:   0%|          | 0/473 [00:00<?, ?it/s]Loading weights:  54%|█████▍    | 256/473 [00:00<00:00, 2367.49it/s]Loading weights: 100%|██████████| 473/473 [00:00<00:00, 961.03it/s] 
+  caption 16/3502
+  caption 416/3502
+  caption 816/3502
+  caption 1216/3502
+  caption 1616/3502
+  caption 2016/3502
+  caption 2416/3502
+  caption 2816/3502
+  caption 3216/3502
+wrote 3502 captions -> /teamspace/studios/this_studio/data/aadg/twitter2015/captions.json
+sample: [('1860693.jpg', 'a man in a blue suit and tie holding a cell'), ('195984.jpg', 'a poster for a concert with a man in a hoodie'), ('871618.jpg', 'a woman in a camo shirt making a peace sign with her fingers')]
+=== [2/5] region embeddings (CLIP, 3x3 grid + full) ===
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 26619.89it/s]
+  regions 0/3502
+Traceback (most recent call last):
+  File "/teamspace/studios/this_studio/experts/aadg.py", line 296, in <module>
+    main()
+  File "/teamspace/studios/this_studio/experts/aadg.py", line 290, in main
+    stage_regions(args.dataset)
+  File "/teamspace/studios/this_studio/experts/aadg.py", line 142, in stage_regions
+    flush()
+  File "/teamspace/studios/this_studio/experts/aadg.py", line 123, in flush
+    e = torch.nn.functional.normalize(e, dim=-1).cpu().numpy()
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/torch/nn/functional.py", line 5567, in normalize
+    denom = input.norm(p, dim, keepdim=True).clamp_min(eps).expand_as(input)
+            ^^^^^^^^^^
+AttributeError: 'BaseModelOutputWithPooling' object has no attribute 'norm'

@@ -1,0 +1,173 @@
+=== [1/4] PDS-v2 continuous, bertweet-large ===
+PDS labels 3179 | POS-shift 687 NEG-shift 101 no-shift 2391
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 13682.74it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+/teamspace/studios/this_studio/experts/masc_pds.py:342: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)
+  tot += loss.item(); tpds += float(lp)
+ep1 loss 1.2320 (pds 0.0112) | dev acc 66.22 | 104s
+ep2 loss 0.8081 (pds 0.0112) | dev acc 72.99 | 211s
+ep3 loss 0.5666 (pds 0.0148) | dev acc 74.96 | 320s
+ep4 loss 0.4133 (pds 0.0098) | dev acc 77.45 | 430s
+ep5 loss 0.2499 (pds 0.0087) | dev acc 75.04 | 540s
+ep6 loss 0.1267 (pds 0.0078) | dev acc 75.85 | 643s
+ep7 loss 0.0411 (pds 0.0061) | dev acc 76.56 | 747s
+early stop
+[dev] gold-span MASC acc 77.45
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 77.34
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 90,
+  "best_dev_acc": 77.45098039215686,
+  "best_epoch": 4,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 77.45098039215686,
+  "test_acc_goldspan": 77.33847637415622
+}
+=== [2/4] PDS-v2 continuous, deberta-v3-large ===
+PDS labels 3179 | POS-shift 687 NEG-shift 101 no-shift 2391
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights:   1%|          | 3/390 [00:00<01:53,  3.40it/s]Loading weights:  71%|███████   | 276/390 [00:00<00:00, 381.90it/s]Loading weights: 100%|██████████| 390/390 [00:01<00:00, 336.20it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+/teamspace/studios/this_studio/experts/masc_pds.py:342: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)
+  tot += loss.item(); tpds += float(lp)
+ep1 loss 1.3340 (pds 0.0126) | dev acc 63.19 | 147s
+ep2 loss 0.8532 (pds 0.0097) | dev acc 76.83 | 300s
+ep3 loss 0.5241 (pds 0.0138) | dev acc 73.26 | 453s
+ep4 loss 0.2247 (pds 0.0114) | dev acc 77.01 | 600s
+ep5 loss 0.1188 (pds 0.0072) | dev acc 76.29 | 753s
+ep6 loss 0.0489 (pds 0.0056) | dev acc 79.23 | 899s
+ep7 loss 0.0204 (pds 0.0042) | dev acc 78.79 | 1053s
+ep8 loss 0.0105 (pds 0.0036) | dev acc 78.52 | 1198s
+[dev] gold-span MASC acc 79.23
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 77.63
+[test] scored 1178 predicted spans
+{
+  "model": "microsoft/deberta-v3-large",
+  "seed": 91,
+  "best_dev_acc": 79.23351158645276,
+  "best_epoch": 6,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 79.23351158645276,
+  "test_acc_goldspan": 77.62777242044359
+}
+=== [3/4] PDS-v2 + NEU-escape, bertweet-large ===
+PDS labels 3179 | POS-shift 687 NEG-shift 101 no-shift 2391
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 15462.62it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+/teamspace/studios/this_studio/experts/masc_pds.py:342: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)
+  tot += loss.item(); tpds += float(lp)
+ep1 loss 1.2149 (pds 0.0114) | dev acc 74.69 | 104s
+ep2 loss 0.7961 (pds 0.0134) | dev acc 76.56 | 218s
+ep3 loss 0.5781 (pds 0.0167) | dev acc 74.60 | 334s
+ep4 loss 0.4059 (pds 0.0144) | dev acc 76.11 | 439s
+ep5 loss 0.2259 (pds 0.0105) | dev acc 75.58 | 544s
+early stop
+[dev] gold-span MASC acc 76.56
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 75.80
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 92,
+  "best_dev_acc": 76.55971479500892,
+  "best_epoch": 2,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 76.55971479500892,
+  "test_acc_goldspan": 75.79556412729026
+}
+=== [4/4] PDS-margin + NEU-escape (isolates the gate), bertweet-large ===
+PDS labels 3179 | POS-shift 687 NEG-shift 101 no-shift 2391
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 15555.34it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+/teamspace/studios/this_studio/experts/masc_pds.py:342: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)
+  tot += loss.item(); tpds += float(lp)
+ep1 loss 1.2380 (pds 0.0034) | dev acc 71.66 | 107s
+ep2 loss 0.8193 (pds 0.0003) | dev acc 75.58 | 215s
+ep3 loss 0.5629 (pds 0.0001) | dev acc 74.33 | 327s
+ep4 loss 0.3564 (pds 0.0001) | dev acc 76.38 | 431s
+ep5 loss 0.1979 (pds 0.0000) | dev acc 78.79 | 542s
+ep6 loss 0.0997 (pds 0.0000) | dev acc 76.47 | 653s
+ep7 loss 0.0442 (pds 0.0000) | dev acc 77.81 | 757s
+ep8 loss 0.0134 (pds 0.0000) | dev acc 77.45 | 862s
+early stop
+[dev] gold-span MASC acc 78.79
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 76.57
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 93,
+  "best_dev_acc": 78.78787878787878,
+  "best_epoch": 5,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 78.78787878787878,
+  "test_acc_goldspan": 76.56702025072323
+}
+=== QUEUE25 DONE ===

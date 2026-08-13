@@ -1,0 +1,17 @@
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 13553.96it/s]
+  regions 0/3502
+  regions 400/3502
+  regions 800/3502
+  regions 1200/3502
+  regions 1600/3502
+  regions 2000/3502
+  regions 2400/3502
+  regions 2800/3502
+  regions 3200/3502
+wrote region feats (3502, 10, 512) -> /teamspace/studios/this_studio/data/aadg/twitter2015/regions.npz
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 14567.37it/s]
+[train] 2101 descriptions, 3163 aspect records, pseudo-pos 27.9%
+[dev] 727 descriptions, 1161 aspect records, pseudo-pos 28.3%
+[test] 674 descriptions, 1087 aspect records, pseudo-pos 26.8%
+stats: {'instances': 3473, 'replaced': 2787, 'absent': 3686, 'aspects': 5411}
+examples: ['a Facebook in a baseball uniform talking to a Facebook of Facebook Oklahoma is not clearly visible.', 'a Lydia with green hair sitting on a couch', 'a stone sculpture of a man and woman Barbara Hepworth is not clearly visible.']

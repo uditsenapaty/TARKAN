@@ -1,0 +1,8 @@
+{
+  "encoder": "sentence-transformers/all-MiniLM-L6-v2",
+  "k": 24,
+  "temp": 0.05,
+  "window": 5,
+  "dev_acc_goldspan": 59.53654188948306,
+  "test_acc_goldspan": 59.209257473481195
+}

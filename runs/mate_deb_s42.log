@@ -1,0 +1,47 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights:   1%|          | 3/390 [00:00<01:35,  4.04it/s]Loading weights:  39%|███▊      | 151/390 [00:00<00:00, 240.95it/s]Loading weights:  61%|██████    | 237/390 [00:00<00:00, 332.24it/s]Loading weights:  80%|████████  | 312/390 [00:01<00:00, 371.91it/s]Loading weights:  96%|█████████▋| 376/390 [00:01<00:00, 275.79it/s]Loading weights: 100%|██████████| 390/390 [00:01<00:00, 249.81it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep1 loss 5.0088 | dev MATE P 80.72 R 85.47 F1 83.03 | 115s
+ep2 loss 1.4851 | dev MATE P 81.83 R 82.71 F1 82.27 | 240s
+ep3 loss 0.7800 | dev MATE P 83.66 R 86.72 F1 85.16 | 325s
+ep4 loss 0.3354 | dev MATE P 84.10 R 84.85 F1 84.47 | 423s
+ep5 loss 0.2394 | dev MATE P 85.34 R 87.17 F1 86.24 | 512s
+ep6 loss 0.1270 | dev MATE P 84.81 R 88.06 F1 86.40 | 605s
+ep7 loss 0.0398 | dev MATE P 83.90 R 88.24 F1 86.01 | 701s
+ep8 loss 0.0471 | dev MATE P 84.93 R 87.88 F1 86.38 | 795s
+ep9 loss 0.0130 | dev MATE P 85.69 R 88.06 F1 86.86 | 876s
+ep10 loss 0.0219 | dev MATE P 85.43 R 87.79 F1 86.59 | 966s
+[dev] MATE P 85.69 R 88.06 F1 86.86
+[test] MATE P 84.14 R 87.46 F1 85.77
+{
+  "model": "microsoft/deberta-v3-large",
+  "seed": 42,
+  "best_dev_F1": 86.85714285714286,
+  "best_epoch": 9,
+  "dev": {
+    "P": 85.68950563746748,
+    "R": 88.05704099821747,
+    "F1": 86.85714285714286
+  },
+  "test": {
+    "P": 84.13729128014842,
+    "R": 87.46383799421407,
+    "F1": 85.76832151300236
+  }
+}

@@ -1,0 +1,83 @@
+# ── secrets ──
+.env.local
+.env
+
+# ── environments / caches ──
+myenv
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.cache/
+
+# ── IDE / editor / Lightning-studio server junk ──
+.idea/
+.vscode/
+.vscode-server
+.cursor-server
+.windsurf-server
+.lightning_studio/
+.lightningignore
+.bash_history
+.claude.json
+.screenrc
+
+# ── source material (heavy / licensed) ──
+TARKAN.pdf
+TARKAN_new.pdf
+TARKAN_old.pdf
+TARKAN_latex/
+referred_papers
+CLAUDE.md
+.claude
+
+# ── data, models, KG dumps, indices (heavy) ──
+data/
+# results: ignore heavy contents (checkpoints/logs) but commit the light artifacts
+# (paper-format tables + plots + reports). NB: `results/` would block the negations —
+# git cannot re-include children of an ignored DIRECTORY, hence `results/*`.
+results/*
+!results/tables/
+!results/tables/**
+!results/plots/
+!results/plots/**
+!results/reports/
+!results/reports/**
+*.pt
+*.bin
+*.safetensors
+*.pth
+*.h5
+*.npy
+*.npz
+*.csv.gz
+
+# ── heavy contents inside cloned baselines (keep source, drop weights/data/features) ──
+referred_clones/**/data/
+referred_clones/**/datasets/
+referred_clones/**/*.pt
+referred_clones/**/*.bin
+referred_clones/**/*.safetensors
+referred_clones/**/*.pth
+referred_clones/**/*.h5
+referred_clones/**/*.npy
+referred_clones/**/*.npz
+referred_clones/**/checkpoints/
+referred_clones/**/pretrained*/
+referred_clones/**/.git/
+
+# ── backbone graft heavy artifacts (weights/data/env/clones) ──
+graft/vlp_assets/
+graft/aom_assets/
+graft/vlpenv/
+graft/AoM_full/
+graft/*.log
+
+# ── MLLM (A15) weights + fine-tune outputs (heavy; keep mllm/*.py, launchers, preds, logs) ──
+mllm/qwen2_5_vl_7b/
+mllm/qwen2_5_vl_32b/
+mllm/runs/
+# data/ is ignored above; the one required KG file is force-added: data/senticnet/senticnet_en.parquet
+
+# ── experiment artifacts: keep logs/metrics/spans, drop checkpoints & prob dumps ──
+# (*.pt / *.npz already ignored globally; runs/ logs+metrics are ~1MB and worth keeping)

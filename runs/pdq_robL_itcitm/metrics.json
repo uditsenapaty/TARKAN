@@ -1,0 +1,8 @@
+{
+  "text_model": "roberta-large",
+  "seed": 64,
+  "best_dev_acc": 77.54010695187165,
+  "best_epoch": 7,
+  "dev_acc": 77.54010695187165,
+  "test_acc": 78.68852459016394
+}

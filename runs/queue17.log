@@ -1,0 +1,89 @@
+=== [1/2] PDQ-MATE + bertweet-large ===
+Loading weights:   0%|          | 0/809 [00:00<?, ?it/s]Loading weights: 100%|██████████| 809/809 [00:00<00:00, 13245.76it/s]
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 14899.22it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+ep1 loss 0.1898 | dev MATE F1 74.93 (thr 0.3) P 75.54 R 74.33 | 108s
+ep2 loss 0.0137 | dev MATE F1 84.85 (thr 0.3) P 84.59 R 85.12 | 219s
+ep3 loss 0.0098 | dev MATE F1 86.09 (thr 0.3) P 85.30 R 86.90 | 328s
+ep4 loss 0.0075 | dev MATE F1 86.04 (thr 0.6) P 85.82 R 86.27 | 438s
+ep5 loss 0.0062 | dev MATE F1 86.18 (thr 0.6) P 87.08 R 85.29 | 539s
+ep6 loss 0.0048 | dev MATE F1 86.04 (thr 0.5) P 86.70 R 85.38 | 647s
+ep7 loss 0.0038 | dev MATE F1 86.18 (thr 0.6) P 86.80 R 85.56 | 746s
+ep8 loss 0.0030 | dev MATE F1 86.33 (thr 0.6) P 87.40 R 85.29 | 845s
+ep9 loss 0.0025 | dev MATE F1 86.17 (thr 0.5) P 85.71 R 86.63 | 953s
+ep10 loss 0.0023 | dev MATE F1 86.10 (thr 0.5) P 85.83 R 86.36 | 1052s
+[dev] MATE P 87.40 R 85.29 F1 86.33
+[test] MATE P 86.48 R 84.47 F1 85.46
+{
+  "seed": 42,
+  "best_dev_F1": 86.33288227334235,
+  "best_epoch": 8,
+  "thr": 0.6,
+  "text_model": "vinai/bertweet-large",
+  "dev": {
+    "P": 87.3972602739726,
+    "R": 85.29411764705883,
+    "F1": 86.33288227334235
+  },
+  "test": {
+    "P": 86.47581441263573,
+    "R": 84.47444551591128,
+    "F1": 85.46341463414635
+  }
+}
+=== [2/2] PDQ-MATE + twitter-roberta ===
+Loading weights:   0%|          | 0/809 [00:00<?, ?it/s]Loading weights:  52%|█████▏    | 423/809 [00:00<00:00, 4229.13it/s]Loading weights: 100%|██████████| 809/809 [00:00<00:00, 4519.59it/s]
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 15775.21it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: cardiffnlp/twitter-roberta-base-sentiment-latest
+Key                        | Status     |  | 
+---------------------------+------------+--+-
+classifier.out_proj.weight | UNEXPECTED |  | 
+classifier.dense.weight    | UNEXPECTED |  | 
+classifier.dense.bias      | UNEXPECTED |  | 
+classifier.out_proj.bias   | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+ep1 loss 0.1445 | dev MATE F1 64.07 (thr 0.2) P 65.16 R 63.01 | 70s
+ep2 loss 0.0154 | dev MATE F1 83.53 (thr 0.4) P 83.20 R 83.87 | 152s
+ep3 loss 0.0100 | dev MATE F1 85.08 (thr 0.6) P 84.78 R 85.38 | 234s
+ep4 loss 0.0075 | dev MATE F1 85.53 (thr 0.4) P 86.23 R 84.85 | 313s
+ep5 loss 0.0055 | dev MATE F1 83.96 (thr 0.5) P 83.26 R 84.67 | 399s
+ep6 loss 0.0042 | dev MATE F1 83.82 (thr 0.5) P 84.78 R 82.89 | 475s
+ep7 loss 0.0031 | dev MATE F1 84.31 (thr 0.4) P 85.31 R 83.33 | 551s
+early stop
+[dev] MATE P 86.23 R 84.85 F1 85.53
+[test] MATE P 82.58 R 84.09 F1 83.33
+{
+  "seed": 43,
+  "best_dev_F1": 85.53459119496856,
+  "best_epoch": 4,
+  "thr": 0.4,
+  "text_model": "cardiffnlp/twitter-roberta-base-sentiment-latest",
+  "dev": {
+    "P": 86.23188405797102,
+    "R": 84.84848484848484,
+    "F1": 85.53459119496856
+  },
+  "test": {
+    "P": 82.57575757575758,
+    "R": 84.08871745419479,
+    "F1": 83.32537028189202
+  }
+}
+=== QUEUE17 DONE ===

@@ -1,0 +1,100 @@
+=== [1/3] PDS teacher labelling (Llama-3.1-8B 4-bit, scored not generated) ===
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files:  25%|██▌       | 1/4 [00:17<00:53, 17.82s/it]Fetching 4 files:  50%|█████     | 2/4 [00:49<00:51, 25.86s/it]Fetching 4 files:  75%|███████▌  | 3/4 [00:52<00:15, 15.59s/it]Fetching 4 files: 100%|██████████| 4/4 [00:54<00:00, 10.31s/it]Fetching 4 files: 100%|██████████| 4/4 [00:54<00:00, 13.72s/it]
+Loading weights:   0%|          | 0/291 [00:00<?, ?it/s]Loading weights:   0%|          | 1/291 [00:00<01:35,  3.05it/s]Loading weights:   1%|          | 2/291 [00:02<05:43,  1.19s/it]Loading weights:   1%|▏         | 4/291 [00:02<02:51,  1.67it/s]Loading weights:   2%|▏         | 5/291 [00:02<02:24,  1.99it/s]Loading weights:   2%|▏         | 6/291 [00:03<02:04,  2.28it/s]Loading weights:   3%|▎         | 9/291 [00:03<00:59,  4.77it/s]Loading weights:   4%|▍         | 11/291 [00:03<00:43,  6.44it/s]Loading weights:   4%|▍         | 13/291 [00:03<00:42,  6.61it/s]Loading weights:   5%|▌         | 15/291 [00:04<00:54,  5.11it/s]Loading weights:   6%|▌         | 18/291 [00:04<00:35,  7.67it/s]Loading weights:   8%|▊         | 22/291 [00:04<00:31,  8.62it/s]Loading weights:   8%|▊         | 24/291 [00:05<00:42,  6.35it/s]Loading weights:  10%|▉         | 28/291 [00:05<00:29,  8.96it/s]Loading weights:  11%|█         | 31/291 [00:05<00:27,  9.32it/s]Loading weights:  11%|█▏        | 33/291 [00:06<00:38,  6.74it/s]Loading weights:  12%|█▏        | 36/291 [00:06<00:28,  8.91it/s]Loading weights:  13%|█▎        | 38/291 [00:06<00:25, 10.12it/s]Loading weights:  14%|█▎        | 40/291 [00:06<00:27,  9.06it/s]Loading weights:  14%|█▍        | 42/291 [00:07<00:39,  6.28it/s]Loading weights:  16%|█▌        | 46/291 [00:07<00:27,  9.04it/s]Loading weights:  17%|█▋        | 49/291 [00:07<00:26,  9.28it/s]Loading weights:  18%|█▊        | 51/291 [00:08<00:36,  6.66it/s]Loading weights:  19%|█▊        | 54/291 [00:08<00:26,  8.87it/s]Loading weights:  19%|█▉        | 56/291 [00:08<00:22, 10.22it/s]Loading weights:  20%|█▉        | 58/291 [00:09<00:25,  9.13it/s]Loading weights:  21%|██        | 60/291 [00:09<00:39,  5.89it/s]Loading weights:  22%|██▏       | 63/291 [00:09<00:27,  8.20it/s]Loading weights:  22%|██▏       | 65/291 [00:09<00:23,  9.44it/s]Loading weights:  23%|██▎       | 67/291 [00:10<00:24,  8.99it/s]Loading weights:  24%|██▎       | 69/291 [00:10<00:36,  6.01it/s]Loading weights:  25%|██▍       | 72/291 [00:10<00:25,  8.43it/s]Loading weights:  25%|██▌       | 74/291 [00:11<00:22,  9.77it/s]Loading weights:  26%|██▌       | 76/291 [00:11<00:24,  8.60it/s]Loading weights:  27%|██▋       | 78/291 [00:11<00:35,  5.94it/s]Loading weights:  28%|██▊       | 81/291 [00:12<00:24,  8.45it/s]Loading weights:  29%|██▊       | 83/291 [00:12<00:21,  9.82it/s]Loading weights:  29%|██▉       | 85/291 [00:12<00:24,  8.53it/s]Loading weights:  30%|██▉       | 87/291 [00:13<00:34,  5.90it/s]Loading weights:  31%|███       | 90/291 [00:13<00:24,  8.36it/s]Loading weights:  32%|███▏      | 92/291 [00:13<00:20,  9.71it/s]Loading weights:  33%|███▎      | 96/291 [00:13<00:14, 13.69it/s]Loading weights:  36%|███▌      | 104/291 [00:13<00:08, 22.39it/s]Loading weights:  37%|███▋      | 107/291 [00:13<00:08, 20.79it/s]Loading weights:  38%|███▊      | 110/291 [00:14<00:09, 19.66it/s]Loading weights:  39%|███▉      | 113/291 [00:14<00:12, 13.82it/s]Loading weights:  40%|███▉      | 115/291 [00:14<00:16, 10.73it/s]Loading weights:  40%|████      | 117/291 [00:14<00:14, 11.76it/s]Loading weights:  41%|████      | 119/291 [00:15<00:13, 12.56it/s]Loading weights:  42%|████▏     | 121/291 [00:15<00:21,  7.94it/s]Loading weights:  42%|████▏     | 123/291 [00:16<00:29,  5.77it/s]Loading weights:  43%|████▎     | 126/291 [00:16<00:20,  8.09it/s]Loading weights:  44%|████▍     | 128/291 [00:16<00:17,  9.41it/s]Loading weights:  45%|████▍     | 130/291 [00:16<00:19,  8.44it/s]Loading weights:  45%|████▌     | 132/291 [00:17<00:26,  5.91it/s]Loading weights:  46%|████▋     | 135/291 [00:17<00:18,  8.31it/s]Loading weights:  47%|████▋     | 137/291 [00:17<00:16,  9.50it/s]Loading weights:  48%|████▊     | 139/291 [00:17<00:17,  8.46it/s]Loading weights:  48%|████▊     | 141/291 [00:18<00:25,  5.90it/s]Loading weights:  49%|████▉     | 144/291 [00:18<00:17,  8.35it/s]Loading weights:  50%|█████     | 146/291 [00:18<00:14,  9.72it/s]Loading weights:  51%|█████     | 148/291 [00:18<00:16,  8.58it/s]Loading weights:  52%|█████▏    | 150/291 [00:19<00:23,  5.99it/s]Loading weights:  53%|█████▎    | 153/291 [00:19<00:16,  8.41it/s]Loading weights:  53%|█████▎    | 155/291 [00:19<00:13,  9.83it/s]Loading weights:  54%|█████▍    | 157/291 [00:20<00:15,  8.72it/s]Loading weights:  55%|█████▍    | 159/291 [00:20<00:22,  5.96it/s]Loading weights:  56%|█████▌    | 162/291 [00:20<00:15,  8.37it/s]Loading weights:  56%|█████▋    | 164/291 [00:20<00:13,  9.74it/s]Loading weights:  57%|█████▋    | 166/291 [00:21<00:14,  8.47it/s]Loading weights:  58%|█████▊    | 168/291 [00:21<00:21,  5.71it/s]Loading weights:  59%|█████▉    | 171/291 [00:21<00:14,  8.03it/s]Loading weights:  59%|█████▉    | 173/291 [00:22<00:12,  9.44it/s]Loading weights:  60%|██████    | 175/291 [00:22<00:14,  7.93it/s]Loading weights:  61%|██████    | 177/291 [00:23<00:21,  5.28it/s]Loading weights:  62%|██████▏   | 180/291 [00:23<00:14,  7.49it/s]Loading weights:  63%|██████▎   | 182/291 [00:23<00:12,  8.72it/s]Loading weights:  63%|██████▎   | 184/291 [00:23<00:13,  8.11it/s]Loading weights:  64%|██████▍   | 186/291 [00:24<00:21,  4.84it/s]Loading weights:  65%|██████▍   | 189/291 [00:24<00:14,  6.87it/s]Loading weights:  66%|██████▌   | 191/291 [00:24<00:12,  8.08it/s]Loading weights:  66%|██████▋   | 193/291 [00:25<00:13,  7.43it/s]Loading weights:  67%|██████▋   | 195/291 [00:25<00:19,  5.04it/s]Loading weights:  68%|██████▊   | 198/291 [00:25<00:12,  7.25it/s]Loading weights:  69%|██████▊   | 200/291 [00:26<00:10,  8.55it/s]Loading weights:  69%|██████▉   | 202/291 [00:26<00:11,  7.80it/s]Loading weights:  70%|███████   | 204/291 [00:26<00:15,  5.63it/s]Loading weights:  71%|███████   | 207/291 [00:27<00:10,  7.69it/s]Loading weights:  72%|███████▏  | 209/291 [00:27<00:09,  8.98it/s]Loading weights:  73%|███████▎  | 211/291 [00:27<00:10,  7.93it/s]Loading weights:  73%|███████▎  | 213/291 [00:28<00:13,  5.68it/s]Loading weights:  74%|███████▍  | 216/291 [00:28<00:09,  8.06it/s]Loading weights:  75%|███████▍  | 218/291 [00:28<00:08,  9.04it/s]Loading weights:  76%|███████▌  | 220/291 [00:28<00:08,  8.06it/s]Loading weights:  76%|███████▋  | 222/291 [00:29<00:12,  5.64it/s]Loading weights:  77%|███████▋  | 225/291 [00:29<00:08,  8.05it/s]Loading weights:  78%|███████▊  | 227/291 [00:29<00:06,  9.19it/s]Loading weights:  79%|███████▊  | 229/291 [00:29<00:07,  8.15it/s]Loading weights:  79%|███████▉  | 231/291 [00:30<00:10,  5.74it/s]Loading weights:  80%|████████  | 234/291 [00:30<00:07,  7.76it/s]Loading weights:  81%|████████  | 236/291 [00:30<00:06,  9.14it/s]Loading weights:  82%|████████▏ | 238/291 [00:31<00:06,  8.10it/s]Loading weights:  82%|████████▏ | 240/291 [00:31<00:09,  5.26it/s]Loading weights:  84%|████████▎ | 243/291 [00:32<00:06,  7.09it/s]Loading weights:  84%|████████▍ | 245/291 [00:32<00:05,  8.42it/s]Loading weights:  85%|████████▍ | 247/291 [00:32<00:05,  7.78it/s]Loading weights:  86%|████████▌ | 249/291 [00:33<00:07,  5.55it/s]Loading weights:  87%|████████▋ | 252/291 [00:33<00:05,  7.57it/s]Loading weights:  87%|████████▋ | 254/291 [00:33<00:04,  8.84it/s]Loading weights:  88%|████████▊ | 256/291 [00:33<00:04,  8.06it/s]Loading weights:  89%|████████▊ | 258/291 [00:34<00:05,  5.67it/s]Loading weights:  90%|████████▉ | 261/291 [00:34<00:03,  8.05it/s]Loading weights:  90%|█████████ | 263/291 [00:34<00:02,  9.44it/s]Loading weights:  91%|█████████ | 265/291 [00:34<00:03,  8.35it/s]Loading weights:  92%|█████████▏| 267/291 [00:35<00:04,  5.51it/s]Loading weights:  93%|█████████▎| 270/291 [00:35<00:02,  7.77it/s]Loading weights:  93%|█████████▎| 272/291 [00:35<00:02,  9.11it/s]Loading weights:  94%|█████████▍| 274/291 [00:36<00:02,  8.09it/s]Loading weights:  95%|█████████▍| 276/291 [00:36<00:02,  5.65it/s]Loading weights:  96%|█████████▌| 279/291 [00:36<00:01,  8.02it/s]Loading weights:  97%|█████████▋| 281/291 [00:36<00:01,  9.39it/s]Loading weights:  97%|█████████▋| 283/291 [00:37<00:00,  8.16it/s]Loading weights:  98%|█████████▊| 285/291 [00:37<00:01,  5.58it/s]Loading weights:  99%|█████████▉| 288/291 [00:38<00:00,  7.88it/s]Loading weights: 100%|█████████▉| 290/291 [00:38<00:00,  9.16it/s]Loading weights: 100%|██████████| 291/291 [00:38<00:00,  7.62it/s]
+option token ids [32, 33, 34]
+3179 prompts for train
+  4/3179
+  404/3179
+  804/3179
+  1204/3179
+  1604/3179
+  2004/3179
+  2404/3179
+  2804/3179
+wrote 3179 direction labels -> /teamspace/studios/this_studio/data/pds/twitter2015
+distribution: {'POS': 687, 'NEG': 101, 'NONE': 2391}
+mean confidence 0.795
+=== [2/3] PDS student: bertweet-large ===
+PDS labels 3179 | POS-shift 687 NEG-shift 101 no-shift 2391
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 14175.73it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+/teamspace/studios/this_studio/experts/masc_pds.py:213: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)
+  tot += loss.item(); tpds += float(lp)
+ep1 loss 0.9049 (pds 0.1401) | dev acc 71.30 | 104s
+ep2 loss 0.6134 (pds 0.1082) | dev acc 74.69 | 210s
+ep3 loss 0.4048 (pds 0.1179) | dev acc 73.53 | 318s
+ep4 loss 0.2566 (pds 0.1216) | dev acc 74.24 | 420s
+ep5 loss 0.1593 (pds 0.1151) | dev acc 72.82 | 523s
+early stop
+[dev] gold-span MASC acc 74.69
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 75.89
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 70,
+  "best_dev_acc": 74.68805704099822,
+  "best_epoch": 2,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 74.68805704099822,
+  "test_acc_goldspan": 75.89199614271939
+}
+=== [3/3] PDS student: deberta-v3-large ===
+PDS labels 3179 | POS-shift 687 NEG-shift 101 no-shift 2391
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights:   1%|          | 3/390 [00:01<02:10,  2.97it/s]Loading weights: 100%|██████████| 390/390 [00:01<00:00, 359.28it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+/teamspace/studios/this_studio/experts/masc_pds.py:213: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)
+  tot += loss.item(); tpds += float(lp)
+ep1 loss 0.9410 (pds 0.1567) | dev acc 69.79 | 146s
+ep2 loss 0.6256 (pds 0.1362) | dev acc 77.90 | 296s
+ep3 loss 0.3667 (pds 0.1418) | dev acc 75.85 | 447s
+ep4 loss 0.2107 (pds 0.1359) | dev acc 76.29 | 591s
+ep5 loss 0.1121 (pds 0.1249) | dev acc 77.09 | 736s
+early stop
+[dev] gold-span MASC acc 77.90
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 78.11
+[test] scored 1178 predicted spans
+{
+  "model": "microsoft/deberta-v3-large",
+  "seed": 71,
+  "best_dev_acc": 77.89661319073083,
+  "best_epoch": 2,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 77.89661319073083,
+  "test_acc_goldspan": 78.1099324975892
+}
+=== QUEUE20 DONE ===

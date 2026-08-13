@@ -1,0 +1,5 @@
+{
+  "dev_auc": 0.8102270887925491,
+  "cand_thr": 0.12,
+  "model": "vinai/bertweet-large"
+}

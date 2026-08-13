@@ -1,0 +1,73 @@
+=== [1/4] PDS w_none=0.1 (direction-only supervision), bertweet-large ===
+PDS labels 3179 | POS-shift 687 NEG-shift 101 no-shift 2391
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 14447.49it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+/teamspace/studios/this_studio/experts/masc_pds.py:222: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)
+  tot += loss.item(); tpds += float(lp)
+ep1 loss 0.8383 (pds 0.1033) | dev acc 66.67 | 104s
+ep2 loss 0.5779 (pds 0.0576) | dev acc 75.13 | 210s
+ep3 loss 0.3827 (pds 0.0664) | dev acc 76.29 | 319s
+ep4 loss 0.2382 (pds 0.0671) | dev acc 76.11 | 428s
+ep5 loss 0.1439 (pds 0.0636) | dev acc 76.29 | 531s
+ep6 loss 0.1020 (pds 0.0564) | dev acc 76.20 | 639s
+early stop
+[dev] gold-span MASC acc 76.29
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 75.80
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 72,
+  "best_dev_acc": 76.29233511586453,
+  "best_epoch": 3,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 76.29233511586453,
+  "test_acc_goldspan": 75.79556412729026
+}
+=== [2/4] PDS w_none=0.1, deberta-v3-large ===
+PDS labels 3179 | POS-shift 687 NEG-shift 101 no-shift 2391
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights:   1%|          | 3/390 [00:00<00:49,  7.75it/s]Loading weights:  51%|█████▏    | 200/390 [00:00<00:00, 530.37it/s]Loading weights:  80%|████████  | 312/390 [00:00<00:00, 617.52it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 504.30it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+/teamspace/studios/this_studio/experts/masc_pds.py:303: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)
+  tot += loss.item(); tpds += float(lp)
+ep1 loss 0.9277 (pds 0.1020) | dev acc 61.76 | 146s
+Traceback (most recent call last):
+  File "/teamspace/studios/this_studio/experts/masc_pds.py", line 338, in <module>
+    main()
+  File "/teamspace/studios/this_studio/experts/masc_pds.py", line 309, in main
+    torch.save(model.state_dict(), out / "best.pt")
+                                   ~~~~^~~~~~~~~~~
+TypeError: unsupported operand type(s) for /: 'tuple' and 'str'

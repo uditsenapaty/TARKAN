@@ -1,0 +1,214 @@
+=== re-score remaining members on the high-recall candidate set ===
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 15402.62it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[dev] gold-span MASC acc 78.34 | mean gate 0.428
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 79.36 | mean gate 0.423
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 50,
+  "fuse": "concat",
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc_goldspan": 78.34224598930481,
+  "dev_mean_gate": 0.4281114935874939,
+  "test_acc_goldspan": 79.36354869816779,
+  "test_mean_gate": 0.42321717739105225
+}
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 14175.24it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[dev] gold-span MASC acc 77.18 | mean gate 0.490
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 77.15 | mean gate 0.483
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 50,
+  "fuse": "convex",
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc_goldspan": 77.18360071301248,
+  "dev_mean_gate": 0.4896693825721741,
+  "test_acc_goldspan": 77.14561234329797,
+  "test_mean_gate": 0.48314011096954346
+}
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights:   1%|          | 3/390 [00:01<02:47,  2.31it/s]Loading weights:  64%|██████▎   | 248/390 [00:01<00:00, 244.18it/s]Loading weights: 100%|██████████| 390/390 [00:01<00:00, 378.37it/s]Loading weights: 100%|██████████| 390/390 [00:01<00:00, 255.46it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[dev] gold-span MASC acc 77.18 | mean gate 0.439
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 77.72 | mean gate 0.434
+[test] scored 1178 predicted spans
+{
+  "model": "microsoft/deberta-v3-large",
+  "seed": 50,
+  "fuse": "concat",
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc_goldspan": 77.18360071301248,
+  "dev_mean_gate": 0.4393586814403534,
+  "test_acc_goldspan": 77.72420443587271,
+  "test_mean_gate": 0.43426719307899475
+}
+{'train': 3179, 'dev': 1122, 'test': 1037}
+Loading weights:   0%|          | 0/809 [00:00<?, ?it/s]Loading weights:  18%|█▊        | 145/809 [00:00<00:00, 1431.04it/s]Loading weights:  40%|████      | 325/809 [00:00<00:00, 1597.97it/s]Loading weights:  61%|██████▏   | 497/809 [00:00<00:00, 1652.29it/s]Loading weights:  82%|████████▏ | 663/809 [00:00<00:00, 1552.92it/s]Loading weights: 100%|██████████| 809/809 [00:00<00:00, 1584.87it/s]
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights:  87%|████████▋ | 173/199 [00:00<00:00, 1729.68it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 1842.77it/s]
+[transformers] [1mBertModel LOAD REPORT[0m from: bert-base-uncased
+Key                                        | Status     |  | 
+-------------------------------------------+------------+--+-
+cls.predictions.transform.dense.bias       | UNEXPECTED |  | 
+cls.seq_relationship.weight                | UNEXPECTED |  | 
+cls.predictions.transform.LayerNorm.bias   | UNEXPECTED |  | 
+cls.predictions.bias                       | UNEXPECTED |  | 
+cls.predictions.transform.dense.weight     | UNEXPECTED |  | 
+cls.seq_relationship.bias                  | UNEXPECTED |  | 
+cls.predictions.transform.LayerNorm.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[dev] gold-span MASC acc 73.71 (n=1122)
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 76.37 (n=1037)
+[test] scored 1178 predicted spans
+{
+  "text_model": "bert-base-uncased",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc": 73.70766488413547,
+  "test_acc": 76.374156219865
+}
+{'train': 3179, 'dev': 1122, 'test': 1037}
+Loading weights:   0%|          | 0/809 [00:00<?, ?it/s]Loading weights:  29%|██▊       | 232/809 [00:00<00:00, 2295.92it/s]Loading weights: 100%|██████████| 809/809 [00:00<00:00, 4118.86it/s]
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 16232.33it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-base
+Key                       | Status     |  | 
+--------------------------+------------+--+-
+lm_head.bias              | UNEXPECTED |  | 
+lm_head.dense.weight      | UNEXPECTED |  | 
+lm_head.decoder.weight    | UNEXPECTED |  | 
+lm_head.layer_norm.bias   | UNEXPECTED |  | 
+lm_head.layer_norm.weight | UNEXPECTED |  | 
+lm_head.dense.bias        | UNEXPECTED |  | 
+lm_head.decoder.bias      | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[dev] gold-span MASC acc 67.11 (n=1122)
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 70.78 (n=1037)
+[test] scored 1178 predicted spans
+{
+  "text_model": "vinai/bertweet-base",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc": 67.11229946524064,
+  "test_acc": 70.7810993249759
+}
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 24613.57it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+class counts [368.0, 1883.0, 928.0] -> weights [1.884, 0.368, 0.747]
+[dev] gold-span MASC acc 76.11 (n=1122)
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 78.88 (n=1037)
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc_goldspan": 76.11408199643493,
+  "test_acc_goldspan": 78.88138862102217
+}
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 24735.22it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[dev] gold-span MASC acc 78.07 (n=1122)
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 76.57 (n=1037)
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc_goldspan": 78.07486631016043,
+  "test_acc_goldspan": 76.56702025072323
+}
+=== QUEUE16 DONE ===

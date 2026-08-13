@@ -1,0 +1,5 @@
+{
+  "dev_auc": 0.8340077606533998,
+  "cand_thr": 0.12,
+  "model": "microsoft/deberta-v3-large"
+}
