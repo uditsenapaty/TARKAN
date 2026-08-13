@@ -354,7 +354,17 @@ def main():
             if bad >= args.patience:
                 print("early stop"); break
 
-    model.load_state_dict(torch.load(out / "best.pt", map_location=device))
+    # The pds_res_* members were trained before §C.27 added the NEU-escape `beta`, so their
+    # checkpoints lack it. `beta` is read ONLY when self.neu_escape is on (line ~145), which
+    # is off unless --neu-escape is passed, so leaving it at its 0.0 init re-scores them
+    # exactly. Narrow on purpose: anything else missing still raises.
+    sd = torch.load(out / "best.pt", map_location=device)
+    missing, unexpected = model.load_state_dict(sd, strict=False)
+    extra = (set(missing) - {"beta"}) | set(unexpected)
+    if extra:
+        raise RuntimeError(f"state_dict mismatch beyond the NEU-escape beta: {sorted(extra)}")
+    if missing and args.neu_escape:
+        raise RuntimeError("checkpoint has no `beta` but --neu-escape was requested")
     res = {"model": args.model, "seed": args.seed, "best_dev_acc": best,
            "best_epoch": best_ep, "lambda_pds": args.lambda_pds}
     for s in ("dev", "test"):
