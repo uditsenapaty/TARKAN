@@ -1,0 +1,24 @@
+{
+  "members": [
+    "runs/mate_deb_s42",
+    "runs/mate_deb_s43",
+    "runs/mate_deb_s44",
+    "runs/mate_probeA",
+    "runs/mate_probeB"
+  ],
+  "cand_thr": 0.12,
+  "union": [
+    "runs/pdqmate_btwL",
+    "runs/pdqmate_twrob"
+  ],
+  "dev": {
+    "P": 77.71129394166043,
+    "R": 92.60249554367202,
+    "F1": 84.50589670597805
+  },
+  "test": {
+    "P": 75.94043887147336,
+    "R": 93.44262295081968,
+    "F1": 83.78728923476005
+  }
+}
