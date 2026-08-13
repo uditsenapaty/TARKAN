@@ -1132,6 +1132,59 @@ The image enters as its BLIP caption, exactly as the teacher sees it, so no new 
 weights enter the system. Measured cost on the T4: **11.2 s/opt-step at batch 2 × accum 8,
 597 steps → 1.86 h** for 3 epochs.
 
+**MEASURED.** dev gold-span 76.83 → 78.79 → **78.88** (converged; train loss reached 0.018,
+i.e. the 8B memorised all 3179 training aspects, so the binding constraint is data, not
+epochs — `--init-adapter` was built to extend the run and is not worth using).
+
+| | gold-span test acc |
+|---|---|
+| best encoder member (pdq_btwL_s47) | 79.94 |
+| **8B decoder member** | **80.04** |
+| 15-encoder log-average ensemble | 80.91 |
+
+**An 8B decoder fine-tuned on this task ties a 355M encoder.** That is the first honest
+surprise of Chapter D and it caps what any "bigger model" argument can buy here.
+
+## D.6 ★★★ THE 8B IS GENUINELY DECORRELATED AND STILL CONVERTS TO NOTHING
+
+This is the sharpest version of the wall the campaign keeps hitting, because for once the
+diversity is unambiguous and its *shape* matches the diagnosis:
+
+| | |
+|---|---|
+| 8B uniquely RIGHT (ensemble wrong) | **49 aspects (4.73%)** |
+| 8B uniquely WRONG (ensemble right) | 58 (5.59%) |
+| **oracle of the two** | **85.63** |
+| best fixed log-space mixing weight | 81.00 (vs 80.91 — noise) |
+
+Per class, the 8B does exactly what §D.1 asked for: **NEG recall 69.0 vs the ensemble's
+61.1 (+7.9)**, POS 75.1 vs 73.8, paid for with NEU 84.7 vs 88.3.
+
+So the information is there, it is the *right* information, and **no realizable rule
+extracts it.** All three combination modes, selected on dev and reported on test:
+
+| rule | dev | **test** |
+|---|---|---|
+| ensemble alone (w=0) | 80.12 | **80.91** |
+| selective NEU-boundary gate (best dev: w 0.7, δ 0.7) | **81.64** | 80.62 |
+| per-class weights (NEU 0.2 / minority 0.3) | 81.19 | 80.52 |
+| NEU-escape, 8B only, conf > 0.9 | 80.48 | 81.00 |
+
+**The gate wins dev by +1.52 and loses test by −0.29.** Dev and test invert for the fifth
+independent time (§C.7 OOF stacker, §C.17 threshold sweep, §C.24(b) 2-D surface, §C.24(c)
+judge ensemble, now this). The selective gate was specifically argued to differ from the
+failed §C.27 NEU-escape because it hands the decision to a *different model class* rather
+than amplifying a residual built from the same features. That argument is sound and the
+result is still negative — which localises the cause precisely:
+
+> **The bottleneck is not member quality, member diversity, or combiner form. It is that
+> n_dev = 1122 with binomial σ ≈ 1.2 cannot resolve the ~0.5 differences being chased, so
+> every combiner that is fitted is fitted to noise.** Adding a better member does not fix a
+> selection problem, and Chapter C's §C.7 already showed that moving the fit to OOF train
+> data does not fix it either.
+
+Recorded as the strongest form of the §B.8 error-correlation ceiling.
+
 ---
 
 # ===== CHAPTER A — T4 ERA (kept verbatim; original title below) =====
