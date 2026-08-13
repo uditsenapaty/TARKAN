@@ -1,0 +1,7 @@
+{
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "best_dev_acc": 78.87700534759358,
+  "seed": 42,
+  "dev_acc": 78.87700534759358,
+  "test_acc": 80.03857280617164
+}

@@ -1,0 +1,50 @@
+=== [0] sanity: 40-aspect label distribution under the fixed mapping ===
+wrote 40 Qwen-VL direction labels -> runs/qwen_cf_smoke2
+distribution: {'POS': 16, 'NEG': 12, 'NONE': 12}
+mean |delta| 0.321   moved >0.05: 31/40
+=== [1] Qwen2.5-VL counterfactual teacher, full TRAIN split ===
+/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/bitsandbytes/backends/cuda/ops.py:944: UserWarning: inner dimension (3420) is not aligned for fast kernel with blocksize=64, falling back to slower implementation.
+  warn(
+wrote 3179 Qwen-VL direction labels -> data/pds_qwen/twitter2015
+distribution: {'POS': 1394, 'NEG': 644, 'NONE': 1141}
+mean |delta| 0.310   moved >0.05: 2422/3179
+=== [2] PDS member on Qwen-VL directions: qpds_btwL ===
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 77.24
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 70,
+  "best_dev_acc": 77.71836007130125,
+  "best_epoch": 6,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 77.71836007130125,
+  "test_acc_goldspan": 77.2420443587271
+}
+=== [2] PDS member on Qwen-VL directions: qpds_deb ===
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 75.60
+[test] scored 1178 predicted spans
+{
+  "model": "microsoft/deberta-v3-large",
+  "seed": 70,
+  "best_dev_acc": 77.27272727272727,
+  "best_epoch": 3,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 77.27272727272727,
+  "test_acc_goldspan": 75.60270009643202
+}
+=== [2] PDS member on Qwen-VL directions: qpds_robL ===
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 78.21
+[test] scored 1178 predicted spans
+{
+  "model": "roberta-large",
+  "seed": 70,
+  "best_dev_acc": 77.45098039215686,
+  "best_epoch": 8,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 77.45098039215686,
+  "test_acc_goldspan": 78.20636451301833
+}
+=== QUEUE29 DONE ===

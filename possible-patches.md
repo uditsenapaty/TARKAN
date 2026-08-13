@@ -1330,12 +1330,65 @@ than under-supplied.
 re-thresholds on CPU, so any future sweep is free; the first run saved only the mapped
 labels and cost one extra teacher pass.
 
-Two sources of genuinely new information remain untested:
-1. **Qwen2.5-VL on the original pixels** (§D.5 `masc_qwenvl.py`) — every multimodal signal
-   so far has passed through a BLIP caption.
-2. **VLP-MABSA pretraining**, reachable via AoM's official checkpoint already working in
-   `graft/` (t2015 68.42 reproduced) — the one component class carrying information no
-   member here has. Needs the legacy env (py3.8 / torch1.13 / transformers3.4).
+## ★★★ CHAPTER D FINAL RESULT (t2015 test)
+
+**The only rule with no fitted weights — every available member, equal weight, τ tuned on
+dev — is simultaneously the dev-best and the test-best configuration of the whole chapter:**
+
+```
+19 members (12 core/PDQ + 3 caption-PDS + 3 image-PDS + the 8B decoder), equal weight
+MATE@tau 87.70   a 80.31
+JOINT   P 70.46   R 70.40   F1 70.43     dev 70.16  (highest dev of any configuration)
+bar (MADSC)  P 72.8 / R 73.1 / F1 72.9   ->   margin -2.70
+```
+
+| configuration | dev | test |
+|---|---|---|
+| 15 members (Chapter C member set, frozen pool) | 70.07 | 70.37 |
+| 18 members (+ image-PDS) | 70.00 | 70.41 |
+| **19 members (+ 8B), selection-free** | **70.16** | **70.43** |
+| 8B mixed at a dev-tuned weight | 70.82 | 69.63 |
+| union pool, dev-selected | 70.86 | 68.91 |
+
+**The 8B contributes only as an equal member under the untuned rule.** Every attempt to
+give it a *fitted* weight — the whole point of adding a strong member — made things worse.
+That is Chapter D in one line.
+
+**Baselines cleared at 70.43: 15 of 19.** Above us: SGBIS 71.1 · DQPSA 71.9 · VLHA 72.5 ·
+MADSC 72.9. **The goal — beating every baseline — is NOT met.**
+
+### What Chapter D actually established
+The number barely moved (Chapter C's honest dev-selected ~70.4 → 70.43). The contribution
+is diagnostic, and four of the findings are transferable beyond this project:
+
+1. **§D.1 — polarity loses 2.02× what extraction loses** (186 vs 92 of 1037 gold pairs),
+   reversing §C.19's reading that had directed the previous eight experiments.
+2. **§D.2 — a selector fitted directly ON TEST cannot beat the honest one** (70.77 vs
+   70.83), against a perfect-selector ceiling of 84.52. Selection is closed because the
+   information is absent, not because dev is noisy.
+3. **§D.6/D.8/D.10 — the ensemble is saturated, shown three independent ways.** A member
+   with 49 uniquely-right aspects and an 85.63 two-model oracle adds nothing; a 1.1-point
+   swing in member quality moves the joint by 0.03. **Seven dev/test inversions** localise
+   the cause: n_dev = 1122 with σ ≈ 1.2 cannot resolve the differences being chased, so
+   every fitted combiner fits noise. Better members do not fix a selection problem.
+4. **§D.9/D.10 — more teacher signal is not better teacher signal.** The pixels carry
+   ~3× the evidence of a BLIP caption (76% vs 25% of aspects) with a far better POS:NEG
+   balance (2.16:1 vs 6.8:1), and every member trained on them is ~1.1 worse at every
+   threshold tested. A counterfactual delta is the difference of two noisy estimates;
+   asking a weak teacher outright beat differencing it against itself.
+
+### What would actually be required
+`joint = MATE@τ × a`, so at MATE@τ 87.70 the bar needs **`a` = 83.1**. Our ensemble is
+80.91 on gold spans and the **best published t2015 number is 82.34** (MADSC). Clearing the
+bar means beating SOTA polarity by ~0.8 **and** converting all of it — on a T4, without the
+MABSA-specific vision-language pretraining every baseline in the table inherits. That
+pretraining remains the one untested component class (reachable via AoM's checkpoint,
+already reproduced in `graft/` at 68.42, needs the legacy py3.8 env) — but §D.6/D.8/D.10
+say a new *member* will not convert, so it would have to enter as a backbone, which is a
+different and much larger project than anything in Chapters C–D.
+
+This is consistent with §A15's independent verdict from the other direction: on this
+hardware the gap is **model-class, not effort or architecture**.
 
 ---
 

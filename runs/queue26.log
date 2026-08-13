@@ -1,0 +1,411 @@
+=== [1] python3 -u experts/masc_text.py --score-only --model vinai/bertweet-large --spans runs/mate_union --out runs/masc_btwL_s45 ===
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[dev] gold-span MASC acc 77.01 (n=1122)
+[dev] scored 1337 predicted spans
+[test] gold-span MASC acc 79.75 (n=1037)
+[test] scored 1276 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc_goldspan": 77.00534759358288,
+  "test_acc_goldspan": 79.74927675988428
+}
+=== [2] python3 -u experts/masc_text.py --score-only --model microsoft/deberta-v3-large --spans runs/mate_union --out runs/masc_deb_s44 ===
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[dev] gold-span MASC acc 77.90 (n=1122)
+[dev] scored 1337 predicted spans
+[test] gold-span MASC acc 79.36 (n=1037)
+[test] scored 1276 predicted spans
+{
+  "model": "microsoft/deberta-v3-large",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc_goldspan": 77.89661319073083,
+  "test_acc_goldspan": 79.36354869816779
+}
+=== [3] python3 -u experts/masc_text.py --score-only --model roberta-large --spans runs/mate_union --out runs/masc_robL_s46 ===
+[transformers] [1mRobertaModel LOAD REPORT[0m from: roberta-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[dev] gold-span MASC acc 78.52 (n=1122)
+[dev] scored 1337 predicted spans
+[test] gold-span MASC acc 78.78 (n=1037)
+[test] scored 1276 predicted spans
+{
+  "model": "roberta-large",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc_goldspan": 78.5204991087344,
+  "test_acc_goldspan": 78.78495660559307
+}
+=== [4] python3 -u experts/masc_text.py --score-only --model cardiffnlp/twitter-roberta-base-sentiment-latest --spans runs/mate_union --out runs/masc_twrob_s42 ===
+[transformers] [1mRobertaModel LOAD REPORT[0m from: cardiffnlp/twitter-roberta-base-sentiment-latest
+Key                        | Status     |  | 
+---------------------------+------------+--+-
+classifier.dense.weight    | UNEXPECTED |  | 
+classifier.out_proj.bias   | UNEXPECTED |  | 
+classifier.out_proj.weight | UNEXPECTED |  | 
+classifier.dense.bias      | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[dev] gold-span MASC acc 77.09 (n=1122)
+[dev] scored 1337 predicted spans
+[test] gold-span MASC acc 77.34 (n=1037)
+[test] scored 1276 predicted spans
+{
+  "model": "cardiffnlp/twitter-roberta-base-sentiment-latest",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc_goldspan": 77.09447415329768,
+  "test_acc_goldspan": 77.33847637415622
+}
+=== [5] python3 -u experts/masc_text.py --score-only --model vinai/bertweet-base --spans runs/mate_union --out runs/masc_btw_s43 ===
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-base
+Key                       | Status     |  | 
+--------------------------+------------+--+-
+lm_head.decoder.weight    | UNEXPECTED |  | 
+lm_head.layer_norm.bias   | UNEXPECTED |  | 
+lm_head.decoder.bias      | UNEXPECTED |  | 
+lm_head.dense.weight      | UNEXPECTED |  | 
+lm_head.bias              | UNEXPECTED |  | 
+lm_head.layer_norm.weight | UNEXPECTED |  | 
+lm_head.dense.bias        | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[dev] gold-span MASC acc 75.31 (n=1122)
+[dev] scored 1337 predicted spans
+[test] gold-span MASC acc 78.11 (n=1037)
+[test] scored 1276 predicted spans
+{
+  "model": "vinai/bertweet-base",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc_goldspan": 75.31194295900178,
+  "test_acc_goldspan": 78.1099324975892
+}
+=== [6] python3 -u experts/masc_text.py --score-only --model microsoft/deberta-v3-large --spans runs/mate_union --out runs/masc_deb_sqrt ===
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[dev] gold-span MASC acc 78.34 (n=1122)
+[dev] scored 1337 predicted spans
+[test] gold-span MASC acc 79.36 (n=1037)
+[test] scored 1276 predicted spans
+{
+  "model": "microsoft/deberta-v3-large",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc_goldspan": 78.34224598930481,
+  "test_acc_goldspan": 79.36354869816779
+}
+=== [7] python3 -u experts/pdq.py --score-only --text-model vinai/bertweet-large --spans runs/mate_union --out runs/pdq_btwL_s47 ===
+{'train': 3179, 'dev': 1122, 'test': 1037}
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+Traceback (most recent call last):
+  File "/teamspace/studios/this_studio/experts/pdq.py", line 439, in <module>
+    main()
+  File "/teamspace/studios/this_studio/experts/pdq.py", line 415, in main
+    model.load_state_dict(torch.load(out / "best.pt", map_location=device))
+  File "/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/torch/nn/modules/module.py", line 2624, in load_state_dict
+    raise RuntimeError(
+RuntimeError: Error(s) in loading state_dict for PDQ:
+	Missing key(s) in state_dict: "temp", "vision_projection.weight", "vision_projection.bias", "text_projection.weight", "text_projection.bias", "itm_head.weight", "itm_head.bias". 
+=== [8] python3 -u experts/pdq.py --score-only --text-model cardiffnlp/twitter-roberta-base-sentiment-latest --spans runs/mate_union --out runs/pdq_twrob_s43 ===
+{'train': 3179, 'dev': 1122, 'test': 1037}
+[transformers] [1mRobertaModel LOAD REPORT[0m from: cardiffnlp/twitter-roberta-base-sentiment-latest
+Key                        | Status     |  | 
+---------------------------+------------+--+-
+classifier.dense.bias      | UNEXPECTED |  | 
+classifier.out_proj.bias   | UNEXPECTED |  | 
+classifier.dense.weight    | UNEXPECTED |  | 
+classifier.out_proj.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Traceback (most recent call last):
+  File "/teamspace/studios/this_studio/experts/pdq.py", line 439, in <module>
+    main()
+  File "/teamspace/studios/this_studio/experts/pdq.py", line 415, in main
+    model.load_state_dict(torch.load(out / "best.pt", map_location=device))
+  File "/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/torch/nn/modules/module.py", line 2624, in load_state_dict
+    raise RuntimeError(
+RuntimeError: Error(s) in loading state_dict for PDQ:
+	Missing key(s) in state_dict: "temp", "vision_projection.weight", "vision_projection.bias", "text_projection.weight", "text_projection.bias", "itm_head.weight", "itm_head.bias". 
+=== [9] python3 -u experts/pdq.py --score-only --text-model vinai/bertweet-large --spans runs/mate_union --out runs/pdq_btwL_itcitm ===
+{'train': 3179, 'dev': 1122, 'test': 1037}
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[dev] gold-span MASC acc 77.90 (n=1122)
+[dev] scored 1337 predicted spans
+[test] gold-span MASC acc 77.53 (n=1037)
+[test] scored 1276 predicted spans
+{
+  "text_model": "vinai/bertweet-large",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc": 77.89661319073083,
+  "test_acc": 77.53134040501446
+}
+=== [10] python3 -u experts/pdq.py --score-only --text-model cardiffnlp/twitter-roberta-base-sentiment-latest --spans runs/mate_union --out runs/pdq_twrob_itcitm ===
+{'train': 3179, 'dev': 1122, 'test': 1037}
+[transformers] [1mRobertaModel LOAD REPORT[0m from: cardiffnlp/twitter-roberta-base-sentiment-latest
+Key                        | Status     |  | 
+---------------------------+------------+--+-
+classifier.out_proj.weight | UNEXPECTED |  | 
+classifier.dense.bias      | UNEXPECTED |  | 
+classifier.dense.weight    | UNEXPECTED |  | 
+classifier.out_proj.bias   | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[dev] gold-span MASC acc 76.02 (n=1122)
+[dev] scored 1337 predicted spans
+[test] gold-span MASC acc 76.57 (n=1037)
+[test] scored 1276 predicted spans
+{
+  "text_model": "cardiffnlp/twitter-roberta-base-sentiment-latest",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc": 76.02495543672015,
+  "test_acc": 76.56702025072323
+}
+=== [11] python3 -u experts/pdq.py --score-only --text-model microsoft/deberta-v3-large --spans runs/mate_union --out runs/pdq_deb_itcitm ===
+{'train': 3179, 'dev': 1122, 'test': 1037}
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[dev] gold-span MASC acc 77.81 (n=1122)
+[dev] scored 1337 predicted spans
+[test] gold-span MASC acc 76.86 (n=1037)
+[test] scored 1276 predicted spans
+{
+  "text_model": "microsoft/deberta-v3-large",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc": 77.80748663101605,
+  "test_acc": 76.85631629701061
+}
+=== [12] python3 -u experts/pdq.py --score-only --text-model roberta-large --spans runs/mate_union --out runs/pdq_robL_itcitm ===
+{'train': 3179, 'dev': 1122, 'test': 1037}
+[transformers] [1mRobertaModel LOAD REPORT[0m from: roberta-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[dev] gold-span MASC acc 77.54 (n=1122)
+[dev] scored 1337 predicted spans
+[test] gold-span MASC acc 78.69 (n=1037)
+[test] scored 1276 predicted spans
+{
+  "text_model": "roberta-large",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc": 77.54010695187165,
+  "test_acc": 78.68852459016394
+}
+=== [13] python3 -u experts/masc_pds.py --score-only --residual --w-none 0 --model vinai/bertweet-large --spans runs/mate_union --out runs/pds_res_btwL_wn0 ===
+PDS labels 3179 | POS-shift 687 NEG-shift 101 no-shift 2391
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+Traceback (most recent call last):
+  File "/teamspace/studios/this_studio/experts/masc_pds.py", line 380, in <module>
+    main()
+  File "/teamspace/studios/this_studio/experts/masc_pds.py", line 357, in main
+    model.load_state_dict(torch.load(out / "best.pt", map_location=device))
+  File "/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/torch/nn/modules/module.py", line 2624, in load_state_dict
+    raise RuntimeError(
+RuntimeError: Error(s) in loading state_dict for PDSResidual:
+	Missing key(s) in state_dict: "beta". 
+=== [14] python3 -u experts/masc_pds.py --score-only --residual --w-none 0 --model microsoft/deberta-v3-large --spans runs/mate_union --out runs/pds_res_deb_wn0 ===
+PDS labels 3179 | POS-shift 687 NEG-shift 101 no-shift 2391
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Traceback (most recent call last):
+  File "/teamspace/studios/this_studio/experts/masc_pds.py", line 380, in <module>
+    main()
+  File "/teamspace/studios/this_studio/experts/masc_pds.py", line 357, in main
+    model.load_state_dict(torch.load(out / "best.pt", map_location=device))
+  File "/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/torch/nn/modules/module.py", line 2624, in load_state_dict
+    raise RuntimeError(
+RuntimeError: Error(s) in loading state_dict for PDSResidual:
+	Missing key(s) in state_dict: "beta". 
+=== [15] python3 -u experts/masc_pds.py --score-only --residual --w-none 0 --model roberta-large --spans runs/mate_union --out runs/pds_res_robL_wn0 ===
+PDS labels 3179 | POS-shift 687 NEG-shift 101 no-shift 2391
+[transformers] [1mRobertaModel LOAD REPORT[0m from: roberta-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[dev] gold-span MASC acc 77.27
+[dev] scored 1337 predicted spans
+[test] gold-span MASC acc 79.27
+[test] scored 1276 predicted spans
+{
+  "model": "roberta-large",
+  "seed": 70,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 77.27272727272727,
+  "test_acc_goldspan": 79.26711668273867
+}
+=== QUEUE26 DONE ===

@@ -1,8 +1,8 @@
 {
   "text_model": "microsoft/deberta-v3-large",
-  "seed": 62,
-  "best_dev_acc": 77.80748663101605,
-  "best_epoch": 2,
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
   "dev_acc": 77.80748663101605,
   "test_acc": 76.85631629701061
 }

@@ -1,8 +1,8 @@
 {
   "text_model": "cardiffnlp/twitter-roberta-base-sentiment-latest",
-  "seed": 61,
-  "best_dev_acc": 76.02495543672015,
-  "best_epoch": 4,
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
   "dev_acc": 76.02495543672015,
   "test_acc": 76.56702025072323
 }

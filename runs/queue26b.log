@@ -1,0 +1,149 @@
+=== pdq_btwL_s47 ===
+{'train': 3179, 'dev': 1122, 'test': 1037}
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[score-only] pre-ITC/ITM checkpoint: 7 pretraining-head tensors left at init (unused for polarity)
+[dev] gold-span MASC acc 77.45 (n=1122)
+[dev] scored 1337 predicted spans
+[test] gold-span MASC acc 79.94 (n=1037)
+[test] scored 1276 predicted spans
+{
+  "text_model": "vinai/bertweet-large",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc": 77.45098039215686,
+  "test_acc": 79.94214079074253
+}
+=== pdq_twrob_s43 ===
+{'train': 3179, 'dev': 1122, 'test': 1037}
+[transformers] [1mRobertaModel LOAD REPORT[0m from: cardiffnlp/twitter-roberta-base-sentiment-latest
+Key                        | Status     |  | 
+---------------------------+------------+--+-
+classifier.dense.bias      | UNEXPECTED |  | 
+classifier.out_proj.weight | UNEXPECTED |  | 
+classifier.out_proj.bias   | UNEXPECTED |  | 
+classifier.dense.weight    | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[score-only] pre-ITC/ITM checkpoint: 7 pretraining-head tensors left at init (unused for polarity)
+[dev] gold-span MASC acc 76.56 (n=1122)
+[dev] scored 1337 predicted spans
+[test] gold-span MASC acc 78.78 (n=1037)
+[test] scored 1276 predicted spans
+{
+  "text_model": "cardiffnlp/twitter-roberta-base-sentiment-latest",
+  "seed": 42,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "dev_acc": 76.55971479500892,
+  "test_acc": 78.78495660559307
+}
+=== pds_res_btwL_wn0 ===
+PDS labels 3179 | POS-shift 687 NEG-shift 101 no-shift 2391
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[dev] gold-span MASC acc 77.90
+[dev] scored 1337 predicted spans
+[test] gold-span MASC acc 78.50
+[test] scored 1276 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 70,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 77.89661319073083,
+  "test_acc_goldspan": 78.49566055930569
+}
+=== pds_res_deb_wn0 ===
+PDS labels 3179 | POS-shift 687 NEG-shift 101 no-shift 2391
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[dev] gold-span MASC acc 77.09
+[dev] scored 1337 predicted spans
+[test] gold-span MASC acc 76.76
+[test] scored 1276 predicted spans
+{
+  "model": "microsoft/deberta-v3-large",
+  "seed": 70,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 77.09447415329768,
+  "test_acc_goldspan": 76.75988428158148
+}
+=== pds_res_robL_wn0 ===
+PDS labels 3179 | POS-shift 687 NEG-shift 101 no-shift 2391
+[transformers] [1mRobertaModel LOAD REPORT[0m from: roberta-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[dev] gold-span MASC acc 77.27
+[dev] scored 1337 predicted spans
+[test] gold-span MASC acc 79.27
+[test] scored 1276 predicted spans
+{
+  "model": "roberta-large",
+  "seed": 70,
+  "best_dev_acc": -1.0,
+  "best_epoch": -1,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 77.27272727272727,
+  "test_acc_goldspan": 79.26711668273867
+}
+=== QUEUE26B DONE ===

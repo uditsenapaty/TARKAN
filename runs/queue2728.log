@@ -1,0 +1,16 @@
+[dev] gold-span acc 78.43
+[test] gold-span acc 79.56
+[dev] scored 1337 candidate anchors
+[test] scored 1276 candidate anchors
+=== QUEUE27 DONE ===
+=== [1] Qwen2.5-VL training-step benchmark ===
+trainable params: 40,370,176 || all params: 8,332,536,832 || trainable%: 0.4845
+/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/bitsandbytes/backends/cuda/ops.py:944: UserWarning: inner dimension (3420) is not aligned for fast kernel with blocksize=64, falling back to slower implementation.
+  warn(
+[transformers] `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+BENCHMARK: 20.43s/opt-step -> 4.52h
+=== [2] Qwen2.5-VL counterfactual smoke test (40 aspects) ===
+wrote 40 Qwen-VL direction labels -> runs/qwen_cf_smoke
+distribution: {'POS': 4, 'NEG': 5, 'NONE': 31}
+mean |delta| 0.321   moved >0.05: 31/40
+=== QUEUE28 DONE ===
