@@ -182,6 +182,10 @@ def main():
                     help="emit PDS direction labels from the WITH-IMAGE minus TEXT-ONLY "
                          "difference instead of training a member")
     ap.add_argument("--split", default="train", help="counterfactual mode: which split")
+    ap.add_argument("--shift-floor", type=float, default=0.05,
+                    help="how large a probability shift has to be before it counts as a "
+                         "direction rather than no-shift")
+    ap.add_argument("--shift-temp", type=float, default=0.1)
     ap.add_argument("--spans", default=None)
     ap.add_argument("--score-only", action="store_true")
     ap.add_argument("--adapter", default=None)
@@ -222,8 +226,14 @@ def main():
         # is POS-shift, and the no-shift mass is whatever the intervention did not move.
         pos_s = np.clip(d[:, POS] - d[:, NEU], 0, None)
         neg_s = np.clip(d[:, NEG] - d[:, NEU], 0, None)
-        none_s = np.clip(1.0 - pos_s - neg_s, 0, None)
-        probs = np.stack([pos_s, neg_s, none_s], 1)
+        # The three columns must COMPETE. `1 - pos - neg` does not: it starts near 1 while
+        # the shift terms are ~0.1-0.3, so no-shift would win by construction whatever the
+        # image did. `--shift-floor` is instead an explicit "how large must a shift be to
+        # count" logit, and the temperature controls how hard the resulting label is.
+        # Only the RELATIVE POS/NEG weight is ever read downstream: §C.27 settled that the
+        # no-shift column must be ignored entirely (w_none = 0).
+        z = np.stack([pos_s, neg_s, np.full_like(pos_s, args.shift_floor)], 1)
+        probs = np.exp((z - z.max(1, keepdims=True)) / args.shift_temp)
         probs /= probs.sum(1, keepdims=True)
         out.mkdir(parents=True, exist_ok=True)
         np.savez_compressed(out / f"direction_{args.split}.npz", probs=probs,
