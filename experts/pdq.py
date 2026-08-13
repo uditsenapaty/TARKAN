@@ -412,7 +412,23 @@ def main():
             if bad >= args.patience:
                 print("early stop"); break
 
-    model.load_state_dict(torch.load(out / "best.pt", map_location=device))
+    # The pre-C2c members (pdq_*_s4x) were trained before the ITC/ITM heads existed, so
+    # their checkpoints lack temp/vision_projection/text_projection/itm_head while the class
+    # now always builds them. Those heads are pretraining objectives only -- polarity comes
+    # from `proj`/`epe` -- so a non-strict load re-scores them faithfully. Anything missing
+    # BEYOND that set is a real mismatch and still raises.
+    sd = torch.load(out / "best.pt", map_location=device)
+    missing, unexpected = model.load_state_dict(sd, strict=False)
+    ITCITM = {"temp", "vision_projection.weight", "vision_projection.bias",
+              "text_projection.weight", "text_projection.bias",
+              "itm_head.weight", "itm_head.bias"}
+    extra = set(missing) - ITCITM
+    if extra or unexpected:
+        raise RuntimeError(f"state_dict mismatch beyond the ITC/ITM heads: "
+                           f"missing={sorted(extra)} unexpected={sorted(unexpected)}")
+    if missing:
+        print(f"[score-only] pre-ITC/ITM checkpoint: {len(missing)} pretraining-head "
+              f"tensors left at init (unused for polarity)", flush=True)
     res = {"text_model": args.text_model, "seed": args.seed,
            "best_dev_acc": best, "best_epoch": best_ep}
     for s in ("dev", "test"):
