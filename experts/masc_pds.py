@@ -177,10 +177,15 @@ def pds_margin_loss(delta, dirp, gamma=0.5, eps=0.1, w_none=0.05,
                     w_pos=0.147, w_neg=1.0):
     """Signed-margin direction loss with PDS-internal POS/NEG balancing.
 
-    Teacher directions are 687 POS vs 101 NEG (6.8:1). Left unbalanced the auxiliary task
-    would teach "visual evidence usually makes things more positive" -- a bias, not a
-    mechanism. Inverse-frequency weights are applied HERE ONLY; the MASC classifier itself
-    is never class-weighted (Chapter B/C measured that as harmful).
+    Left unbalanced the auxiliary task would teach "visual evidence usually pushes one
+    way" -- a bias, not a mechanism. Inverse-frequency weights are applied HERE ONLY; the
+    MASC classifier itself is never class-weighted (Chapter B/C measured that as harmful).
+
+    The defaults (0.147 / 1.0) are the inverse frequencies of the §C.25 caption teacher's
+    687 POS : 101 NEG. **They are wrong for any other teacher** -- the §D12 direct image
+    teacher is 214 POS : 382 NEG, i.e. NEG-leaning, and reusing these defaults would push
+    the same way the teacher already leans instead of balancing it. `main()` therefore
+    derives them from whatever labels are actually loaded unless told otherwise.
     """
     d_pos = delta[:, POS] - delta[:, NEU]
     d_neg = delta[:, NEG] - delta[:, NEU]
@@ -269,6 +274,9 @@ def main():
                     help="zero-init residual formulation + signed-margin direction loss")
     ap.add_argument("--gamma", type=float, default=0.5)
     ap.add_argument("--eps", type=float, default=0.1)
+    ap.add_argument("--w-pos", type=float, default=None,
+                    help="override the auto inverse-frequency POS direction weight")
+    ap.add_argument("--w-neg", type=float, default=None)
     ap.add_argument("--w-none", type=float, default=1.0,
                     help="weight of the no-shift L2 term (75%% of teacher labels)")
     ap.add_argument("--seed", type=int, default=70)
@@ -299,8 +307,14 @@ def main():
     dirp = {(int(k[0]), int(k[1]), int(k[2])): p.astype(np.float32)
             for p, k in zip(z["probs"], z["keys"])}
     hard = np.array([v.argmax() for v in dirp.values()])
-    print(f"PDS labels {len(dirp)} | POS-shift {int((hard==0).sum())} "
-          f"NEG-shift {int((hard==1).sum())} no-shift {int((hard==2).sum())}", flush=True)
+    n_pos, n_neg = int((hard == 0).sum()), int((hard == 1).sum())
+    print(f"PDS labels {len(dirp)} | POS-shift {n_pos} "
+          f"NEG-shift {n_neg} no-shift {int((hard==2).sum())}", flush=True)
+    # Inverse-frequency POS/NEG weights derived from THIS teacher, not hardcoded for the
+    # §C.25 one. Reproduces 0.147 / 1.0 exactly on the caption teacher's 687:101.
+    W_POS = args.w_pos if args.w_pos is not None else min(1.0, n_neg / max(n_pos, 1))
+    W_NEG = args.w_neg if args.w_neg is not None else min(1.0, n_pos / max(n_neg, 1))
+    print(f"PDS direction weights: w_pos {W_POS:.3f}  w_neg {W_NEG:.3f}", flush=True)
 
     coll = make_collate(tok.pad_token_id)
     dl = {s: DataLoader(DS(ex[s], tok, desc[s], *art[s],
@@ -333,7 +347,8 @@ def main():
             if args.residual:
                 lgf, lgb, delta, _ = mo
                 lp = (pds_continuous_loss(delta, dirp) if args.pds_mode == "continuous"
-                      else pds_margin_loss(delta, dirp, args.gamma, args.eps, args.w_none))
+                      else pds_margin_loss(delta, dirp, args.gamma, args.eps, args.w_none,
+                                           W_POS, W_NEG))
                 loss = ce(lgf, y) + 0.5 * ce(lgb, y) + args.lambda_pds * lp
             else:
                 lgf, lgt, _ = mo

@@ -18,3 +18,13 @@ for m in "qdpds_btwL vinai/bertweet-large" \
       --model "$2" --spans runs/mate_ens5_hr --out runs/$1 2>&1 | grep -v "it/s\]" | tail -11
 done
 echo "=== QUEUE31 DONE ==="
+
+# D.9/D.10 CONFOUND CHECK: those members were trained with w_pos=0.147, the inverse
+# frequency of the CAPTION teacher's 687:101, while their own teacher was 1394:644
+# (w_pos 0.462). Re-run one tower with the correct auto-derived weights so the -1.1 is
+# attributable to the labels rather than to a mis-weighted loss.
+echo "=== [3] counterfactual teacher, CORRECT weights (confound check) ==="
+python3 -u experts/masc_pds.py --residual --w-none 0 --pds data/pds_qwen/twitter2015 \
+    --model vinai/bertweet-large --spans runs/mate_ens5_hr --out runs/qpds_btwL_bal \
+    2>&1 | grep -v "it/s\]" | tail -11
+echo "=== QUEUE31B DONE ==="
