@@ -187,6 +187,9 @@ def main():
     ap.add_argument("--spans", default=None,
                     help="dir with spans_{dev,test}.json; also score those candidate anchors")
     ap.add_argument("--score-only", action="store_true")
+    ap.add_argument("--adapter", default=None,
+                    help="load the LoRA adapter from here instead of <out>/adapter, so one "
+                         "trained member can be re-scored into a separate member dir")
     ap.add_argument("--limit-steps", type=int, default=0, help="benchmark mode")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
@@ -221,7 +224,7 @@ def main():
                                                  device_map={"": 0})
     model.config.use_cache = False
     if args.score_only:
-        model = PeftModel.from_pretrained(model, str(out / "adapter"))
+        model = PeftModel.from_pretrained(model, args.adapter or str(out / "adapter"))
     else:
         model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
         model.gradient_checkpointing_enable()
