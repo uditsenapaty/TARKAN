@@ -43,13 +43,37 @@ def load(pool: Path, split: str):
     return rows, S, A, B, g
 
 
-def score(S, A, B, w, k):
+NEU = POLARITIES.index("NEU")
+
+
+def mix(A, B, w, delta=None):
+    """Log-space interpolation of the two MASC groups.
+
+    Note this IS the residual form `z = z_base + alpha*(z_llm - z_base)` with alpha = w;
+    there is no separate experiment to run for it.
+
+    `delta` additionally restricts the correction to rows where the base is undecided at
+    the NEU/minority boundary -- |p(NEU) - max(p(POS), p(NEG))| < delta -- which is where
+    §D.1 measured 158 of the 186 polarity errors. This is NOT the §C.27 NEU-escape gate
+    that failed: that one AMPLIFIED a residual trained from the same features exactly where
+    the base was most often right (NEU recall 88.2). This one hands the decision to a
+    *different model class* only where the base is admitting it cannot tell.
+    """
+    if delta is not None:
+        pb = np.exp(A - A.max(1, keepdims=True))
+        pb /= pb.sum(1, keepdims=True)
+        minority = np.delete(pb, NEU, axis=1).max(1)
+        undecided = np.abs(pb[:, NEU] - minority) < delta
+        w = np.where(undecided, w, 0.0)[:, None]
     lg = (1 - w) * A + w * B
     p = np.exp(lg - lg.max(1, keepdims=True))
-    p /= p.sum(1, keepdims=True)
-    j = p.argmax(1)
+    return p / p.sum(1, keepdims=True)
+
+
+def score(S, A, B, w, k, delta=None):
+    p = mix(A, B, w, delta)
     return np.exp((k * np.log(np.clip(S, 1e-9, 1)) +
-                   np.log(p.max(1))) / (k + 1)), j
+                   np.log(p.max(1))) / (k + 1)), p.argmax(1)
 
 
 def prf(tp, npred, ngold):
@@ -77,6 +101,9 @@ def main():
                          "3 = the §C.23 equal-weight convention (tagger, judge, PDQ-MATE)")
     ap.add_argument("--w-grid", type=float, nargs="+",
                     default=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+    ap.add_argument("--gate-grid", type=float, nargs="*", default=[],
+                    help="also try the selective gate at these deltas (see mix()). Costs a "
+                         "third dev-fitted scalar, so it only wins if dev says so clearly.")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
     d = Path(args.pool)
@@ -99,6 +126,28 @@ def main():
             best, star = (dev_f1, w, tau, sc), "  <- dev-best"
         print(f"{w:5.2f} {tau:6.3f} {dev_f1:7.2f} | {sc['P']:7.2f} {sc['R']:7.2f} "
               f"{sc['F1']:7.2f} {sc['MATE']:7.2f} {sc['a']:6.2f}{star}")
+
+    if args.gate_grid:
+        print(f"\nSELECTIVE GATE — hand the decision to group 2 only where the base is "
+              f"undecided at the NEU/minority boundary")
+        print(f"{'w':>5} {'delta':>6} {'tau':>6} {'dev F1':>7} | {'TEST F1':>7} {'a':>6}")
+        for w in args.w_grid:
+            if w == 0.0:
+                continue
+            for delta in args.gate_grid:
+                sd, jd = score(D["dev"][1], D["dev"][2], D["dev"][3], w, args.k, delta)
+                st, jt = score(D["test"][1], D["test"][2], D["test"][3], w, args.k, delta)
+                dev_f1, tau = max((evaluate(sd, jd, D["dev"][4], t, NGOLD["dev"])["F1"], t)
+                                  for t in taus)
+                sc = evaluate(st, jt, D["test"][4], tau, NGOLD["test"])
+                rows_out.append({"w": w, "delta": delta, "tau": tau, "dev_F1": dev_f1,
+                                 "test": sc})
+                star = ""
+                if dev_f1 > best[0]:
+                    best, star = (dev_f1, w, tau, sc), "  <- dev-best"
+                if star or dev_f1 > best[0] - 0.4:
+                    print(f"{w:5.2f} {delta:6.2f} {tau:6.3f} {dev_f1:7.2f} | "
+                          f"{sc['F1']:7.2f} {sc['a']:6.2f}{star}")
 
     dev_f1, w, tau, sc = best
     m = min(sc["P"] - BAR["P"], sc["R"] - BAR["R"], sc["F1"] - BAR["F1"])

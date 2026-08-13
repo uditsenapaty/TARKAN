@@ -1016,6 +1016,17 @@ Confusion on the 945 in-pool gold spans is not diffuse either — it is one dire
 **158 of the 186 polarity errors are minority↔NEU.** NEG recall 57.4 is the single worst
 number in the campaign.
 
+**Baseline reconciliation (important for reading every D number).** The frozen pool
+reproduces §C.23's core-8 configuration on **dev to within 0.01** (69.37 vs 69.36) and lands
+0.57 lower on test (70.18 vs 70.75); the 15-member set gives dev 70.07 / test 70.37 against
+§C.25's 71.37. The whole difference is τ tie-breaking — a 0.005 grid on F1 here versus a
+0.01 grid on the per-cell margin there — which is precisely the §C.26 instability
+(test spans 1.2 with dev flat). Nothing is broken and nothing is being chased: **§C.26
+already ruled that ~70.5 is the defensible dev-selected figure and 71.37 is not
+dev-selectable, and 70.37 is that same number computed without a tie-break lottery.**
+Chapter D therefore measures everything against **70.37**, so the honest gap to the bar is
+**+2.53**, not +1.53.
+
 ## D.2 ★★ THE FEATURES ARE EXHAUSTED — proved by letting a selector CHEAT
 
 §C.24 called selection saturated from four dev-fitted negatives, leaving open the reading
