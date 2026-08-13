@@ -67,12 +67,31 @@ What sentiment does the tweet express toward the target?
 {options}
 Answer with one letter."""
 
+# --direct-teacher. §D.10's own conclusion, acted on: a counterfactual delta is the
+# difference of two ~80%-accurate distributions, so it carries ~sqrt(2) times the noise of
+# either arm while the effect being extracted is small -- and asking the caption teacher
+# outright (§C.25) beat differencing the image teacher against itself by ~1.1 per member.
+# This asks the SAME question §C.25 asks Llama, but of a model that is looking at the
+# actual image instead of reading a caption of it. One forward pass, not two.
+SHIFT_PROMPT = """Tweet: {text}
+Target: "{term}"
+
+You can see the image attached to this tweet. Relative to the tweet TEXT ALONE, does the
+image shift the sentiment expressed toward "{term}"?
+A. more positive
+B. more negative
+C. no shift
+
+Answer with one letter."""
+SHIFT_DIRS = ["POS", "NEG", "NONE"]     # matches pds_teacher.py's column order exactly
+
 
 class VLDS(Dataset):
     """One item per aspect. `use_image=False` gives the text-only arm of the counterfactual."""
 
-    def __init__(self, ex, dataset, order="fwd", use_image=True):
+    def __init__(self, ex, dataset, order="fwd", use_image=True, shift=False):
         self.ex, self.order, self.use_image = ex, ORDERS[order], use_image
+        self.shift = shift
         self.root = DATA / "images" / dataset
 
     def __len__(self):
@@ -80,8 +99,11 @@ class VLDS(Dataset):
 
     def __getitem__(self, i):
         e = self.ex[i]
-        opts = "\n".join(f"{L}. {NAMES[p]}" for L, p in zip(LETTERS, self.order)) + "\n"
-        txt = PROMPT.format(text=e.marked_text(), term=e.term, options=opts)
+        if self.shift:
+            txt = SHIFT_PROMPT.format(text=e.marked_text(), term=e.term)
+        else:
+            opts = "\n".join(f"{L}. {NAMES[p]}" for L, p in zip(LETTERS, self.order)) + "\n"
+            txt = PROMPT.format(text=e.marked_text(), term=e.term, options=opts)
         content = []
         img = None
         if self.use_image:
@@ -178,6 +200,9 @@ def main():
                     help="Qwen2.5-VL is dynamic-resolution; this caps the visual token "
                          "count, which is the whole memory/speed story on a 16GB T4")
     ap.add_argument("--tta", action="store_true", help="average both option orderings")
+    ap.add_argument("--direct-teacher", action="store_true",
+                    help="ask the shift question DIRECTLY of a model looking at the image "
+                         "(one pass), instead of differencing two arms -- see SHIFT_PROMPT")
     ap.add_argument("--counterfactual", action="store_true",
                     help="emit PDS direction labels from the WITH-IMAGE minus TEXT-ONLY "
                          "difference instead of training a member")
@@ -197,7 +222,7 @@ def main():
     set_seed(args.seed)
     device = torch.device("cuda")
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
-    train_mode = not (args.counterfactual or args.score_only)
+    train_mode = not (args.counterfactual or args.score_only or args.direct_teacher)
     proc, model = load_model(args, train_mode)
     tok = proc.tokenizer
     opt_ids = [tok.encode(l, add_special_tokens=False)[0] for l in LETTERS]
@@ -208,8 +233,30 @@ def main():
     ex = {s: masc_examples(v) for s, v in insts.items()}
     if args.limit:
         ex = {s: v[:args.limit] for s, v in ex.items()}
-    mk = lambda e, bs, sh, o="fwd", im=True: DataLoader(
-        VLDS(e, args.dataset, o, im), batch_size=bs, shuffle=sh, collate_fn=coll)
+    mk = lambda e, bs, sh, o="fwd", im=True, shift=False: DataLoader(
+        VLDS(e, args.dataset, o, im, shift), batch_size=bs, shuffle=sh, collate_fn=coll)
+
+    # ------------------------------------------------------------ direct teacher
+    if args.direct_teacher:
+        e = ex[args.split]
+        loader = mk(e, args.eval_batch, False, "fwd", True, True)
+        model.eval()
+        P, K = [], []
+        with torch.no_grad():
+            for enc in loader:
+                with torch.autocast("cuda", dtype=torch.float16):
+                    lg = option_logits(model, enc, opt_ids, device)
+                P.append(torch.softmax(lg, -1).cpu().numpy())
+                K.extend(enc["key"])
+        probs = np.concatenate(P)          # already [POS, NEG, NONE] -- see SHIFT_DIRS
+        out.mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(out / f"direction_{args.split}.npz", probs=probs,
+                            keys=np.array(K, dtype=np.int64))
+        hard = probs.argmax(1)
+        print(f"wrote {len(probs)} DIRECT Qwen-VL direction labels -> {out}")
+        print("distribution:", {n: int((hard == i).sum()) for i, n in enumerate(SHIFT_DIRS)})
+        print(f"mean confidence {float(probs.max(1).mean()):.3f}")
+        return
     orders = ["fwd", "rev"] if args.tta else ["fwd"]
 
     # ---------------------------------------------------------------- counterfactual
