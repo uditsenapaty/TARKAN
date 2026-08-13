@@ -236,8 +236,13 @@ def main():
         probs = np.exp((z - z.max(1, keepdims=True)) / args.shift_temp)
         probs /= probs.sum(1, keepdims=True)
         out.mkdir(parents=True, exist_ok=True)
+        # Keep the RAW arms as well as the mapped labels. --shift-floor / --shift-temp are
+        # first guesses, and without these the only way to re-threshold is another full
+        # teacher pass over the split.
         np.savez_compressed(out / f"direction_{args.split}.npz", probs=probs,
-                            keys=np.array(K, dtype=np.int64))
+                            keys=np.array(K, dtype=np.int64),
+                            p_img=P_img.astype(np.float32),
+                            p_txt=P_txt.astype(np.float32))
         hard = probs.argmax(1)
         print(f"wrote {len(probs)} Qwen-VL direction labels -> {out}")
         print("distribution:", {n: int((hard == i).sum())
