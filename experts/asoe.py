@@ -160,6 +160,18 @@ class ASOE(nn.Module):
         nn.init.zeros_(self.head_delta[-1].weight)     # §C.27: start at the text classifier
         nn.init.zeros_(self.head_delta[-1].bias)
         self.alpha = nn.Parameter(torch.tensor(0.1))
+        # TTP: aspect-conditioned contrastive projections. §D.27 measured that evidence
+        # mechanisms have NEGATIVE marginal value above a baseline of ~77.93, and our towers
+        # sit above it -- so the intervention has to move the BASE representation instead of
+        # adding another mechanism on top of it. Stage 1 aligns the aspect text with its
+        # OWN routed image evidence E_a, using no polarity labels. Ordinary tweet-image
+        # alignment cannot express this: two aspects of one tweet share an image and would be
+        # positives for each other. Because E_a is aspect-routed and instance batching puts
+        # siblings in the same batch, they become HARD NEGATIVES and the routing is forced to
+        # be aspect-discriminative.
+        self.ct = nn.Linear(h, 256)
+        self.ci = nn.Linear(h, 256)
+        self.logit_scale = nn.Parameter(torch.tensor(np.log(1 / 0.07), dtype=torch.float32))
 
     def text(self, ids, mask, term_mask):
         hs = self.enc(input_ids=ids, attention_mask=mask).last_hidden_state
@@ -194,6 +206,16 @@ class ASOE(nn.Module):
         o, E = self.ownership(t_a, patches)
         lg_base, d, _ = self.decide(t_a, ctx, E)
         return lg_base + d, lg_base, d, o, t_a, ctx
+
+
+def ttp_loss(model, t_a, E):
+    """Symmetric InfoNCE between the aspect representation and its routed image evidence."""
+    a = nn.functional.normalize(model.ct(t_a).float(), dim=-1)
+    b = nn.functional.normalize(model.ci(E).float(), dim=-1)
+    logits = model.logit_scale.exp().clamp(max=100.0) * a @ b.t()
+    tgt = torch.arange(len(a), device=a.device)
+    return 0.5 * (nn.functional.cross_entropy(logits, tgt)
+                  + nn.functional.cross_entropy(logits.t(), tgt))
 
 
 def gold_margin(lg, y):
@@ -232,6 +254,9 @@ def main():
     ap.add_argument("--lam-own", type=float, default=0.3)
     ap.add_argument("--lam-sep", type=float, default=0.1)
     ap.add_argument("--margin", type=float, default=0.2)
+    ap.add_argument("--ttp-epochs", type=int, default=0,
+                    help="TTP stage 1: aspect-conditioned contrastive pretraining epochs "
+                         "BEFORE any polarity label is used")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
 
@@ -265,7 +290,32 @@ def main():
     scaler = torch.amp.GradScaler("cuda", enabled=device.type == "cuda")
     ce = nn.CrossEntropyLoss()
 
-    best, best_ep, bad, t0 = -1.0, -1, 0, time.time()
+    t0 = time.time()
+    if args.ttp_epochs > 0:
+        # STAGE 1 -- no polarity labels are touched here.
+        popt = torch.optim.AdamW(
+            [{"params": body, "lr": args.lr}, {"params": head, "lr": args.head_lr}],
+            weight_decay=0.01)
+        for ep in range(1, args.ttp_epochs + 1):
+            model.train(); tot = 0.0
+            for b in dl["train"]:
+                popt.zero_grad(set_to_none=True)
+                with torch.autocast("cuda", dtype=torch.float16,
+                                    enabled=device.type == "cuda"):
+                    t_a, _ = model.text(b["ids"].to(device), b["mask"].to(device),
+                                        b["term_mask"].to(device))
+                _, E = model.ownership(t_a, b["patches"].to(device))
+                lo = ttp_loss(model, t_a, E)
+                scaler.scale(lo).backward(); scaler.unscale_(popt)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                scaler.step(popt); scaler.update()
+                tot += float(lo)
+            print(f"[TTP] ep{ep} contrastive {tot/len(dl['train']):.4f} | "
+                  f"{time.time()-t0:.0f}s", flush=True)
+        # the polarity heads must start fresh -- stage 1 never saw a label
+        nn.init.zeros_(model.head_delta[-1].weight); nn.init.zeros_(model.head_delta[-1].bias)
+
+    best, best_ep, bad = -1.0, -1, 0
     for ep in range(1, args.epochs + 1):
         model.train(); tot = ts = to = tp = 0.0
         for b in dl["train"]:
@@ -334,6 +384,7 @@ def main():
 
     model.load_state_dict(torch.load(out / "best.pt", map_location=device))
     res = {"model": args.model, "seed": args.seed, "best_dev_acc": best,
+           "ttp_epochs": args.ttp_epochs,
            "best_epoch": best_ep, "lam_suf": args.lam_suf, "lam_own": args.lam_own,
            "lam_sep": args.lam_sep}
     for s in ("dev", "test"):
