@@ -2296,6 +2296,121 @@ it.
 
 Reproduce (CPU, seconds): `python3 experts/decide.py --pool "pools/e_standing-19........" --w-grid 0.0`
 
+## D.33 ★★★ EXTERNAL ASPECT-SENTIMENT SUPERVISION — the one INPUT class never tried  *(running)*
+
+Everything in Chapters C and D is a *mechanism*: a loss, a gate, an evidence stream, a
+combination rule. §D.27's law prices those at Δ = −0.868 × baseline + 67.67, break-even
+77.93, and our towers sit above it. §D.30–D.32 closed the evidence route from both ends.
+**§B.8's own conclusion names the only escape: *"Only NEW INFORMATION or a
+mechanism-decorrelated member can move it."*** That sentence has been in the ledger since
+Chapter B and was never acted on.
+
+Every MASC tower in this project has been trained on **3179 aspects** — t2015's train split,
+nothing else. Every MATE tower on **2101 sentences**. §D.1 measured polarity losing twice
+what extraction loses. So the untried lever is not another loss; it is more supervision for
+the task that is losing.
+
+| corpus | domain | aspects |
+|---|---|---|
+| Dong et al. 2014 (`acl-14-short-data`) | **Twitter** | 6248 |
+| SemEval-2014 Task 4 Restaurants | reviews | 3608 |
+| SemEval-2014 Task 4 Laptops | reviews | 2328 |
+| MAMS-ATSA | reviews, **multi-aspect multi-polarity** | 11186 |
+| **total** | | **23370 = 7.35× t2015** |
+
+Two reasons this is aimed rather than merely bigger: t2015 train carries **368 NEG aspects**
+against these **6001**; and MAMS is built so every sentence has multiple aspects with
+*different* sentiment, which is the shortcut §C.10/§C.13/SupCon all attacked from other
+angles.
+
+**`experts/absa_extra.py`** loads all four in one format. `masc_text.py` and
+`mate_expert.py` gain `--pre-epochs/--pre-data/--pre-lr`: stage 1 trains on external data,
+then the optimiser and schedule are **rebuilt** so stage 2 starts with a fresh LR on t2015
+(without the rebuild the LR is already decayed to ~0 when the in-domain data arrives).
+`--pre-epochs 0` leaves both trainers bit-identical. For PDQ/PDS, which read image features
+the external corpora do not have, the transfer arrives as encoder weights instead
+(`--pre-save` / `--pre-init`, strict load).
+
+### The leak gate — run BEFORE training, not after
+| t2015 split | sentences | exact matches | near-dup (5-gram Jaccard ≥ 0.5) |
+|---|---|---|---|
+| train | 2101 | **0** | **0** |
+| dev | 727 | **0** | **0** |
+| test | 674 | **0** | **0** |
+
+**Max Jaccard observed: 0.000.** BIO round-trip on the extraction side: **0/9733 failures.**
+This is intermediate-task training, not benchmark adaptation — no t2015 dev/test aspect is
+touched and no t2017 is involved.
+
+### ★ Zero-shot transfer — the necessary condition, met decisively
+After stage 1 and **before any t2015 aspect is seen**, on t2015 dev:
+
+| | accuracy |
+|---|---|
+| NEU majority baseline | 59.2 |
+| **external-only (zero-shot)** | **71.21** |
+| fully fine-tuned tower | 77–78 |
+
+### Seed 42 pair — bertweet-large, identical recipe
+| | dev | **test** |
+|---|---|---|
+| control | 77.54 | 77.34 |
+| **intermediate** | **78.34** | **79.36** |
+| Δ | +0.80 | **+2.03** |
+
+### ★★ The mechanism is the OPPOSITE of the prediction
+Predicted: 6001 external NEG aspects lift NEG. Measured (test):
+
+| | NEG (113) | NEU (607) | POS (317) | ALL |
+|---|---|---|---|---|
+| control | 62.83 | 86.49 | 64.98 | 77.34 |
+| intermediate | **46.02** | **90.77** | **69.40** | 79.36 |
+| Δ | **−16.81** | +4.28 | +4.42 | **+2.03** |
+
+NEG **collapses** −16.8; the whole gain is NEU and POS, which are 924 of 1037 aspects.
+Reading: external NEG is lexically explicit ("the food was terrible"); t2015's NEG is an
+entity the tweet complains about **implicitly**, and a sharper review-trained boundary calls
+those neutral. Consistent with §D.9 measuring the image at 3× the text signal — if t2015 NEG
+is under-determined by text, that is where the visual members should live, which makes this
+member complementary to the PDS towers rather than redundant.
+
+### ★★★ Why the trade lands on the right cell
+The standing 19-member ensemble, 945 matched test candidates:
+
+```
+confusion (gold -> pred)     NEG     NEU     POS
+NEG  (n=101, recall 59.41)    60      35       6
+NEU  (n=552, recall 87.86)    20     485      47
+POS  (n=292, recall 73.63)     3      74     215
+                                   a = 80.42, 185 errors
+```
+
+**The largest single error cell is POS → NEU: 74.** With NEG → NEU's 35, **109 of 185 errors
+(59%) are the ensemble saying NEU where real sentiment exists**; only 9 are POS↔NEG. D.33
+fixes POS→NEU (the big bucket) and worsens NEG→NEU (a bucket a third the size), which is why
+the net is positive rather than a wash.
+
+### ★★ Decorrelation — the §B.8 property, measured
+Member vs the 19-member ensemble on the same 945 candidates (ensemble makes 185 errors):
+
+| member | uniquely right | uniquely wrong | **both wrong** |
+|---|---|---|---|
+| `masc_btwL_s45` (already IN the ensemble) | 37 | 44 | 148 |
+| `d33_ctl_btwL_s42` | 35 | 67 | 150 |
+| **`d33_pre_btwL_s42`** | **44** | 56 | **141** |
+
+Right on **44 of the ensemble's 185 errors (23.8%)**, beating both its own control and a
+member the ensemble already contains — and the lowest shared-blind-spot count of the three,
+which is the number §B.8 said nothing had ever moved.
+
+### Status
+Seeds 43/44 running (`queue60`); paired sd not yet available, and **one seed is not a
+result** — §D.20's floor is ±1.31 and this project's history is dev/test inversion
+(here dev +0.80 against test +2.03). `queue63` then converts to joint F1 directly, because
+§C.24 and §D.24 both measured levers that improved a member and converted to nothing.
+`queue61` applies the same lever to extraction (the bar needs +2.83 on one factor of
+`joint = MATE@τ × a` or **+1.4 on each**); `queue62` ablates MAMS.
+
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
 Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:
