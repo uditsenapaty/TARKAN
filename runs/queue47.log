@@ -1,1 +1,34 @@
 === d26_cet_btwL (vinai/bertweet-large, cet-swap 0.1) ===
+ep1 loss 1.2523 (pds 0.0042) | dev acc 74.24 | 104s
+ep2 loss 0.8170 (pds 0.0000) | dev acc 76.74 | 212s
+ep3 loss 0.5942 (pds 0.0012) | dev acc 76.74 | 321s
+ep4 loss 0.3595 (pds 0.0007) | dev acc 76.38 | 425s
+ep5 loss 0.2006 (pds 0.0001) | dev acc 77.18 | 529s
+ep6 loss 0.1133 (pds 0.0000) | dev acc 77.45 | 639s
+ep7 loss 0.0594 (pds 0.0000) | dev acc 77.72 | 749s
+ep8 loss 0.0268 (pds 0.0000) | dev acc 77.18 | 859s
+[dev] gold-span MASC acc 77.72
+[test] gold-span MASC acc 78.01
+=== d26_cet_deb (microsoft/deberta-v3-large, cet-swap 0.1) ===
+ep1 loss 1.2803 (pds 0.0036) | dev acc 72.10 | 148s
+ep2 loss 0.8374 (pds 0.0000) | dev acc 75.76 | 298s
+ep3 loss 0.4951 (pds 0.0001) | dev acc 77.27 | 453s
+ep4 loss 0.2346 (pds 0.0003) | dev acc 76.02 | 611s
+ep5 loss 0.0807 (pds 0.0001) | dev acc 77.54 | 759s
+ep6 loss 0.0482 (pds 0.0000) | dev acc 77.09 | 915s
+ep7 loss 0.0180 (pds 0.0000) | dev acc 75.40 | 1062s
+ep8 loss 0.0044 (pds 0.0000) | dev acc 77.54 | 1208s
+[dev] gold-span MASC acc 77.54
+[test] gold-span MASC acc 77.63
+=== d26_cet_robL (roberta-large, cet-swap 0.1) ===
+ep1 loss 1.3009 (pds 0.0040) | dev acc 72.73 | 106s
+ep2 loss 0.8605 (pds 0.0000) | dev acc 76.65 | 214s
+ep3 loss 0.6535 (pds 0.0000) | dev acc 74.15 | 324s
+ep4 loss 0.4159 (pds 0.0012) | dev acc 72.01 | 429s
+ep5 loss 0.2305 (pds 0.0008) | dev acc 76.83 | 532s
+ep6 loss 0.1402 (pds 0.0001) | dev acc 77.81 | 641s
+ep7 loss 0.0983 (pds 0.0000) | dev acc 76.83 | 750s
+ep8 loss 0.0211 (pds 0.0000) | dev acc 76.83 | 854s
+[dev] gold-span MASC acc 77.81
+[test] gold-span MASC acc 78.30
+=== QUEUE47 DONE ===

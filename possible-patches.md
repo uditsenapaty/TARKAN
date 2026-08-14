@@ -1923,6 +1923,55 @@ Together with 7 backbones, an 8B decoder (80.04, ties a 355M encoder), and every
 variant in Chapters C–D, **the polarity side admits no architectural improvement at this
 capacity.**
 
+## D.26 CET — corrupt the evidence-ASPECT binding. **−0.20, and the family closes**
+
+With the polarity-head axis closed (§D.15/D.20/D.25), this stops changing the layer that
+*consumes* the representation and changes what the model learns about **evidence**. The
+constraint: feeding an aspect its **sibling's** evidence must not move its decision, because
+evidence belongs to an aspect rather than to the tweet. §C13 acted on final logits and §C10
+on the input text — both weak/negative; corrupting the evidence-aspect **binding** was
+untested.
+
+**Verified a real intervention before building it**, since a no-op would have produced a
+meaningless null: across 400 multi-aspect tweets the AADG visual vector differs between
+aspects in **304** and the aspect-image similarity `u` in **393**, with 799 of 2101 train
+tweets carrying >1 aspect.
+
+| tower | §C.27 PDS baseline | CET swap | Δ |
+|---|---|---|---|
+| bertweet-large | 78.50 | 78.01 | −0.49 |
+| **deberta-v3-large** | 76.76 | 77.63 | **+0.87** |
+| roberta-large | 79.27 | 78.30 | −0.97 |
+| **mean** | **78.18** | **77.98** | **−0.20** |
+
+Flat (sd 0.95, well inside the ±1.31 floor). **The deberta cell is the whole lesson: a single
+tower shows +0.87 and the cross-tower mean is −0.20.** Running one architecture would have
+produced a reportable "breakthrough". This is the third time in Chapter D that a single
+favourable cell would have been wrong — §D.17's CER (+0.58 on t2015, +0.02 independent) and
+§D.25's TORF (+3.7 on bertweet-base, −0.46 on bertweet-large) being the others.
+
+**Not run, deliberately: CET-1 (remove evidence, measure Δ).** On this additive architecture
+`lg_full = lg_base + scale·g·δ` with `lg_base` never seeing `vis`, so
+`lg_full − lg_novis ≈ scale·g·δ` — exactly the quantity §C.27's signed-margin loss already
+constrains. It would have re-measured PDS. Implementation cost was near zero anyway:
+`forward()` now returns `t_a` and `evidence_delta()` reuses it, so the swapped-evidence
+residual needs no second encoder pass.
+
+### ★ BOTH REMAINING FAMILIES ARE NOW CLOSED
+| family | change | cross-seed / cross-tower mean |
+|---|---|---|
+| **polarity representation** | factorized `P(non-neutral)×P(POS\|non-neutral)` | −0.97 |
+| | TBRF target-vs-background | −0.07 |
+| | TORF signed evidence decomposition | −0.46 |
+| **evidence training** | PDS caption teacher (§C.25, kept) | +0.26 |
+| | PDS Qwen-VL counterfactual teacher (§D.9/D.13) | −0.94 |
+| | PDS Qwen-VL direct image teacher (§D.12) | −0.23 |
+| | **CET evidence-aspect swapping** | **−0.20** |
+
+Nothing in either family clears the detection floor. Combined with the closed axes for
+combiners, member selection, span selection, teacher variants, pool construction, extraction
+architecture and backbone, **there is no remaining untested lever on this hardware**.
+
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
 Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:
