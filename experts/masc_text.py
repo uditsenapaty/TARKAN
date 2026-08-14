@@ -216,6 +216,7 @@ def sibling_logit_loss(logits, y, inst, margin=1.0):
 
 
 NEU_ID = POL2ID["NEU"]
+APS_W = {}
 CER_CONS = None      # {key: (consensus_label, is_hard)} -- filled by main()
 
 
@@ -255,7 +256,7 @@ class TextMASC(nn.Module):
     this changes the output space rather than reweighting it.
     """
 
-    def __init__(self, model_id, dropout=0.1, factorized=False):
+    def __init__(self, model_id, dropout=0.1, factorized=False, aps=False):
         super().__init__()
         from transformers import AutoConfig, AutoModel
         cfg = AutoConfig.from_pretrained(model_id)
@@ -263,7 +264,21 @@ class TextMASC(nn.Module):
         h = cfg.hidden_size
         self.drop = nn.Dropout(dropout)
         self.factorized = factorized
+        self.aps = aps
         self.head = nn.Linear(2 * h, 3)
+        if aps:
+            # APS. The benchmark label is not the same object as the underlying sentiment:
+            # §D.16 measured 425 of 750 consensus failures at >0.95 confidence with only 26%
+            # recoverable, i.e. a large irreducible/mislabelled component. Ordinary CE lets
+            # those labels reshape the encoder. Here the SEMANTIC head owns the encoder and
+            # is supervised in proportion to how much the model family agrees with gold,
+            # while the ANNOTATION head is a zero-init residual over DETACHED features -- it
+            # fits the benchmark's quirks at full weight but its gradient cannot reach the
+            # representation. The dataset's annotation policy is absorbed, not learned into
+            # the features.
+            self.head_sem = nn.Linear(2 * h, 3)
+            self.head_ann = nn.Linear(2 * h, 3)
+            nn.init.zeros_(self.head_ann.weight); nn.init.zeros_(self.head_ann.bias)
         if factorized:
             self.head_aff = nn.Linear(2 * h, 2)     # neutral vs non-neutral
             self.head_dir = nn.Linear(2 * h, 2)     # NEG vs POS, non-neutral only
@@ -277,6 +292,10 @@ class TextMASC(nn.Module):
 
     def forward(self, ids, mask):
         z = self.features(ids, mask)
+        if self.aps:
+            sem = self.head_sem(z).float()
+            ann = sem + self.head_ann(z.detach()).float()
+            return sem, ann          # ann is what is reported
         if not self.factorized:
             return self.head(z).float()
         return self.head_aff(z).float(), self.head_dir(z).float()
@@ -298,6 +317,9 @@ def run(model, loader, device):
     for b in loader:
         with torch.autocast("cuda", dtype=torch.float16, enabled=device.type == "cuda"):
             lg = model(b["ids"].to(device), b["mask"].to(device))
+        if isinstance(lg, tuple) and getattr(model, "aps", False):
+            P.append(torch.softmax(lg[1].float(), -1).cpu().numpy())
+            Y.extend(b["y"].tolist()); K.extend(b["key"]); continue
         if isinstance(lg, tuple):                       # factorized heads
             lg = factorized_logits(*lg)
             P.append(torch.exp(lg.float()).cpu().numpy())
@@ -353,6 +375,11 @@ def main():
     ap.add_argument("--score-only", action="store_true",
                     help="skip training, load <out>/best.pt and just (re-)score. Lets the "
                          "candidate anchor set change without retraining any member.")
+    ap.add_argument("--aps", action="store_true",
+                    help="Annotation-Policy Separation: semantic head owns the encoder "
+                         "(agreement-weighted), annotation head is a zero-init residual on "
+                         "detached features and absorbs the benchmark's label quirks")
+    ap.add_argument("--aps-lambda", type=float, default=1.0)
     ap.add_argument("--factorized", action="store_true",
                     help="split the 3-way softmax into P(non-neutral) x P(POS|non-neutral); "
                          "the direction head is trained on POS/NEG examples only")
@@ -380,6 +407,19 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
     LEX = load_lexicon() if args.opinion_dropout > 0 else {}
+
+    if args.aps:
+        global APS_W
+        z = np.load(args.cer_buffer)
+        # agreement = how many of the 4 independent OOF towers match gold. Low agreement
+        # means the label is suspicious, so it shapes the representation only weakly.
+        tab = {0: 0.15, 1: 0.15, 2: 0.50, 3: 0.75, 4: 1.00}
+        APS_W = {(int(k[0]), int(k[1]), int(k[2])): tab[int(n)]
+                 for k, n in zip(z["keys"], z["n_right"])}
+        import collections
+        c = collections.Counter(APS_W.values())
+        print("APS agreement weights: " + "  ".join(f"{v}:{c[v]}" for v in sorted(c)),
+              flush=True)
 
     if args.cer > 0 or args.cer_upweight > 1.0:
         global CER_CONS
@@ -442,7 +482,7 @@ def main():
             dl[s_] = DataLoader(ds_, batch_size=args.batch, shuffle=(s_ == "train"),
                                 collate_fn=coll)
 
-    model = TextMASC(args.model, factorized=args.factorized).to(device)
+    model = TextMASC(args.model, factorized=args.factorized, aps=args.aps).to(device)
     head = [p for n, p in model.named_parameters() if not n.startswith("enc.")]
     body = [p for n, p in model.named_parameters() if n.startswith("enc.")]
     opt = torch.optim.AdamW([{"params": body, "lr": args.lr},
@@ -472,7 +512,15 @@ def main():
             with torch.autocast("cuda", dtype=torch.float16, enabled=device.type == "cuda"):
                 lg = model(b["ids"].to(device), b["mask"].to(device))
             yb = b["y"].to(device)
-            if args.factorized:
+            if args.aps:
+                sem, ann = lg
+                wi = torch.tensor([APS_W.get(tuple(k), 1.0) for k in b["key"]],
+                                  device=device, dtype=torch.float32)
+                ce_sem = nn.functional.cross_entropy(sem, yb, reduction="none")
+                loss = (nn.functional.cross_entropy(ann, yb)
+                        + args.aps_lambda * (wi * ce_sem).sum() / wi.sum().clamp(min=1e-6))
+                lg = ann
+            elif args.factorized:
                 aff, dirn = lg
                 y_aff = (yb != NEU_ID).long()
                 loss = nn.functional.cross_entropy(aff, y_aff)
