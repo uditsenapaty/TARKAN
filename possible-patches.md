@@ -1643,6 +1643,47 @@ n_dev = 1122 and σ ≈ 1.2 there is no protocol available that both finds this 
 and remains honest. The ceiling is not the model any more; **it is the size of the
 development set.**
 
+## D.18 ★★★ INDEPENDENT VALIDATION KILLS CER — and vindicates the method, not the result
+
+§D.17 concluded the CER member effect was **real** because it replicated across three
+architectures on t2015 with matched controls (+0.58 / +0.67 / +0.48). That conclusion was
+still drawn on the *same test set the effect was discovered on*. §D.17 also identified the
+true bottleneck as **selection data**, so the fix is more of it: **t2017 dev + test = 2410
+labelled aspects that are neither t2015 test nor anything this project reports.** The six
+t2015 members were scored there unchanged (`--ckpt`, no retraining).
+
+| tower | t2015 Δtest | **t2017 Δdev** | **t2017 Δtest** |
+|---|---|---|---|
+| bertweet-large | +0.58 | −0.76 | +0.32 |
+| deberta-v3-large | +0.67 | +0.85 | +1.05 |
+| roberta-large | +0.48 | **−3.06** | **−1.30** |
+| **mean** | **+0.58** | **−0.99** | **+0.02** |
+
+**CER is flat on independent data.** The three-way agreement on t2015 did not survive
+contact with 2410 aspects the effect was not discovered on, and the roberta tower reverses
+outright. So:
+
+* **§D.17's "the member effect is real" is withdrawn.** Three same-sign measurements on one
+  test set were not sufficient evidence, even with matched controls — the towers share
+  training data, the OOF buffer, and the evaluation sample, so their errors are correlated
+  and three agreeing draws are worth far less than three independent ones.
+* **The chapter-best 71.03 is not merely unselectable (§D.17) — it is most likely not real.**
+  It is not claimed, and the claimable result is unchanged.
+
+**What this validates is the protocol, not the patch.** Chapters C and D contain ~30
+measured mechanisms, and the recurring failure mode has been a promising cell on a
+1122-example dev set or a 1037-example test set. This is the first time an effect was taken
+to a genuinely independent sample before being believed, and it died there in one run — for
+about 12 minutes of GPU. **Every earlier "+0.3 that didn't convert" in this ledger should be
+read in that light: the conversion failures may not have been ensemble saturation at all,
+but effects that were never there.** That reading is consistent with §D.11 (the residual
+errors are consensus errors) and with §D.16's recoverability curve (74% of the
+ultra-confident failures are irreducible) without needing either to be wrong.
+
+**Standing recommendation for any future work on this system: no mechanism should be
+believed on t2015 alone. Score it on t2017 first — it costs minutes and it is the only
+control in this project that has ever falsified a positive.**
+
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
 Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:
