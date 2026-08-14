@@ -1537,10 +1537,13 @@ well below 100 on a pool that contains the right span.
 | RER + kernel, weight 0.10 | 78.07 | 77.34 |
 | factorized head | 76.92 | 77.72 |
 
-**No knob is monotone and the whole family scatters ±0.6 around baseline.** One cell landing
-0.58 above baseline out of eleven attempts is the expected best-of-eleven under noise, and
-the ±1.6 tower spread measured in §D.13 is larger than the entire effect. **The +0.58 is not
-a result.**
+**No knob is monotone and the whole family scatters ±0.6 around baseline** — on this tower.
+I first read that as "the +0.58 is a best-of-eleven artefact". **That verdict was wrong, and
+§D.17 corrects it:** with matched same-recipe baselines on two further architectures, CER at
+weight 0.05 replicates at +0.67 (deberta) and +0.48 (roberta). A single-tower weight sweep
+was the wrong instrument for deciding whether the effect exists; matched controls across
+architectures were. What the sweep does establish is that the *weight* is not tunable —
+0.02, 0.05 and 0.10 are not ordered, so 0.05 is not an optimum, just a value that works.
 
 **Two decompositions worth keeping, both clean:**
 * **The margin is the useful half; replay is harmful.** Margin-only 79.27, replay-only
@@ -1596,6 +1599,49 @@ mostly-mislabelled cases) and why filtering to conf>0.95 underperformed conf>0.7
 filter selects precisely the noise). **A large part of the remaining gap is annotation
 noise, not modelling headroom** — which is the most useful thing Chapter D can say about why
 72.9 is out of reach here.
+
+## D.17 ★★★ CER IS REAL AT THE MEMBER LEVEL, PRODUCES THE CHAPTER'S BEST JOINT, AND IS
+## STILL NOT CLAIMABLE — the eighth inversion
+
+**Matched same-recipe baselines (seed 45, 6 epochs) on all three towers:**
+| tower | baseline | CER 0.05 | Δ test |
+|---|---|---|---|
+| bertweet-large | 78.69 | 79.27 | **+0.58** |
+| deberta-v3-large | 78.21 | 78.88 | **+0.67** |
+| roberta-large | 78.11 | 78.59 | **+0.48** |
+| **mean** | **78.34** | **78.91** | **+0.58** |
+
+Three independent architectures, same sign, similar magnitude. **The member-level effect is
+real** — and dev cannot see it at all (+1.34 / +0.09 / −1.96, mean −0.18).
+
+**Used as an UPGRADE to the core three members rather than as extra members** — which is the
+correct way to spend a member-level improvement, and which §D.16 failed to try — it produces
+the best joint result of the chapter:
+
+| core variant | dev | **test** | MATE@τ | `a` |
+|---|---|---|---|---|
+| all plain (standing 19) | **70.43** | 70.62 | 87.80 | 80.44 |
+| CER on bertweet only | 70.34 | 70.72 | 87.80 | 80.55 |
+| **CER on all three** | 69.74 | **71.03** | 87.83 | **80.87** |
+| CER added as 3 extra members (22) | 70.34 | 70.24 | 87.80 | 80.00 |
+
+**Test rises monotonically as each CER member replaces its plain counterpart; dev falls
+monotonically.** The gain is where the mechanism was aimed — `a` 80.44 → **80.87**, the
+highest of the campaign, with MATE@τ unchanged — so this is a genuine polarity improvement,
+not a threshold artefact.
+
+**And dev-argmax selects the worst test cell of the three.** Choosing each member's variant
+by its own dev accuracy (CER for bertweet and deberta, plain for roberta) gives test 70.62 —
+no better than doing nothing. **71.03 is best-measured and not dev-selectable**, exactly like
+§C.25's 71.37 before it, and it is not claimed here.
+
+**Why this one stings more than the others:** every previous inversion involved a mechanism
+that was flat or negative at the member level, so the ensemble refusing it was consistent.
+Here the mechanism is *measurably positive on three architectures*, it moves the *right*
+quantity (`a`), it converts to +0.41 joint — and dev still points the other way. With
+n_dev = 1122 and σ ≈ 1.2 there is no protocol available that both finds this configuration
+and remains honest. The ceiling is not the model any more; **it is the size of the
+development set.**
 
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
