@@ -306,6 +306,9 @@ def main():
     ap.add_argument("--dataset", default="twitter2015")
     ap.add_argument("--desc", default="data/aadg/twitter2015")
     ap.add_argument("--pds", default="data/pds/twitter2015")
+    ap.add_argument("--aspect-suffix", default="",
+                    help="read desc_/aspect_ files with this suffix, e.g. _qwen for the "
+                         "Qwen2.5-VL description source (D30)")
     ap.add_argument("--spans", default=None)
     ap.add_argument("--lambda-pds", type=float, default=0.5)
     ap.add_argument("--margin", type=float, default=0.5)
@@ -345,8 +348,10 @@ def main():
     tok = AutoTokenizer.from_pretrained(args.model)
     insts = {s: load(args.dataset, s) for s in ("train", "dev", "test")}
     ex = {s: masc_examples(v) for s, v in insts.items()}
-    desc = {s: json.load(open(D / f"desc_{s}.json")) for s in insts}
-    art = {s: load_aspect_npz(D / f"aspect_{s}.npz") for s in insts}
+    desc = {s: json.load(open(D / f"desc_{s}{args.aspect_suffix}.json"))
+            for s in insts}
+    art = {s: load_aspect_npz(D / f"aspect_{s}{args.aspect_suffix}.npz")
+           for s in insts}
     vis_dim = next(iter(art["train"][0].values())).shape[0]
 
     z = np.load(Path(args.pds) / "direction_train.npz")

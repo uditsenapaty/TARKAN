@@ -48,6 +48,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from experts.common import DATA, image_path, load  # noqa: E402
 
 CAPTIONER = "Salesforce/blip-image-captioning-base"
+CAPTIONS_FILE = None
+OUT_SUFFIX = ""
 CLIP_ID = "openai/clip-vit-base-patch32"          # the paper's own visual encoder
 STOP = {"a", "an", "the", "this", "that", "these", "those", "it", "there", "some",
         "front", "background", "image", "picture", "photo", "view", "side", "top"}
@@ -207,7 +209,9 @@ def stage_describe(ds: str, spans_dir: str | None, alpha: float, beta: float,
     clip = CLIPModel.from_pretrained(CLIP_ID).to(device).eval()
 
     d = out_dir(ds)
-    caps = json.load(open(d / "captions.json"))
+    cap_file = d / (CAPTIONS_FILE or "captions.json")
+    caps = json.load(open(cap_file))
+    print(f"description source: {cap_file.name} ({len(caps)} images)", flush=True)
     z = np.load(d / "regions.npz", allow_pickle=True)
     reg_feats, reg_ids = z["feats"], list(z["ids"])
     reg_index = {k: i for i, k in enumerate(reg_ids)}
@@ -316,7 +320,7 @@ def stage_describe(ds: str, spans_dir: str | None, alpha: float, beta: float,
                     (no > 0 and float(np.max(direct[i_a])) >= 0.85)
                 rec_y.append(1.0 if hit else 0.0)
 
-        json.dump(descs, open(d / f"desc_{split}.json", "w"))
+        json.dump(descs, open(d / f"desc_{split}{OUT_SUFFIX}.json", "w"))
         np.savez_compressed(d / f"aspect_{split}.npz",
                             keys=np.array(rec_keys, dtype=np.int64),
                             vis=np.asarray(rec_vis, dtype=np.float32),
@@ -332,6 +336,15 @@ def stage_describe(ds: str, spans_dir: str | None, alpha: float, beta: float,
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset", default="twitter2015")
+    ap.add_argument("--captions", default=None,
+                    help="alternative caption file inside data/aadg/<ds>/ (e.g. "
+                         "captions_qwen.json from experts/qwen_describe.py). The whole AADG "
+                         "chain -- dual similarity, greedy one-to-one matching, TRAIN-ECDF "
+                         "u -- is unchanged; only the description source differs, which is "
+                         "the axis MADSC's own ablation prices at -1.1 for BLIP2.")
+    ap.add_argument("--suffix", default="",
+                    help="suffix for the written desc_/aspect_ files, so a new evidence set "
+                         "does not overwrite the BLIP one it is being compared against")
     ap.add_argument("--stage", choices=["captions", "regions", "describe", "all"],
                     default="all")
     ap.add_argument("--spans", default=None)
@@ -341,6 +354,9 @@ def main():
                     help="percentile of the TRAIN similarity distribution used "
                          "as tau (raw CLIP cosines have no usable absolute scale)")
     args = ap.parse_args()
+    global CAPTIONS_FILE, OUT_SUFFIX
+    CAPTIONS_FILE = args.captions
+    OUT_SUFFIX = args.suffix
     if args.stage in ("captions", "all"):
         stage_captions(args.dataset)
     if args.stage in ("regions", "all"):
