@@ -269,7 +269,7 @@ class TextMASC(nn.Module):
     """
 
     def __init__(self, model_id, dropout=0.1, factorized=False, aps=False,
-                 tbrf=False, torf=False):
+                 tbrf=False, torf=False, dual=False):
         super().__init__()
         from transformers import AutoConfig, AutoModel
         cfg = AutoConfig.from_pretrained(model_id)
@@ -277,6 +277,22 @@ class TextMASC(nn.Module):
         h = cfg.hidden_size
         self.drop = nn.Dropout(dropout)
         self.factorized = factorized
+        self.dual = dual
+        if dual:
+            # DUAL-ANCHOR. TARKAN anchors the ASPECT but never the OPINION, so nothing in the
+            # architecture answers "which sentiment cue belongs to THIS target". §D.1 put 158
+            # of 186 errors at minority<->NEU, which is the signature of a model reading the
+            # tweet's overall tone. §D.28 showed image grounding is polarity-irrelevant, so
+            # the ownership has to be over TEXT tokens -- ASOE routed over the wrong modality.
+            #   o_j     : learned opinion SALIENCE, is token j sentiment-bearing at all
+            #   d_j     : learned signed DIRECTION of that cue
+            #   r_a,j   : relation MLP over [h_a, h_j, h_a*h_j, |h_a-h_j|] -- richer than
+            #             §D.25 TORF's bilinear dot product, and salience is separate from sign
+            #   alpha   : softmax_j(r + o)   e_a = sum_j alpha_j h_j   D_a = sum_j alpha_j d_j
+            self.op_sal = nn.Linear(h, 1)
+            self.op_dir = nn.Linear(h, 1)
+            self.rel = nn.Sequential(nn.Linear(4 * h, h), nn.GELU(), nn.Linear(h, 1))
+            self.head_dual = nn.Linear(4 * h + 1, 3)
         self.torf = torf
         if torf:
             # TORF. §D.1: 158 of 186 polarity errors are minority<->NEU, i.e. the model sees
@@ -337,6 +353,19 @@ class TextMASC(nn.Module):
         h = self.enc(input_ids=ids, attention_mask=mask).last_hidden_state
         m = mask.unsqueeze(-1).float()
         mean = (h * m).sum(1) / m.sum(1).clamp(min=1)
+        if self.dual:
+            am = amask.unsqueeze(-1).float()
+            h_a = (h * am).sum(1) / am.sum(1).clamp(min=1)                   # aspect anchor
+            ha = h_a.unsqueeze(1).expand_as(h)
+            rel = self.rel(torch.cat([ha, h, ha * h, (ha - h).abs()], -1)).squeeze(-1)
+            o = self.op_sal(h).squeeze(-1)                                   # opinion salience
+            d = torch.tanh(self.op_dir(h).squeeze(-1))                       # signed direction
+            neg_inf = torch.finfo(rel.dtype).min
+            a = (rel + o).masked_fill(mask == 0, neg_inf).softmax(-1)        # ownership
+            e_a = (a.unsqueeze(-1) * h).sum(1)
+            D_a = (a * d).sum(-1, keepdim=True)                              # aggregate sign
+            self._own = a                                                   # for the loss
+            return self.drop(torch.cat([h_a, e_a, h_a * e_a, h_a - e_a, D_a], -1))
         if self.torf:
             am = amask.unsqueeze(-1).float()
             t_a = (h * am).sum(1) / am.sum(1).clamp(min=1)          # the aspect itself
@@ -362,6 +391,8 @@ class TextMASC(nn.Module):
 
     def forward(self, ids, mask, amask=None):
         z = self.features(ids, mask, amask)
+        if self.dual:
+            return self.head_dual(z).float()
         if self.torf:
             return self.head_torf(z).float()
         if self.tbrf:
@@ -449,6 +480,12 @@ def main():
     ap.add_argument("--score-only", action="store_true",
                     help="skip training, load <out>/best.pt and just (re-)score. Lets the "
                          "candidate anchor set change without retraining any member.")
+    ap.add_argument("--dual", action="store_true",
+                    help="Dual-Anchor: aspect anchor + learned opinion anchor + aspect->"
+                         "opinion ownership attention over TEXT tokens")
+    ap.add_argument("--dual-own", type=float, default=0.0,
+                    help="cross-aspect ownership COMPETITION: each salient opinion token "
+                         "should be owned by ONE aspect of the tweet, not shared")
     ap.add_argument("--torf", action="store_true",
                     help="Target-Opinion Relational Fusion: split target-conditioned "
                          "attention by a learned token sentiment sign into E+ / E- pools; "
@@ -555,7 +592,9 @@ def main():
                  mark_siblings=args.mark_siblings,
                  opinion_dropout=args.opinion_dropout, lexicon=LEX,
                  train=(s_ == "train"))
-        if s_ == "train" and args.sibling_loss > 0:
+        # DUAL-2's ownership competition also needs the aspects of one tweet co-batched:
+        # without this the cross-aspect normalisation has a single row and is a silent no-op.
+        if s_ == "train" and (args.sibling_loss > 0 or args.dual_own > 0):
             dl[s_] = DataLoader(ds_, collate_fn=coll,
                                 batch_sampler=InstanceBatchSampler(v, args.batch,
                                                                    seed=args.seed))
@@ -564,7 +603,8 @@ def main():
                                 collate_fn=coll)
 
     model = TextMASC(args.model, factorized=args.factorized, aps=args.aps,
-                     tbrf=args.tbrf, torf=args.torf).to(device)
+                     tbrf=args.tbrf, torf=args.torf,
+                     dual=args.dual).to(device)
     head = [p for n, p in model.named_parameters() if not n.startswith("enc.")]
     body = [p for n, p in model.named_parameters() if n.startswith("enc.")]
     opt = torch.optim.AdamW([{"params": body, "lr": args.lr},
@@ -635,6 +675,26 @@ def main():
                     ce_i = nn.functional.cross_entropy(lg, yb, reduction="none")
                     loss = loss + (args.cer_upweight - 1.0) * (
                         (cw * ce_i).sum() / cw.sum().clamp(min=1e-6))
+            if args.dual_own > 0 and getattr(model, "_own", None) is not None:
+                # COMPETITION: normalise ownership ACROSS the aspects of a tweet, then push
+                # each salient token to be owned by ONE of them. §C13 acted on final logits
+                # and §C10 on the input text; this acts on the evidence ATTRIBUTION itself.
+                own = model._own                                   # [B, L] per-aspect
+                inst = b["inst"].to(device)
+                lo = own.new_zeros(())
+                npair = 0
+                for v in torch.unique(inst):
+                    idx = (inst == v).nonzero(as_tuple=True)[0]
+                    if len(idx) < 2:
+                        continue
+                    g = own[idx]                                   # [k, L]
+                    comp = g / g.sum(0, keepdim=True).clamp(min=1e-9)   # across aspects
+                    ent = -(comp * comp.clamp(min=1e-9).log()).sum(0)   # [L]
+                    w = g.sum(0)                                   # weight by salience
+                    lo = lo + (w * ent).sum() / w.sum().clamp(min=1e-9)
+                    npair += 1
+                if npair:
+                    loss = loss + args.dual_own * lo / npair
             if args.minority_margin > 0:
                 loss = loss + minority_margin_loss(lg, b["y"].to(device),
                                                    args.minority_margin)

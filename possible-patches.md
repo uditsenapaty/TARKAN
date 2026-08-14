@@ -2084,6 +2084,51 @@ Fifth loss/training bug in Chapter D caught by watching intermediate quantities 
 the final metric — and the only one that had already produced a confident wrong conclusion
 before being caught.
 
+## D.29 DUAL-ANCHOR TARKAN — anchor the OPINION, not just the aspect  *(running)*
+
+### ⚠ First, a correction to the record
+Chapters A/D have repeatedly explained shortfalls as **"model-class / compute-locked"**.
+**That explanation is not supported and is withdrawn.** MADSC reaches 72.9 with a
+**~157M-parameter BART-base** system — smaller than several members here — so parameter
+count and GPU class are not the barrier. What the measurements actually support is the far
+narrower claim: *the specific mechanisms tried on top of these representations are
+saturated.* That is a statement about the search performed, not about what is achievable on
+a T4. §D.27's regression likewise establishes only that **these** refinements stop helping
+above ~77.93 on **these** towers; six points do not make a universal law.
+
+### The gap this targets
+TARKAN anchors the **aspect** and has never anchored the **opinion**, so nothing in the
+architecture answers *"which sentiment cue belongs to THIS target"*. §D.1 puts **158 of 186**
+polarity errors at minority↔NEU — the signature of a model reading the tweet's overall tone
+rather than the target's.
+
+**And §D.28 says where to look.** Aspect-image grounding is *learnable but
+polarity-irrelevant*, so **ASOE routed ownership over the wrong modality**. These errors are
+text-driven; ownership belongs over **text tokens**. That is the correction §D.29 acts on.
+
+### Mechanism
+```
+o_j      learned opinion SALIENCE   (is token j sentiment-bearing at all)
+d_j      learned signed DIRECTION   (which way that cue points)
+r_a,j    relation MLP over [h_a, h_j, h_a*h_j, |h_a - h_j|]
+alpha    softmax_j(r + o)   ->   e_a = sum_j alpha_j h_j     D_a = sum_j alpha_j d_j
+head  <- [h_a, e_a, h_a*e_a, h_a - e_a, D_a]
+```
+Richer than §D.25's TORF, which used a **bilinear dot product** for affinity and split one
+attention by sign; here salience and direction are **separate learned quantities** and the
+relation is a full interaction MLP.
+
+**DUAL-2** adds cross-aspect **competition**: ownership is normalised *across the aspects of
+a tweet* and each salient token is pushed to be owned by **one** of them. §C13 acted on final
+logits and §C10 on the input text; this acts on the evidence **attribution** itself, using the
+444 different-polarity sibling pairs. Instance batching is force-enabled whenever
+`--dual-own > 0`, because without co-batched siblings the cross-aspect normalisation has a
+single row and is a **silent no-op** — the same class of vacuous-loss bug as §D.26's
+batch-mean margin.
+
+*Status: 6 runs (3 paired seeds x {DUAL-1, DUAL-1+2}) against the baselines TBRF and TORF
+used — 78.69 / 78.50 / 78.50.*
+
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
 Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:
