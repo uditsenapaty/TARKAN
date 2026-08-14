@@ -1972,6 +1972,73 @@ Nothing in either family clears the detection floor. Combined with the closed ax
 combiners, member selection, span selection, teacher variants, pool construction, extraction
 architecture and backbone, **there is no remaining untested lever on this hardware**.
 
+## D.27 ★★★ ASOE, AND THE LAW THAT EXPLAINS THE WHOLE CAMPAIGN
+
+**ASOE — Aspect-Signed Evidence Ownership** (`experts/asoe.py`). Every visual experiment
+here asked *"is the image useful?"* and measured ~0. ASOE asks **which visual evidence is
+OWNED by this aspect, and does the decision NEED it?** That was previously unaskable: every
+prior member compressed the image into ONE pooled vector, so there was no set to route over.
+ASOE routes over the cached EVA-ViT-g **256-patch grid** (`data/vit_cache`, 3502×257×1408,
+full train coverage — sitting unused since the PDQ work):
+
+```
+o(a,i) = softmax_i( (W_q t_a)·(W_k v_i)/sqrt(d) )      E_a = sum_i o(a,i)·W_v v_i
+```
+
+Three losses, none previously supervised: **sufficiency** (routed evidence must RAISE the
+gold margin, weighted by the teacher's `1 − P(no-shift)` — "select evidence the classifier
+*needs*, not evidence that looks relevant"), **ownership** (a sibling's routing must not move
+this aspect's decision; siblings share the image so it is free), **separation** (ownership
+maps of different-polarity siblings must diverge; 236 such pairs per epoch).
+
+*Design flaw caught in the smoke run:* penalising the **gated** `alpha·delta_sib` is
+satisfiable by driving `alpha → 0` — obeying "sibling evidence must not move me" by ignoring
+**all** evidence. `alpha` duly fell 0.100 → 0.003 in one epoch while fighting the sufficiency
+term through the same scalar. Ownership now constrains the **raw** delta (the routing) and
+`alpha` holds at +0.106. Fourth loss-design bug this chapter caught by printing intermediates.
+
+### The result, and the pattern across two mechanisms
+| tower | §C.27 PDS baseline | CET (§D.26) | **ASOE** | Δ CET | **Δ ASOE** |
+|---|---|---|---|---|---|
+| roberta-large | **79.27** | 78.30 | 78.11 | −0.97 | **−1.16** |
+| bertweet-large | 78.50 | 78.01 | 77.72 | −0.49 | **−0.78** |
+| deberta-v3-large | **76.76** | 77.63 | 78.01 | +0.87 | **+1.25** |
+| **mean** | **78.18** | 77.98 | **77.95** | −0.20 | **−0.23** |
+
+ASOE is flat (−0.23, sd 1.30). But the six points are **perfectly rank-ordered by how strong
+the tower's baseline was**, for *both* mechanisms independently:
+
+| statistic | value |
+|---|---|
+| Pearson r (Δ vs baseline) | **−0.981** (p = 0.0005) |
+| Spearman ρ | **−0.956** (p = 0.0028) |
+| least-squares fit | **Δ = −0.868 × baseline + 67.67** |
+| **break-even baseline** | **77.93** |
+
+**This quantifies Chapter A's qualitative law** — *"TARKAN's components help WEAK bases and
+are ABSORBED by strong bases; their value is inversely proportional to backbone strength"* —
+with n=6 and p=0.0005, and it explains roughly thirty negative results in one line:
+
+> **An evidence/architecture mechanism's gain declines linearly with the strength of the base
+> it is added to, crossing zero at ≈77.9. Our members sit at 76.8–79.9 and the 19-member
+> ensemble at 80.91 — entirely above break-even. Every such mechanism must therefore lose on
+> the system we actually ship, no matter how well-motivated it is.**
+
+It also predicts the §D.25 TORF anomaly exactly: bertweet-**base** (weak, ~70 at matched
+epochs) gained +3.7 while bertweet-**large** lost 0.46. And it retro-explains §C.25's PDS
+(+0.26 on members then flat in the ensemble), §C.7's gate (+0.10), and §D.12's image teacher.
+
+**Caveat, stated plainly:** n=6, and the three towers differ in architecture as well as
+strength, so "strength" and "architecture family" are confounded. The effect is nonetheless
+consistent across two mechanisms built on different principles, which is the strongest
+evidence available at this scale.
+
+### Consequence for the goal
+The mechanisms that would raise a weak model are precisely the ones that cannot raise ours.
+Clearing 72.9 needs `a` ≈ 83.1 or MATE@τ ≈ 90.6 — both above published SOTA — and this law
+says the entire class of TARKAN-native evidence refinements is structurally unable to supply
+it at our operating strength. **That is the closing statement of the campaign.**
+
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
 Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:

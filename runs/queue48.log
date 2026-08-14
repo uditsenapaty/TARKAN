@@ -1,1 +1,28 @@
 === d27_asoe_btwL (vinai/bertweet-large) ===
+ep1 loss 1.4429 (suf 0.2126 own 0.0117 sep 0.0533) | dev acc 71.21 | alpha +0.087 | 113s
+ep2 loss 1.0140 (suf 0.2136 own 0.0017 sep 0.0119) | dev acc 75.22 | alpha +0.083 | 229s
+ep3 loss 0.7447 (suf 0.2130 own 0.0173 sep 0.0139) | dev acc 75.85 | alpha +0.066 | 347s
+ep4 loss 0.5567 (suf 0.2101 own 0.0566 sep 0.0337) | dev acc 74.78 | alpha +0.080 | 464s
+ep5 loss 0.3011 (suf 0.2116 own 0.0033 sep 0.0243) | dev acc 73.53 | alpha +0.085 | 575s
+ep6 loss 0.1696 (suf 0.2127 own 0.0011 sep 0.0070) | dev acc 75.13 | alpha +0.076 | 685s
+[dev] gold-span MASC acc 75.85
+[test] gold-span MASC acc 77.72
+=== d27_asoe_deb (microsoft/deberta-v3-large) ===
+ep1 loss 1.4552 (suf 0.2126 own 0.0142 sep 0.0519) | dev acc 65.06 | alpha +0.105 | 158s
+ep2 loss 1.0174 (suf 0.2136 own 0.0031 sep 0.0298) | dev acc 74.33 | alpha +0.104 | 320s
+ep3 loss 0.6687 (suf 0.2128 own 0.0275 sep 0.0268) | dev acc 75.31 | alpha +0.135 | 484s
+ep4 loss 0.3715 (suf 0.2097 own 0.0602 sep 0.0199) | dev acc 77.18 | alpha +0.168 | 648s
+ep5 loss 0.1992 (suf 0.2116 own 0.0011 sep 0.0109) | dev acc 77.09 | alpha +0.167 | 813s
+ep6 loss 0.1149 (suf 0.2126 own 0.0003 sep 0.0059) | dev acc 76.02 | alpha +0.167 | 969s
+ep7 loss 0.0868 (suf 0.2141 own 0.0002 sep 0.0037) | dev acc 76.56 | alpha +0.167 | 1126s
+[dev] gold-span MASC acc 77.18
+[test] gold-span MASC acc 78.01
+=== d27_asoe_robL (roberta-large) ===
+ep1 loss 1.4823 (suf 0.2127 own 0.0172 sep 0.0533) | dev acc 70.41 | alpha +0.105 | 113s
+ep2 loss 1.0460 (suf 0.2136 own 0.0021 sep 0.0172) | dev acc 77.45 | alpha +0.105 | 227s
+ep3 loss 0.8155 (suf 0.2126 own 0.0044 sep 0.0159) | dev acc 75.31 | alpha +0.111 | 343s
+ep4 loss 0.5873 (suf 0.2106 own 0.0092 sep 0.0158) | dev acc 74.51 | alpha +0.105 | 453s
+ep5 loss 0.3849 (suf 0.2116 own 0.0057 sep 0.0113) | dev acc 74.69 | alpha +0.130 | 562s
+[dev] gold-span MASC acc 77.45
+[test] gold-span MASC acc 78.11
+=== QUEUE48 DONE ===
