@@ -2210,6 +2210,57 @@ because AADG is deterministic given its captions — regenerated to identical va
 (u 0.623 / y 0.278) — but with a non-reproducible teacher this would have destroyed the
 baseline mid-comparison.
 
+## D.31 ★★★ THE UNIFIED-BACKBONE ROUTE WAS ALREADY RUN — and the MADSC puzzle, stated exactly
+
+After §D.30 closed the description route, the remaining structural difference from MADSC was
+"they run ONE unified BART seq2seq for MATE+MASC+JMASA; we run separate specialist towers".
+**That experiment is Chapter A.** The proposed U0→U4 sequence maps onto measurements already
+in this ledger:
+
+| proposed step | already measured (Chapter A) | result |
+|---|---|---|
+| U0 — unified BART, trained from scratch | "our re-train of their recipe" | **65.87** |
+| unified + MABSA pretraining | official AoM checkpoint on our pipeline | **68.42** |
+| U1/U3 — unified + TARKAN teacher evidence | "+ fine-tune WITH teacher-ranked KG evidence" | **67.23** (−0.2 vs its own control 68.69) |
+| U4 — unified joint JMASA decoding | AoM *is* a seq2seq JMASA generator | 68.69 |
+| best graft ensemble | 5 heterogeneous members | **69.30** |
+
+**Every cell lands 65.9–69.3, all below the current 70.32**, and TARKAN's evidence machinery
+on a unified BART backbone measured **−0.2**. So "unified representation" is not an untested
+hypothesis here; it is a tested and weaker one.
+
+### ★ The MADSC puzzle, stated precisely
+| system | t2015 JMASA |
+|---|---|
+| AoM (published) | 68.6 |
+| **MADSC (published)** | **72.9** |
+| difference | **+4.3** |
+
+MADSC's gain over AoM is attributed by its own ablations to aspect-aware descriptions, dual
+similarity, confidence calibration and modality gating. **This project has now implemented
+every one of them and measured each at ≈0, in two different architectures:**
+
+* on our specialist ensemble — §C.7 gate +0.10, §D.30 descriptions −0.77 (with grounding
+  coverage *doubled*), §D.27 ASOE −0.23, §D.26 CET −0.20;
+* on a unified BART backbone — Chapter A's evidence graft, **−0.2**.
+
+So the honest position is one of two things, and the ledger cannot distinguish them:
+1. our reimplementation differs materially from theirs in some detail the paper does not
+   specify, or
+2. the +4.3 comes from something not identified in the paper's ablations.
+
+**MADSC has no public code** (searched 2026-08-13, recorded in `referred_clones/FIXES.md`),
+so (1) cannot be checked by reading. Six mechanisms reconstructed from the paper text, each
+measured at ≈0 in two architectures, is the strongest statement available without their
+implementation.
+
+### What remains genuinely unfilled
+Exactly one cell: **AoM (unified, 68.4) + the §D.30 Qwen-grounded evidence** — Chapter A's
+graft used BLIP-era KG/visual evidence, not the Qwen descriptions that doubled grounding
+coverage. Chapter A's own law predicts ≈0 there too (it found the components absorbed by AoM
+as well), and it requires the legacy py3.8/torch1.13/transformers3.4 environment. Recorded as
+the last untested combination, not as a promising one.
+
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
 Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:
