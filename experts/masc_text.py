@@ -522,6 +522,10 @@ def main():
                     help="comma list of experts/absa_extra.py SOURCES")
     ap.add_argument("--pre-lr", type=float, default=0.0,
                     help="encoder LR for stage 1; 0 = same as --lr")
+    ap.add_argument("--pre-save", default=None,
+                    help="write the post-stage-1 encoder here for reuse by other members")
+    ap.add_argument("--pre-init", default=None,
+                    help="load a saved intermediate encoder instead of running stage 1")
     ap.add_argument("--ckpt", default=None,
                     help="load best.pt from here instead of <out>/best.pt, so a member can "
                          "be scored on another dataset without overwriting its own outputs")
@@ -641,7 +645,12 @@ def main():
     # 12184 external aspects (Twitter + SemEval-14) is 3.83x more supervision for the
     # losing task, and 8.8x more NEG -- the campaign's worst class. `absa_extra` runs a
     # leak gate against all three t2015 splits before anything trains.
-    if args.pre_epochs > 0 and not args.score_only:
+    if args.pre_init:
+        # reuse an encoder already intermediate-trained for this backbone; 4 backbones
+        # instead of 19 members, and every member of a family starts from the same place
+        from experts.absa_extra import load_encoder
+        load_encoder(model, Path(args.pre_init) / "enc.pt")
+    elif args.pre_epochs > 0 and not args.score_only:
         if args.aps or args.factorized:
             raise SystemExit("--pre-epochs supports the plain 3-way head only")
         from experts.absa_extra import load_extra
@@ -679,6 +688,9 @@ def main():
             acc, *_ = run(model, dl["dev"], device)
             print(f"  pre-ep{ep} loss {tot/len(pre_dl):.4f} | t2015 dev acc (zero-shot) "
                   f"{acc:.2f} | {time.time()-p0:.0f}s", flush=True)
+        if args.pre_save:
+            from experts.absa_extra import save_encoder
+            save_encoder(model, Path(args.pre_save) / "enc.pt")
         # stage 2 must start from a clean optimiser state and a fresh schedule, otherwise
         # the LR is already decayed to ~0 when the in-domain data finally arrives
         opt = torch.optim.AdamW([{"params": body, "lr": args.lr},

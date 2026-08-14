@@ -337,6 +337,9 @@ def main():
     ap.add_argument("--score-only", action="store_true",
                     help="skip training, load <out>/best.pt and just (re-)score, so the "
                          "candidate anchor set can change without retraining the member")
+    ap.add_argument("--pre-init", default=None,
+                    help="load an encoder intermediate-trained on external "
+                         "aspect-sentiment data (experts/absa_extra.py)")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
 
@@ -377,6 +380,11 @@ def main():
     model = (PDSResidual if args.residual else PDSModel)(args.model, vis_dim).to(device)
     if args.residual and args.neu_escape:
         model.neu_escape = True
+    if args.pre_init:
+        # §D.33: these members read image features the external corpora do not have, so
+        # the transfer arrives as encoder weights rather than a training stage.
+        from experts.absa_extra import load_encoder
+        load_encoder(model, Path(args.pre_init) / "enc.pt")
     body = [p for n, p in model.named_parameters() if n.startswith("enc.")]
     head = [p for n, p in model.named_parameters() if not n.startswith("enc.")]
     opt = torch.optim.AdamW([{"params": body, "lr": args.lr},

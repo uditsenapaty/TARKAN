@@ -348,6 +348,9 @@ def main():
                          "candidate anchors (written to probs_span_*.npz)")
     ap.add_argument("--score-only", action="store_true",
                     help="skip training, load <out>/best.pt and just (re-)score")
+    ap.add_argument("--pre-init", default=None,
+                    help="load an encoder intermediate-trained on external "
+                         "aspect-sentiment data (experts/absa_extra.py)")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
 
@@ -368,6 +371,10 @@ def main():
     print({s: len(v) for s, v in ex.items()}, flush=True)
 
     model = PDQ(args.text_model, args.n_query).to(device)
+    if args.pre_init:
+        # §D.33: the BLIP-2 side has no external counterpart; only the text tower transfers
+        from experts.absa_extra import load_encoder
+        load_encoder(model, Path(args.pre_init) / "enc.pt", attr="text")
     head = [p for n, p in model.named_parameters()
             if n.startswith(("proj", "epe"))]
     body = [p for n, p in model.named_parameters()
