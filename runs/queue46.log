@@ -1,1 +1,28 @@
 === d25_torf_s45 ===
+ep1 loss 0.8011 | dev acc 71.48 | 55s
+ep2 loss 0.5357 | dev acc 73.08 | 112s
+ep3 loss 0.3232 | dev acc 76.92 | 172s
+ep4 loss 0.2183 | dev acc 76.47 | 230s
+ep5 loss 0.1049 | dev acc 76.38 | 284s
+ep6 loss 0.0469 | dev acc 77.63 | 337s
+[dev] gold-span MASC acc 77.63 (n=1122)
+[test] gold-span MASC acc 78.01 (n=1037)
+=== d25_torf_s46 ===
+ep1 loss 0.8431 | dev acc 70.59 | 53s
+ep2 loss 0.5918 | dev acc 74.51 | 111s
+ep3 loss 0.3797 | dev acc 68.98 | 171s
+ep4 loss 0.2268 | dev acc 75.58 | 224s
+ep5 loss 0.1401 | dev acc 74.42 | 284s
+ep6 loss 0.0653 | dev acc 77.09 | 337s
+[dev] gold-span MASC acc 77.09 (n=1122)
+[test] gold-span MASC acc 77.72 (n=1037)
+=== d25_torf_s47 ===
+ep1 loss 0.8155 | dev acc 72.19 | 54s
+ep2 loss 0.5711 | dev acc 75.31 | 110s
+ep3 loss 0.3738 | dev acc 76.29 | 169s
+ep4 loss 0.2138 | dev acc 76.56 | 227s
+ep5 loss 0.1213 | dev acc 77.54 | 286s
+ep6 loss 0.0697 | dev acc 77.18 | 344s
+[dev] gold-span MASC acc 77.54 (n=1122)
+[test] gold-span MASC acc 78.59 (n=1037)
+=== QUEUE46 DONE ===

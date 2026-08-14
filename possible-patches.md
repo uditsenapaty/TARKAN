@@ -1873,6 +1873,56 @@ That is the deepest statement of the §D.2 ceiling, and it closes the coupling r
 explains §D.11 without contradiction: the residual errors are consensus errors *and* the
 consensus cannot tell which of its own answers are the wrong ones.
 
+## D.25 TORF — signed evidence decomposition. **−0.46, and it reproduces Chapter A's law**
+
+The one member of the target-relational family §D.20 did not test. TBRF gave the head a
+target-conditioned *context vector* (aspect queries the tweet) and measured flat (−0.07), so
+"what is near this aspect" is not the missing piece. TORF splits that attention **by sign**
+using a learned per-token opinion score `s_j`:
+
+```
+alpha+_j ~ exp(r_j)*sigmoid( s_j) -> E+      head <- [t_a, E+, E-, E+ - E-]
+alpha-_j ~ exp(r_j)*sigmoid(-s_j) -> E-
+```
+
+so the POS/NEG decision carries an explicit directional contrast rather than having to
+recover one from a single pooled vector — aimed at the 158 of 186 errors that are
+minority↔NEU (§D.1). `s_j` is learned, not seeded from SenticNet (§C14 measured that hard
+opinion-word manipulation damages the pretrained representation).
+
+| seed | baseline test | TORF test | Δ |
+|---|---|---|---|
+| 45 | 78.69 | 78.01 | −0.68 |
+| 46 | 78.50 | 77.72 | −0.78 |
+| 47 | 78.50 | 78.59 | +0.09 |
+| **mean** | **78.56** | **78.11** | **−0.46** |
+
+Negative (sd 0.48), and slightly worse than TBRF.
+
+**★ The instructive part is the capacity interaction.** The bertweet-**base** smoke test was
+strongly positive — dev **74.06** at 2 epochs against the baseline's 70.32 at 2 and 73.80 at
+3 — and bertweet-**large** at 6 epochs is negative. That is the Chapter A law reproducing
+exactly: *"TARKAN's evidence/rules components help WEAK bases and are ABSORBED by strong
+bases; the components' value is inversely proportional to backbone strength."*
+
+**Generalisable warning for this project: a promising smoke test on a small/undertrained
+tower is not evidence about the strong tower — it is weak evidence in the opposite
+direction.** Extra structure substitutes for capacity the strong model already has.
+
+### The polarity-head architecture axis is now closed
+Every structural change to the polarity representation, all on bertweet-large with the
+identical recipe:
+
+| change | paired-seed mean |
+|---|---|
+| factorized `P(non-neutral) x P(POS|non-neutral)` (§D.15) | −0.97 |
+| TBRF target-vs-background (§D.20) | −0.07 |
+| **TORF signed evidence decomposition (§D.25)** | **−0.46** |
+
+Together with 7 backbones, an 8B decoder (80.04, ties a 355M encoder), and every loss
+variant in Chapters C–D, **the polarity side admits no architectural improvement at this
+capacity.**
+
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
 Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:
