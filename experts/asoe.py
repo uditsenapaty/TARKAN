@@ -257,6 +257,9 @@ def main():
     ap.add_argument("--ttp-epochs", type=int, default=0,
                     help="TTP stage 1: aspect-conditioned contrastive pretraining epochs "
                          "BEFORE any polarity label is used")
+    ap.add_argument("--ttp-freeze", action="store_true",
+                    help="stage 1 trains ONLY the routing/projection heads, leaving the "
+                         "text encoder untouched")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
 
@@ -293,9 +296,15 @@ def main():
     t0 = time.time()
     if args.ttp_epochs > 0:
         # STAGE 1 -- no polarity labels are touched here.
-        popt = torch.optim.AdamW(
-            [{"params": body, "lr": args.lr}, {"params": head, "lr": args.head_lr}],
-            weight_decay=0.01)
+        # Freezing the encoder is the CORRECT form of this experiment. Training it against
+        # the contrastive objective destroyed the text representation: stage 1 starts AT
+        # chance (ln(batch) ~= 2.08) and plateaus at 1.63, only ~0.45 nats below chance, so
+        # the aspect->image association in t2015 is very nearly unlearnable -- and optimising
+        # an encoder hard against a near-unlearnable target cost 19.8 points downstream
+        # (58.05 against a 77.82 matched control).
+        pgroups = ([{"params": head, "lr": args.head_lr}] if args.ttp_freeze else
+                   [{"params": body, "lr": args.lr}, {"params": head, "lr": args.head_lr}])
+        popt = torch.optim.AdamW(pgroups, weight_decay=0.01)
         for ep in range(1, args.ttp_epochs + 1):
             model.train(); tot = 0.0
             for b in dl["train"]:

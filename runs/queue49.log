@@ -1,1 +1,16 @@
 === d28_ctrl_s45 (--seed 45 --ttp-epochs 0) ===
+ep2 loss 0.9016 (suf 0.0000 own 0.0000 sep 0.0000) | dev acc 75.58 | alpha +0.042 | 220s
+ep4 loss 0.4511 (suf 0.0000 own 0.0000 sep 0.0000) | dev acc 75.31 | alpha +0.036 | 449s
+ep6 loss 0.1169 (suf 0.0000 own 0.0000 sep 0.0000) | dev acc 76.47 | alpha +0.041 | 664s
+[dev] gold-span MASC acc 77.54
+[test] gold-span MASC acc 77.82
+=== d28_ttp_s45 (--seed 45 --ttp-epochs 4) ===
+[TTP] ep1 contrastive 2.0896 | 104s
+[TTP] ep2 contrastive 1.7302 | 204s
+[TTP] ep3 contrastive 1.6587 | 306s
+[TTP] ep4 contrastive 1.6294 | 407s
+ep2 loss 1.5054 (suf 0.0000 own 0.0000 sep 0.0000) | dev acc 60.16 | alpha +0.018 | 627s
+ep4 loss 1.3996 (suf 0.0000 own 0.0000 sep 0.0000) | dev acc 57.93 | alpha +0.020 | 852s
+[dev] gold-span MASC acc 60.16
+[test] gold-span MASC acc 58.05
+=== d28_ctrl_s46 (--seed 46 --ttp-epochs 0) ===
