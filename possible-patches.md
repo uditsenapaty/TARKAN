@@ -1827,6 +1827,38 @@ mechanism that was *confirmed working at the member level* — the 8B decoder, I
 diversity, the image teacher's +7.1 NEG recall, the direction-weight bug fix — converted to
 nothing at the joint level.
 
+### ★★★ EVERY LEVER IS NOW MEASURED — including the one held in reserve
+The route repeatedly deferred as "the highest-upside untested lever" — **VLP-MABSA's
+MABSA-specific vision-language pretraining** — was already pulled in the Chapter A
+backbone-graft work, and it is *worse than where we are*:
+
+| system | t2015 |
+|---|---|
+| AoM official checkpoint on this pipeline (**= VLP-MABSA pretraining**) | 68.42 |
+| + fine-tune, no evidence (control) | 68.69 |
+| + TARKAN evidence graft | 67.23 |
+| best 5-member heterogeneous graft ensemble | **69.30** |
+| **Chapter D standing result** | **70.32 – 70.62** |
+
+Chapter A also recorded *why*: **"TARKAN's evidence/rules components help WEAK bases and are
+ABSORBED by strong bases — the components' value is inversely proportional to backbone
+strength."** And every stronger backbone is unobtainable: DQPSA's weights are behind an
+expired Baidu link with unresponsive authors, VLHA ships no weights, SGBIS no code, CORSA no
+weights. **AoM is the self-service ceiling and this pipeline already beats it by ~1.9.**
+
+So the axes stand as: combiners (4 measurements) · member count/selection (5) · span
+selection (4) · polarity-member families (3) · teacher variants (4) · training-time
+mechanisms (5) · pool construction (2) · **extraction architecture (1, §D.21)** ·
+**backbone (Chapter A)**. Nothing remains that is both obtainable on a T4 and untested.
+
+**What clearing 72.9 would actually require**, stated exactly: `joint = MATE@τ × a`, so from
+MATE@τ 87.80 the bar needs **`a` = 83.1** against our 80.9 and the best *published* 82.34 —
+or from `a` 80.4 it needs **MATE@τ = 90.6** against the best published 88.2. **Either route
+requires beating the published state of the art on a subtask by a clear margin, and §D.20
+shows this setup cannot even *detect* an improvement below 1.3 F1 from a single run.**
+Chapter A15 reached the same verdict from the MLLM side: the gap is **model-class, not effort
+or architecture**, and closing it needs a ≥48 GB card, not more ideas on a 16 GB one.
+
 ### What Chapter D actually established
 The number barely moved (Chapter C's honest dev-selected ~70.4 → 70.32). The contribution
 is diagnostic, and four of the findings are transferable beyond this project:
