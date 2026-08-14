@@ -2261,6 +2261,41 @@ coverage. Chapter A's own law predicts ≈0 there too (it found the components a
 as well), and it requires the legacy py3.8/torch1.13/transformers3.4 environment. Recorded as
 the last untested combination, not as a promising one.
 
+## D.32 EVIDENCE-SOURCE DECORRELATION — the one free axis §D.30 created, and it is negative
+
+§D.30 built six members that differ from existing ones in **exactly one factor**: the
+description source (BLIP vs Qwen2.5-VL-on-original-pixels). Everything else — backbone, seed,
+loss, recipe — is identical. That is a decorrelation axis this project has never had, and
+§B.8/§D.6 both showed that *decorrelation*, not member strength, is what the ensemble
+responds to. Testing it costs nothing: the member scores are already cached, so the whole
+experiment is three CPU pool builds and three `decide.py` runs.
+
+| pool | members | dev | **test** | MATE@τ | `a` |
+|---|---|---|---|---|---|
+| `e_standing-19........` (standing) | 19 | **70.43** | **70.62** | 87.80 | 80.44 |
+| `e_+qwen-evidence-22..` (add the 3 Qwen-evidence PDS towers) | 22 | 70.23 | **69.76** | 86.96 | 80.22 |
+| `e_swap-BLIP-for-QWEN.` (swap the 3 BLIP-PDS for the Qwen ones) | 19 | 70.00 | **70.12** | 87.52 | 80.11 |
+
+**Both Qwen-evidence configurations are negative, on dev and on test, and dev agrees with
+test for once** (ranking identical: standing > add > swap on dev; standing > swap > add on
+test — the two Qwen arms are 0.36 apart, inside the ±1.31 floor, the gap to standing is not).
+Adding the three towers costs −0.86 test; swapping them in costs −0.50.
+
+Note the mechanism: adding members moved **MATE@τ down** (87.80 → 86.96) while `a` also fell
+(80.44 → 80.22). The Qwen-evidence towers do not merely fail to add — their disagreement
+shifts the log-average enough to change which candidates clear τ, and both factors of the
+identity `joint = MATE@τ × a` degrade together.
+
+**Reading.** A genuinely orthogonal input factor, held to a single controlled difference,
+produced no decorrelation benefit. Combined with §D.30 (the same descriptions doubled
+grounding coverage 27.8% → 49.6% and moved polarity by −0.77), this closes the description
+route from both ends: better evidence does not help a member, and members built on different
+evidence do not help the ensemble. §B.8's conclusion — *the hard t2015 cases are
+data-intrinsic shared blind spots* — survives the one new axis that could have contradicted
+it.
+
+Reproduce (CPU, seconds): `python3 experts/decide.py --pool "pools/e_standing-19........" --w-grid 0.0`
+
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
 Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:

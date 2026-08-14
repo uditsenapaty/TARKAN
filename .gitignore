@@ -81,3 +81,6 @@ mllm/runs/
 
 # ── experiment artifacts: keep logs/metrics/spans, drop checkpoints & prob dumps ──
 # (*.pt / *.npz already ignored globally; runs/ logs+metrics are ~1MB and worth keeping)
+
+# ── raw session export; its full content is embedded in response.md Part II ──
+full_conversation.md
