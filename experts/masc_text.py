@@ -219,7 +219,7 @@ NEU_ID = POL2ID["NEU"]
 CER_CONS = None      # {key: (consensus_label, is_hard)} -- filled by main()
 
 
-def cer_loss(logits, y, consensus, is_hard, margin=1.0):
+def cer_loss(logits, y, consensus, w, margin=1.0):
     """D15 — Consensus-Error Replay: push the gold logit ABOVE the logit of whatever the
     model family confidently agreed on, on the examples where that agreement is wrong.
 
@@ -236,12 +236,11 @@ def cer_loss(logits, y, consensus, is_hard, margin=1.0):
     is against the *specific wrong label the family agreed on*, only on examples where that
     agreement was confident and wrong -- so it can only fire where the shortcut fires.
     """
-    if is_hard.sum() == 0:
+    if float(w.sum()) == 0.0:
         return logits.sum() * 0.0
-    lg = logits[is_hard]
-    gold = lg.gather(1, y[is_hard][:, None]).squeeze(1)
-    cons = lg.gather(1, consensus[is_hard][:, None]).squeeze(1)
-    return torch.relu(margin + cons - gold).mean()
+    gold = logits.gather(1, y[:, None]).squeeze(1)
+    cons = logits.gather(1, consensus[:, None]).squeeze(1)
+    return (w * torch.relu(margin + cons - gold)).sum() / w.sum().clamp(min=1e-6)
 
 
 class TextMASC(nn.Module):
@@ -363,6 +362,11 @@ def main():
     ap.add_argument("--cer-upweight", type=float, default=1.0,
                     help="extra CE mass on the family's confident failures")
     ap.add_argument("--cer-buffer", default="data/cer_train.npz")
+    ap.add_argument("--cer-recoverable", action="store_true",
+                    help="RER: replay only failures some sibling OOF tower already gets "
+                         "right, skipping the ones where the whole family fails")
+    ap.add_argument("--cer-kernel", action="store_true",
+                    help="weight replay by 4c(1-c) on the consensus confidence c")
     ap.add_argument("--cer-conf", type=float, default=0.7,
                     help="a training aspect joins the buffer when the OOF consensus is "
                          "wrong AND more confident than this")
@@ -378,13 +382,30 @@ def main():
         global CER_CONS
         z = np.load(args.cer_buffer)
         CER_CONS = {}
-        n_hard = 0
-        for k, c, cf, gd in zip(z["keys"], z["consensus"], z["conf"], z["gold"]):
-            hard = bool(c != gd and cf > args.cer_conf)
-            CER_CONS[(int(k[0]), int(k[1]), int(k[2]))] = (int(c), hard)
-            n_hard += hard
-        print(f"CER buffer: {n_hard} confident consensus FAILURES of {len(CER_CONS)} "
-              f"train aspects (conf > {args.cer_conf})", flush=True)
+        nr = z["n_right"] if "n_right" in z else None
+        n_hit, wsum = 0, 0.0
+        for i, (k, c, cf, gd) in enumerate(zip(z["keys"], z["consensus"], z["conf"],
+                                               z["gold"])):
+            w = 0.0
+            if c != gd and cf > args.cer_conf:
+                # RER: replay only errors some sibling tower already gets right. Measured
+                # recoverability collapses with confidence -- 92-93% below conf 0.90 but
+                # only 26% above 0.95, and those 425 ultra-confident cases are the majority
+                # of all failures. Replaying them is replaying label noise, which is what
+                # the -4.34 collapse at margin 0.5 was.
+                if args.cer_recoverable and nr is not None and nr[i] < 1:
+                    w = 0.0
+                else:
+                    w = 1.0
+                    if args.cer_kernel:      # 4c(1-c): peaks at c=0.5, ~0.08 at c=0.95
+                        w *= 4.0 * float(cf) * (1.0 - float(cf))
+            if w > 0:
+                n_hit += 1
+                wsum += w
+            CER_CONS[(int(k[0]), int(k[1]), int(k[2]))] = (int(c), w)
+        print(f"CER buffer: {n_hit} replayed failures of {len(CER_CONS)} train aspects "
+              f"(conf>{args.cer_conf}, recoverable={args.cer_recoverable}, "
+              f"kernel={args.cer_kernel}, total weight {wsum:.1f})", flush=True)
     if LEX:
         print(f"opinion lexicon: {len(LEX)} words |polarity|>=0.3", flush=True)
 
@@ -471,16 +492,16 @@ def main():
             # reproduced the baseline to the second decimal).
             if (args.cer > 0 or args.cer_upweight > 1.0) and CER_CONS is not None:
                 ks = [tuple(k) for k in b["key"]]
-                cons = torch.tensor([CER_CONS.get(k, (0, 0))[0] for k in ks],
+                cons = torch.tensor([CER_CONS.get(k, (0, 0.0))[0] for k in ks],
                                     device=device)
-                hard = torch.tensor([CER_CONS.get(k, (0, 0))[1] for k in ks],
-                                    device=device, dtype=torch.bool)
+                cw = torch.tensor([CER_CONS.get(k, (0, 0.0))[1] for k in ks],
+                                  device=device, dtype=torch.float32)
                 if args.cer > 0:
-                    loss = loss + args.cer * cer_loss(lg, yb, cons, hard, args.cer_margin)
-                if args.cer_upweight > 1.0 and hard.any():
-                    # replay: extra CE mass on the family's confident failures
-                    loss = loss + (args.cer_upweight - 1.0) * nn.functional.cross_entropy(
-                        lg[hard], yb[hard])
+                    loss = loss + args.cer * cer_loss(lg, yb, cons, cw, args.cer_margin)
+                if args.cer_upweight > 1.0 and float(cw.sum()) > 0:
+                    ce_i = nn.functional.cross_entropy(lg, yb, reduction="none")
+                    loss = loss + (args.cer_upweight - 1.0) * (
+                        (cw * ce_i).sum() / cw.sum().clamp(min=1e-6))
             if args.minority_margin > 0:
                 loss = loss + minority_margin_loss(lg, b["y"].to(device),
                                                    args.minority_margin)
