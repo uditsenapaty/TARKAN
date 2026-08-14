@@ -1,4 +1,4 @@
-# Session Handoff — TARKAN Chapter D: freeze the pool, re-derive the target, exhaust the model-class levers
+# Session Handoff — TARKAN Chapter D: freeze the pool, re-derive the target, exhaust every lever
 
 ## Where it started
 Chapter C ended at "every axis is saturated" with a best-measured 71.37 (~70.5 under strict
@@ -24,25 +24,29 @@ unchanged: one Tesla T4 16 GB, fp16 only.
   **Clears 15 of 19 baselines. SGBIS 71.1 / DQPSA 71.9 / VLHA 72.5 / MADSC 72.9 remain
   above. The goal is NOT met.**
 
-## The four findings (this is the session's actual output)
-1. **§D.1 — polarity loses 2.02× what extraction loses.** Of 1037 test gold pairs: 92 lost
-   to extraction, **186 to polarity**, 759 recoverable. This *reverses* §C.19, which had
-   directed the eight experiments after it toward MATE precision. NEG recall is 57.4 and
-   158 of the 186 errors are minority↔NEU.
-2. **§D.2 — a selector fitted directly ON TEST cannot beat the honest one** (70.77 vs
-   70.83; geometric product 70.37), against a perfect-selector ceiling of 84.52. Selection
-   is closed because **the information is absent, not because dev is noisy.**
-3. **§D.6/D.8/D.10 — the ensemble is saturated, three independent ways.** A member with 49
-   uniquely-right aspects and an 85.63 two-model oracle adds nothing; a 1.1-point swing in
-   member quality moves the joint by 0.03. **Seven dev/test inversions** localise the
-   cause: n_dev = 1122 with σ ≈ 1.2 cannot resolve the differences being chased, so every
-   fitted combiner fits noise. **Better members do not fix a selection problem.**
-4. **§D.9/D.10 — more teacher signal is not better teacher signal.** Qwen2.5-VL on the
-   *original pixels* carries ~3× the evidence of a BLIP caption (76% vs 25% of aspects)
-   with a far better POS:NEG balance (2.16:1 vs 6.8:1) — and every member trained on it is
-   ~1.1 worse at **every** threshold tested (floors 0.05/0.20/0.35, non-monotonic). A
-   counterfactual Δ is the difference of two noisy estimates; asking a weak teacher
-   outright beat differencing it against itself.
+## The findings (this is the session's actual output)
+1. **§D.1 — polarity loses 2.02x what extraction loses.** Of 1037 test gold pairs: 92 lost to
+   extraction, **186 to polarity**, 759 recoverable. Reverses §C.19, which had directed the
+   eight experiments after it. NEG recall 57.4; 158 of 186 errors are minority<->NEU.
+2. **§D.2 — a selector fitted directly ON TEST cannot beat the honest one** (70.77 vs 70.83)
+   against a perfect-selector ceiling of 84.52. Selection is closed because the information
+   is absent, not because dev is noisy.
+3. **§D.11 — the residual errors are CONSENSUS errors.** On the 179 wrong-polarity cases only
+   3.9/19 members are right (vs 17.4/19 on correct ones) and just **7 have majority support**.
+   Adding voters provably cannot help.
+4. **§D.16 — a large part of the gap is annotation noise.** Of 750 OOF consensus failures,
+   92-93% are recoverable below confidence 0.90 but only **26% above 0.95** — and those 425
+   ultra-confident cases are the majority. Part of the remaining 2.5 is *unavailable*.
+5. **§D.20 — THE NOISE FLOOR: +/-1.31 F1 for a single run-pair.** TBRF scored -0.58, -0.29,
+   +0.67 on three paired seeds (mean -0.07). **Almost every per-patch verdict in Chapters C
+   and D rests on one run-pair and is below that floor** — the CER +0.58, the PDS +0.26, the
+   C7 gate +0.10 were never detectable. The saturation conclusion survives (it rests on many
+   independent measurements in the same 70.1-70.6 band); the per-mechanism bookkeeping does
+   not. **Rule: use >=3 paired seeds and report the paired mean.**
+6. **§D.18 — independent validation is the only control that has ever falsified a positive
+   here.** CER's t2015 replication across three architectures went to +0.02 on t2017. (t2017
+   is now out of bounds by user direction — t2015 and t2017 are separate experiments — and
+   those artifacts are quarantined under `quarantine_t2017/`.)
 
 ## Measured negatives (do not re-run these)
 | lever | test | vs 70.37 |
@@ -52,6 +56,10 @@ unchanged: one Tesla T4 16 GB, fp16 only.
 | option-order TTA on the 8B member | 79.56 (member) | −0.48 |
 | selective NEU-boundary gate / per-class weights / NEU-escape | all | invert dev↔test |
 | Qwen-VL image teacher → PDS members | 77.24 / 75.60 / 78.21 | −1.1 each |
+| CER / RER / factorized polarity (§D.15-D.17) | 11 configs, ±0.6 scatter | flat; killed on t2017 |
+| TBRF aspect-vs-background fusion (§D.20) | 3 paired seeds | **−0.07, flat** |
+| MATE architectural diversity (§D.21) | 87.01 → 86.78 | flat, below the floor |
+| VLP-MABSA backbone (Chapter A, already done) | 68.42 / graft 69.30 | **worse than 70.32** |
 
 ## Key files
 - `possible-patches.md` — **read first.** Chapter D is §D.0–D.10 plus the final standing.
@@ -89,9 +97,21 @@ unchanged: one Tesla T4 16 GB, fp16 only.
   argument that does not apply to MASC; the fairness objection does stand).
 
 ## Pick up here
-The honest position is that the bar needs `a` = 83.1 against our 80.91 and the best
-**published** 82.34 — i.e. beating SOTA polarity by ~0.8 *and* converting all of it, on a
-T4, without the MABSA pretraining every baseline inherits. §A15 reached the same verdict
-from the other direction: the gap is **model-class, not effort or architecture**. Either
-commit to VLP-MABSA-as-backbone (large), or write up Chapter D's four findings as the
-contribution and report 70.43.
+**Every lever obtainable on a T4 is now measured, including the one repeatedly held in
+reserve.** VLP-MABSA's pretraining = AoM's official checkpoint = 68.42 on this pipeline, and
+the best graft ensemble was 69.30 — both *below* the standing 70.32-70.62. Every stronger
+backbone is unobtainable (DQPSA's Baidu link expired with unresponsive authors; VLHA no
+weights; SGBIS no code; CORSA no weights), so AoM was the self-service ceiling and this
+pipeline already beats it by ~1.9.
+
+Clearing 72.9 needs **`a` = 83.1** (best published 82.34) or **MATE@τ = 90.6** (best
+published 88.2) — beating published SOTA on a subtask, in a setup that cannot *detect* an
+improvement below 1.3 F1 from a single run (§D.20). §A15 reached the same verdict from the
+MLLM side: the gap is **model-class, not effort or architecture**, and closing it needs a
+>=48 GB card.
+
+**Recommendation: stop spending GPU below the noise floor.** The defensible deliverable is
+the diagnostic chapter — §D.1 (the loss decomposition reversal), §D.2 (a test-fitted selector
+cannot beat the honest one), §D.11 (consensus errors), §D.16 (the recoverability curve), and
+§D.20 (the measured detection floor, which indicts single-run patch evaluation as a
+methodology) — reported alongside 70.32 and an explicit account of what the bar would require.
