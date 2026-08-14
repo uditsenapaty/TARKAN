@@ -1468,35 +1468,56 @@ The member-oracle ceiling — fixing all 140 — would be F1 **83.9**, which is 
 84.5-ish perfect-selector ceiling §D.1 found from the other direction. The entire 70.4 → 84
 gap is per-example model selection, and it is inaccessible.
 
+## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
+
+Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:
+
+| member set | dev | **test** |
+|---|---|---|
+| core12 + CFB (15) | 69.84 | 70.53 |
+| core12 + CFB + 8B (16) | 70.04 | 70.37 |
+| core12 + cap + CFB (18) | 70.36 | 70.41 |
+| core12 + cap + CFB + 8B (19) | 70.43 | **70.62** |
+| core12 + cap + CFB + DIR (21) | **70.71** ← dev-argmax | **69.47** |
+| **all 22 (every correct member)** | 70.68 | **70.32** |
+
+Test spans **69.47–70.62** while dev spans 70.36–70.71 in roughly the *opposite* order, and
+**dev-argmax over member sets picks the worst test cell.** This is §C.26 reproducing exactly,
+now with corrected members: with n_dev = 1122 and σ ≈ 1.2, member-set choice is a lottery.
+
+**So 70.62 is NOT claimable** — dev ranks it 3rd of 6. The only rule containing no choices
+is *every available correct member, equal weight, τ the single fitted scalar*, which is the
+**22-member set → 70.32** (the superseded mis-weighted members are excluded as defective,
+not selected against).
+
+**Reported figure: 70.32, with an explicit ±0.6 member-set band that dev cannot resolve.**
+The bug fix is worth +0.19 on the fixed 19-member structure (70.43 → 70.62) and −0.11 under
+the choice-free rule (70.43 → 70.32); both are inside the band. **No teacher variant, no
+weighting fix and no member addition in Chapter D moves the joint result outside noise.**
+
 ## ★★★ CHAPTER D FINAL RESULT (t2015 test)
 
-**The only rule with no fitted weights — every available member, equal weight, τ tuned on
-dev — is simultaneously the dev-best and the test-best configuration of the whole chapter:**
+**Rule: every available correct member, equal weight, τ the single fitted scalar.**
+It is the only rule in the chapter that contains no choices (§D.14).
 
 ```
-19 members (12 core/PDQ + 3 caption-PDS + 3 image-PDS + the 8B decoder), equal weight
-MATE@tau 87.70   a 80.31
-JOINT   P 70.46   R 70.40   F1 70.43     dev 70.16  (highest dev of any configuration)
-bar (MADSC)  P 72.8 / R 73.1 / F1 72.9   ->   margin -2.70
+22 members (12 core/PDQ + 3 caption-PDS + 3 counterfactual-PDS + 3 direct-PDS + 8B decoder)
+MATE@tau 87.79   a 80.11
+JOINT   P 69.59   R 71.07   F1 70.32     dev 70.68
+member-set band 69.47 - 70.62, which dev CANNOT resolve (§D.14)
+bar (MADSC)  P 72.8 / R 73.1 / F1 72.9   ->   margin -2.58
 ```
 
-| configuration | dev | test |
-|---|---|---|
-| 15 members (Chapter C member set, frozen pool) | 70.07 | 70.37 |
-| 18 members (+ image-PDS) | 70.00 | 70.41 |
-| **19 members (+ 8B), selection-free** | **70.16** | **70.43** |
-| 8B mixed at a dev-tuned weight | 70.82 | 69.63 |
-| union pool, dev-selected | 70.86 | 68.91 |
+**Baselines cleared: 15 of 19.** Above us: SGBIS 71.1 · DQPSA 71.9 · VLHA 72.5 · MADSC 72.9.
+**The goal — beating every baseline — is NOT met.**
 
-**The 8B contributes only as an equal member under the untuned rule.** Every attempt to
-give it a *fitted* weight — the whole point of adding a strong member — made things worse.
-That is Chapter D in one line.
-
-**Baselines cleared at 70.43: 15 of 19.** Above us: SGBIS 71.1 · DQPSA 71.9 · VLHA 72.5 ·
-MADSC 72.9. **The goal — beating every baseline — is NOT met.**
+Chapter D's arc in one line: the number entered at ~70.4 and left at ~70.4, and every
+mechanism that was *confirmed working at the member level* — the 8B decoder, ITC/ITM-style
+diversity, the image teacher's +7.1 NEG recall, the direction-weight bug fix — converted to
+nothing at the joint level.
 
 ### What Chapter D actually established
-The number barely moved (Chapter C's honest dev-selected ~70.4 → 70.43). The contribution
+The number barely moved (Chapter C's honest dev-selected ~70.4 → 70.32). The contribution
 is diagnostic, and four of the findings are transferable beyond this project:
 
 1. **§D.1 — polarity loses 2.02× what extraction loses** (186 vs 92 of 1037 gold pairs),
@@ -1509,11 +1530,13 @@ is diagnostic, and four of the findings are transferable beyond this project:
    swing in member quality moves the joint by 0.03. **Seven dev/test inversions** localise
    the cause: n_dev = 1122 with σ ≈ 1.2 cannot resolve the differences being chased, so
    every fitted combiner fits noise. Better members do not fix a selection problem.
-4. **§D.9/D.10 — more teacher signal is not better teacher signal.** The pixels carry
-   ~3× the evidence of a BLIP caption (76% vs 25% of aspects) with a far better POS:NEG
-   balance (2.16:1 vs 6.8:1), and every member trained on them is ~1.1 worse at every
-   threshold tested. A counterfactual delta is the difference of two noisy estimates;
-   asking a weak teacher outright beat differencing it against itself.
+4. **§D.9/D.10/D.12/D.13 — the teacher axis is flat, and one of my own bugs cost 1.26 on a
+   tower.** With every member correctly weighted the three teachers rank caption 78.18 >
+   direct-image 77.95 > counterfactual 77.24, all inside a ±1.6 tower spread on identical
+   labels. The image genuinely carries ~3× the evidence of a BLIP caption and its NEG lean
+   genuinely transfers (**+7.1 NEG recall**, aimed at the campaign's worst number) — and
+   none of it reaches the joint metric. §D.13 records both the hardcoded-weight bug and my
+   premature one-tower retraction of §D.9/D.10.
 
 ### What would actually be required
 `joint = MATE@τ × a`, so at MATE@τ 87.70 the bar needs **`a` = 83.1**. Our ensemble is
