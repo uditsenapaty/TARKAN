@@ -305,6 +305,15 @@ def main():
         pgroups = ([{"params": head, "lr": args.head_lr}] if args.ttp_freeze else
                    [{"params": body, "lr": args.lr}, {"params": head, "lr": args.head_lr}])
         popt = torch.optim.AdamW(pgroups, weight_decay=0.01)
+        if args.ttp_freeze:
+            # Freeze in AUTOGRAD, not merely in the optimizer. Excluding the encoder from
+            # `popt` alone leaves requires_grad=True, so its grads accumulate unbounded
+            # across stage 1 -- popt.zero_grad() never touches them -- and
+            # clip_grad_norm_(model.parameters()) then sees an exploding total norm, crushes
+            # the head updates and finally overflows. That produced NaN from epoch 1 and a
+            # 10.90 collapse before this fix.
+            for prm in body:
+                prm.requires_grad_(False)
         for ep in range(1, args.ttp_epochs + 1):
             model.train(); tot = 0.0
             for b in dl["train"]:
@@ -316,11 +325,16 @@ def main():
                 _, E = model.ownership(t_a, b["patches"].to(device))
                 lo = ttp_loss(model, t_a, E)
                 scaler.scale(lo).backward(); scaler.unscale_(popt)
-                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                trained = [q for grp in popt.param_groups for q in grp["params"]]
+                torch.nn.utils.clip_grad_norm_(trained, 1.0)
                 scaler.step(popt); scaler.update()
                 tot += float(lo)
             print(f"[TTP] ep{ep} contrastive {tot/len(dl['train']):.4f} | "
                   f"{time.time()-t0:.0f}s", flush=True)
+        if args.ttp_freeze:
+            for prm in body:
+                prm.requires_grad_(True)          # stage 2 fine-tunes the encoder normally
+        model.zero_grad(set_to_none=True)
         # the polarity heads must start fresh -- stage 1 never saw a label
         nn.init.zeros_(model.head_delta[-1].weight); nn.init.zeros_(model.head_delta[-1].bias)
 
