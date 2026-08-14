@@ -1,1 +1,16 @@
 === d20_tbrf_s45 ===
+[dev] gold-span MASC acc 77.18 (n=1122)
+[test] gold-span MASC acc 78.11 (n=1037)
+=== d20_base_s46 ===
+[dev] gold-span MASC acc 77.01 (n=1122)
+[test] gold-span MASC acc 78.50 (n=1037)
+=== d20_tbrf_s46 ===
+[dev] gold-span MASC acc 76.11 (n=1122)
+[test] gold-span MASC acc 78.21 (n=1037)
+=== d20_base_s47 ===
+[dev] gold-span MASC acc 78.43 (n=1122)
+[test] gold-span MASC acc 78.50 (n=1037)
+=== d20_tbrf_s47 ===
+[dev] gold-span MASC acc 78.25 (n=1122)
+[test] gold-span MASC acc 79.17 (n=1037)
+=== QUEUE40 DONE ===

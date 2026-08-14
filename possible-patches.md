@@ -1684,6 +1684,77 @@ ultra-confident failures are irreducible) without needing either to be wrong.
 believed on t2015 alone. Score it on t2017 first — it costs minutes and it is the only
 control in this project that has ever falsified a positive.**
 
+## D.20 ★★★ TBRF IS FLAT — and the paired seeds finally measure the NOISE FLOOR
+
+The annotation-policy head (§D.19) was **abandoned mid-run and deleted**: even trained only
+on t2015-train it optimises the benchmark's labelling idiosyncrasies rather than the model,
+which is benchmark adaptation and has no business behind a SOTA claim. t2017 was likewise
+put out of bounds — t2015 and t2017 are to be reported as **separate** experiments, so the
+§D.18 scoring artifacts are quarantined under `quarantine_t2017/`. (Nothing was ever trained
+on t2017 and no reported number depends on it: t2015 dev alone already ranked the CER
+configuration last, 69.74 vs 70.43.)
+
+**TBRF — Target-Background Residual Fusion.** The right target, because the code made the
+diagnosis undeniable: `masc_text.features()` was `[mean_pool(seq), max_pool(seq)]`, so **the
+aspect span was never used at all** — it entered only as `[` `]` characters in the text.
+Nothing in the architecture could stop the model answering *"what is this tweet's mood"*,
+which is exactly the measured failure (86 POS + 35 NEG → NEU at NEU recall 89.5).
+
+Replaced with: the aspect term **queries the tweet** by attention over all tokens (no fixed
+window, so negation and long-range modifiers stay reachable), and the head additionally
+receives **`t_local − t_global`** — what is special about this aspect relative to the
+tweet's overall tone. The aspect mask is exact rather than heuristic (the first segment *is*
+the term, so its token positions are known without offset mapping, which bertweet's
+tokenizer does not provide; verified decoding back to `'Chuck Bass'`, `'# MCM'`,
+`'Millions For Trayvon'`). TARKAN's core is untouched.
+
+| seed | baseline | TBRF | Δ |
+|---|---|---|---|
+| 45 | 78.69 | 78.11 | −0.58 |
+| 46 | 78.50 | 78.21 | −0.29 |
+| 47 | 78.50 | 79.17 | **+0.67** |
+| **mean** | **78.56** | **78.50** | **−0.07** |
+
+**TBRF is flat** (−0.07 test, −0.45 dev). So the aspect *representation* was not the
+bottleneck — a genuinely different aspect encoding reproduces the old one's accuracy, which
+means the bracket markers plus the term-as-first-segment were already carrying that
+information. That rules out the strongest remaining architectural hypothesis.
+
+### ★★★ THE NUMBER THAT REFRAMES THE WHOLE LEDGER
+The same mechanism scores **−0.58, −0.29 and +0.67** on three seeds. Paired-delta
+sd = **0.65**, so the **2σ detection floor for a single run-pair is ±1.31 F1**.
+
+**Almost every per-patch verdict in Chapters C and D rests on a single run-pair and is
+therefore below the noise floor.** Every "+0.3 that didn't convert", the CER "+0.58"
+(§D.15/§D.17, already killed independently in §D.18), the PDS "+0.26", the C7 gate "+0.10" —
+none of these were ever detectable. This does **not** overturn the saturation conclusion:
+that rests on *many independent* measurements all landing in the same 70.1–70.6 band, which
+is exactly what a saturated system plus ±0.6 noise looks like. What it overturns is the idea
+that any individual mechanism was ever shown to help or hurt by less than ~1.3.
+
+**Standing methodological rule, now with a number attached: no single-pair comparison on
+t2015 means anything below ±1.3 F1. Use ≥3 paired seeds, and report the paired mean.**
+
+## D.21 THE EXTRACTION SIDE HAS NO ARCHITECTURAL DIVERSITY AT ALL
+
+Found while looking for what is left. Backbone census:
+
+| side | distinct backbones |
+|---|---|
+| polarity | **7** — bertweet-large ×14, deberta ×6, twitter-roberta ×4, bertweet-base ×3, Llama-8B ×2, roberta-large ×2, bert-base |
+| **extraction** | **1** — all five MATE members are `deberta-v3-large` (seeds 42/43/44 + probeA/B) |
+
+§C.1 measured the seed lottery (85.77 / 84.81 / 84.95 → ensemble 85.75) and concluded "more
+seeds is the wrong lever — the recipe is", then moved to the recipe fix (§C.6, head-lr
+1e-3 → 1e-4, giving 87.01). **A different architecture is neither a seed nor a recipe, and
+it was never tried.** The project's own stated principle — *"diversity, not individual
+strength, is what they contribute"* (`masc_text` docstring) — was applied to polarity and
+never to extraction.
+
+*Status: running* — bertweet-large and roberta-large MATE members on the §C.6 recipe.
+Marginal-averaging over architecturally diverse taggers is the one untested ensemble axis
+left, and unlike the polarity side it has never been shown saturated.
+
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
 Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:

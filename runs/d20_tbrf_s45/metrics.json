@@ -1,0 +1,8 @@
+{
+  "model": "vinai/bertweet-large",
+  "seed": 45,
+  "best_dev_acc": 77.18360071301248,
+  "best_epoch": 6,
+  "dev_acc_goldspan": 77.18360071301248,
+  "test_acc_goldspan": 78.1099324975892
+}
