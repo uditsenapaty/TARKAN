@@ -1517,6 +1517,86 @@ remaining 2.5 F1 as partly unavailable rather than merely hard to reach, and it 
 consistent with the perfect-selector (84.5) and member-oracle (83.9) ceilings both sitting
 well below 100 on a pool that contains the right span.
 
+## D.16 ★★ CER / RER — the weight sweep dissolves the effect, and the ensemble refuses it
+
+§D.15's CER at margin 0.05 looked like the first real member gain in a long time
+(dev 77.45 → 78.79, test 78.69 → **79.27**, both moving together). Sweeping it dissolves it.
+
+**Eleven configurations, bertweet-large, seed 45, 6 epochs, identical recipe:**
+| variant | dev | test |
+|---|---|---|
+| **baseline** | 77.45 | **78.69** |
+| CER margin 0.02 | 76.29 | 79.17 |
+| **CER margin 0.05** | **78.79** | **79.27** |
+| CER margin 0.05, conf>0.95 | 77.81 | 78.98 |
+| CER margin 0.10 | 76.83 | 76.76 |
+| CER margin 0.5 + replay 2.0 | 69.70 | 74.35 |
+| replay only (1.3x CE) | 75.22 | 77.15 |
+| RER (recoverable only) | 77.81 | 78.69 |
+| RER + 4c(1−c) kernel | 77.09 | 78.69 |
+| RER + kernel, weight 0.10 | 78.07 | 77.34 |
+| factorized head | 76.92 | 77.72 |
+
+**No knob is monotone and the whole family scatters ±0.6 around baseline.** One cell landing
+0.58 above baseline out of eleven attempts is the expected best-of-eleven under noise, and
+the ±1.6 tower spread measured in §D.13 is larger than the entire effect. **The +0.58 is not
+a result.**
+
+**Two decompositions worth keeping, both clean:**
+* **The margin is the useful half; replay is harmful.** Margin-only 79.27, replay-only
+  77.15, both-at-strength 74.35. Mechanistically consistent: upweighted CE on a buffer that
+  is ~50% mislabelled is unbounded and keeps pushing on noise, while the hinge saturates
+  once the gold logit clears the consensus logit and then stops.
+* **RER's recoverability filter makes it WORSE, not better.** Restricting replay to the 305
+  failures a sibling tower already solves (from 653) returns test to exactly baseline, and
+  adding the kernel does the same. Either the "irreducible" cases still supply useful
+  gradient — pushing *away* from the consensus label is informative even when the gold label
+  is unreachable — or a 4-tower recoverability detector is too coarse. **The principled
+  variant loses to the crude one.**
+
+**The ensemble refuses all of it** (standing 19-member configuration = 70.62):
+| ensemble | dev | test |
+|---|---|---|
+| **standing 19** | **70.43** | **70.62** |
+| caption-PDS swapped for CER | 70.10 | 70.52 |
+| + CER (22 members) | 70.34 | 70.24 |
+| core12 + CER + 8B (16) | 69.67 | 69.95 |
+
+**And the §D.11 diagnostic explains why, definitively.** Against the 19-member ensemble's
+198 errors, every candidate is net-negative:
+| member | fixes | breaks | net |
+|---|---|---|---|
+| plain baseline | 37 | 60 | −23 |
+| CER 0.05 | 38 | 55 | **−17** |
+| CER deberta / roberta | 39 / 44 | 60 / 68 | −21 / −24 |
+| RER (+kernel) | 37 / 39 | 60 / 62 | −23 |
+| factorized | 34 | 67 | −33 |
+| *(§D.6 reference: the 8B decoder)* | *49* | *58* | *−9* |
+
+CER's −17 versus the plain baseline's −23 is inside noise, and **the best member the
+campaign ever produced for this purpose is still the 8B at −9 — also negative.** No member
+trained by any mechanism in Chapters C–D produces corrections the consensus lacks.
+
+### ★ THE ONE SOLID RESULT FROM THIS LINE — the recoverability curve
+Independent of whether CER works, this is a measurement worth keeping. Of the 750 OOF
+consensus failures, recoverability (≥1 of 4 sibling towers correct) collapses with the
+consensus's own confidence:
+
+| consensus confidence | wrong | recoverable |
+|---|---|---|
+| < 0.70 | 97 | **92%** |
+| 0.70–0.90 | 150 | **93%** |
+| 0.90–0.95 | 78 | 71% |
+| **> 0.95** | **425** | **26%** |
+
+**The ultra-confident failures are 74% irreducible and they are the majority of all
+failures.** This quantifies §D.11's "39 of 179 where no member is right" on training data,
+and it retro-explains two results at once: the −4.34 collapse at margin 0.5 (it hammered 425
+mostly-mislabelled cases) and why filtering to conf>0.95 underperformed conf>0.7 (that
+filter selects precisely the noise). **A large part of the remaining gap is annotation
+noise, not modelling headroom** — which is the most useful thing Chapter D can say about why
+72.9 is out of reach here.
+
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
 Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:
