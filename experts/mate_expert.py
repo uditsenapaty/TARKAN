@@ -244,6 +244,11 @@ def main():
                          "the span reranker -- predictions on the training set itself are "
                          "memorised and contain almost no FPs, so they are useless for it.")
     ap.add_argument("--nfolds", type=int, default=2)
+    ap.add_argument("--pre-epochs", type=int, default=0,
+                    help="intermediate BIO-training epochs on external aspect-term data "
+                         "before the t2015 fine-tune (0 = off, unchanged behaviour)")
+    ap.add_argument("--pre-data", default="twitter,rest,laptop")
+    ap.add_argument("--pre-lr", type=float, default=0.0)
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
 
@@ -279,6 +284,61 @@ def main():
     scaler = torch.amp.GradScaler("cuda", enabled=device.type == "cuda")
 
     gold = {s: gold_spans(v) for s, v in splits.items()}
+
+    # ------------------------------------------------------------------ #
+    # STAGE 1 — intermediate BIO training on external aspect-term data
+    # ------------------------------------------------------------------ #
+    # §D.21 showed the extraction side has no architectural diversity and that filling
+    # that gap changes nothing. What it has never had is more DATA: 2101 tweets, and
+    # nothing else, for every one of the five taggers. The external corpora annotate
+    # aspect terms with positions, so they give a BIO signal directly.
+    if args.pre_epochs > 0:
+        from experts.absa_extra import load_extra_insts
+        print(f"stage 1: intermediate BIO training on [{args.pre_data}]", flush=True)
+        pre_insts = load_extra_insts(args.pre_data.split(","))
+        na = sum(len(i.aspects) for i in pre_insts)
+        print(f"  {len(pre_insts)} sentences / {na} aspect terms", flush=True)
+        pre_dl = DataLoader(AnchorDS(pre_insts, tok, args.max_len), batch_size=args.batch,
+                            shuffle=True, collate_fn=lambda b: collate(b, pad))
+        pre_lr = args.pre_lr if args.pre_lr > 0 else args.lr
+        popt = torch.optim.AdamW([{"params": enc, "lr": pre_lr},
+                                  {"params": head, "lr": args.head_lr}], weight_decay=0.01)
+        psteps = (len(pre_dl) // args.accum + 1) * args.pre_epochs
+        psched = get_linear_schedule_with_warmup(popt, int(args.warmup * psteps), psteps)
+        p0 = time.time()
+        for ep in range(1, args.pre_epochs + 1):
+            model.train()
+            tot = 0.0
+            popt.zero_grad(set_to_none=True)
+            for i, batch in enumerate(pre_dl):
+                with torch.autocast("cuda", dtype=torch.float16,
+                                    enabled=device.type == "cuda"):
+                    emis = model.emissions(batch["input_ids"].to(device),
+                                           batch["attention_mask"].to(device),
+                                           batch["word_index"].to(device),
+                                           batch["word_mask"].to(device))
+                wmask = batch["word_mask"].to(device)
+                loss = model.crf.nll(emis.float(), batch["tags"].to(device),
+                                     wmask) / args.accum
+                scaler.scale(loss).backward()
+                tot += loss.item() * args.accum
+                if (i + 1) % args.accum == 0:
+                    scaler.unscale_(popt)
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                    scaler.step(popt); scaler.update()
+                    popt.zero_grad(set_to_none=True); psched.step()
+            # zero-shot: no t2015 sentence has been seen yet. Diagnostic, never selected on.
+            dsp, _ = predict(model, dl["dev"], device, want_marginals=False)
+            z = score_spans(dsp, gold["dev"])
+            print(f"  pre-ep{ep} loss {tot/len(pre_dl):.4f} | t2015 dev MATE (zero-shot) "
+                  f"P {z['P']:.2f} R {z['R']:.2f} F1 {z['F1']:.2f} | "
+                  f"{time.time()-p0:.0f}s", flush=True)
+        opt = torch.optim.AdamW([{"params": enc, "lr": args.lr},
+                                 {"params": head, "lr": args.head_lr}], weight_decay=0.01)
+        steps = (len(dl["train"]) // args.accum + 1) * args.epochs
+        sched = get_linear_schedule_with_warmup(opt, int(args.warmup * steps), steps)
+        print("stage 2: fine-tuning on t2015 train", flush=True)
+
     best_dev, best_ep, bad = -1.0, -1, 0
     t0 = time.time()
     for ep in range(1, args.epochs + 1):

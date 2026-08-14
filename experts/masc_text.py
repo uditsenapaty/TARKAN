@@ -515,6 +515,13 @@ def main():
     ap.add_argument("--cer-conf", type=float, default=0.7,
                     help="a training aspect joins the buffer when the OOF consensus is "
                          "wrong AND more confident than this")
+    ap.add_argument("--pre-epochs", type=int, default=0,
+                    help="intermediate-training epochs on external aspect-sentiment data "
+                         "before the t2015 fine-tune (0 = off, unchanged behaviour)")
+    ap.add_argument("--pre-data", default="twitter,rest,laptop",
+                    help="comma list of experts/absa_extra.py SOURCES")
+    ap.add_argument("--pre-lr", type=float, default=0.0,
+                    help="encoder LR for stage 1; 0 = same as --lr")
     ap.add_argument("--ckpt", default=None,
                     help="load best.pt from here instead of <out>/best.pt, so a member can "
                          "be scored on another dataset without overwriting its own outputs")
@@ -623,6 +630,62 @@ def main():
         print(f"class counts {cnt.tolist()} -> weights {np.round(w, 3).tolist()}", flush=True)
         lossf = nn.CrossEntropyLoss(
             weight=torch.tensor(w, dtype=torch.float, device=device))
+
+    # ------------------------------------------------------------------ #
+    # STAGE 1 — intermediate training on external aspect-sentiment data
+    # ------------------------------------------------------------------ #
+    # §D.27's law says every MECHANISM added above a 77.9 baseline arrives with the sign
+    # flipped, and §D.30-D.32 closed the evidence route. §B.8 names the only escape left:
+    # "Only NEW INFORMATION ... can move it." Every tower here has seen 3179 aspects and
+    # nothing else, while §D.1 measured polarity losing twice what extraction loses.
+    # 12184 external aspects (Twitter + SemEval-14) is 3.83x more supervision for the
+    # losing task, and 8.8x more NEG -- the campaign's worst class. `absa_extra` runs a
+    # leak gate against all three t2015 splits before anything trains.
+    if args.pre_epochs > 0 and not args.score_only:
+        if args.aps or args.factorized:
+            raise SystemExit("--pre-epochs supports the plain 3-way head only")
+        from experts.absa_extra import load_extra
+        print(f"stage 1: intermediate training on [{args.pre_data}]", flush=True)
+        p0 = time.time()
+        pre_ex = load_extra(args.pre_data.split(","))
+        # desc=None: external corpora have no image, so no AADG description. Stage 2
+        # restores whatever the member normally reads.
+        pre_dl = DataLoader(DS(pre_ex, tok, mark_siblings=args.mark_siblings,
+                               opinion_dropout=args.opinion_dropout, lexicon=LEX,
+                               train=True),
+                            batch_size=args.batch, shuffle=True, collate_fn=coll)
+        pre_lr = args.pre_lr if args.pre_lr > 0 else args.lr
+        popt = torch.optim.AdamW([{"params": body, "lr": pre_lr},
+                                  {"params": head, "lr": args.head_lr}], weight_decay=0.01)
+        psteps = len(pre_dl) * args.pre_epochs
+        psched = get_linear_schedule_with_warmup(popt, int(0.1 * psteps), psteps)
+        for ep in range(1, args.pre_epochs + 1):
+            model.train()
+            tot = 0.0
+            for b in pre_dl:
+                popt.zero_grad(set_to_none=True)
+                with torch.autocast("cuda", dtype=torch.float16,
+                                    enabled=device.type == "cuda"):
+                    lg = model(b["ids"].to(device), b["mask"].to(device),
+                               b["amask"].to(device))
+                loss = nn.functional.cross_entropy(lg, b["y"].to(device))
+                scaler.scale(loss).backward()
+                scaler.unscale_(popt)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                scaler.step(popt); scaler.update(); psched.step()
+                tot += loss.item()
+            # t2015 dev here is the ZERO-SHOT transfer number: no t2015 aspect has been
+            # seen yet. Printed as a diagnostic, never selected on.
+            acc, *_ = run(model, dl["dev"], device)
+            print(f"  pre-ep{ep} loss {tot/len(pre_dl):.4f} | t2015 dev acc (zero-shot) "
+                  f"{acc:.2f} | {time.time()-p0:.0f}s", flush=True)
+        # stage 2 must start from a clean optimiser state and a fresh schedule, otherwise
+        # the LR is already decayed to ~0 when the in-domain data finally arrives
+        opt = torch.optim.AdamW([{"params": body, "lr": args.lr},
+                                 {"params": head, "lr": args.head_lr}], weight_decay=0.01)
+        steps = len(dl["train"]) * args.epochs
+        sched = get_linear_schedule_with_warmup(opt, int(0.1 * steps), steps)
+        print("stage 2: fine-tuning on t2015 train", flush=True)
 
     best, best_ep, bad, t0 = -1.0, -1, 0, time.time()
     n_epochs = 0 if args.score_only else args.epochs
