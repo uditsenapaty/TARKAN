@@ -370,6 +370,9 @@ def main():
     ap.add_argument("--cer-conf", type=float, default=0.7,
                     help="a training aspect joins the buffer when the OOF consensus is "
                          "wrong AND more confident than this")
+    ap.add_argument("--ckpt", default=None,
+                    help="load best.pt from here instead of <out>/best.pt, so a member can "
+                         "be scored on another dataset without overwriting its own outputs")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
 
@@ -524,7 +527,7 @@ def main():
             if bad >= args.patience:
                 print("early stop"); break
 
-    model.load_state_dict(torch.load(out / "best.pt", map_location=device))
+    model.load_state_dict(torch.load(Path(args.ckpt or out) / "best.pt", map_location=device))
     res = {"model": args.model, "seed": args.seed, "best_dev_acc": best,
            "best_epoch": best_ep}
     if oof_ex is not None:
