@@ -269,7 +269,7 @@ class TextMASC(nn.Module):
     """
 
     def __init__(self, model_id, dropout=0.1, factorized=False, aps=False,
-                 tbrf=False):
+                 tbrf=False, torf=False):
         super().__init__()
         from transformers import AutoConfig, AutoModel
         cfg = AutoConfig.from_pretrained(model_id)
@@ -277,6 +277,26 @@ class TextMASC(nn.Module):
         h = cfg.hidden_size
         self.drop = nn.Dropout(dropout)
         self.factorized = factorized
+        self.torf = torf
+        if torf:
+            # TORF. §D.1: 158 of 186 polarity errors are minority<->NEU, i.e. the model sees
+            # the aspect but cannot find a target-specific DIRECTIONAL cue. §D.20's TBRF gave
+            # the head a target-conditioned context vector and was flat (-0.07), so pooling
+            # "what is near this aspect" is not the missing piece.
+            #
+            # Here the evidence is separated BY SIGN before pooling. A learned per-token
+            # opinion score s_j splits one target-conditioned attention into two:
+            #     alpha+_j ~ exp(r_j) * sigmoid( s_j)     -> E+  (support for positive)
+            #     alpha-_j ~ exp(r_j) * sigmoid(-s_j)     -> E-  (support for negative)
+            # so the head receives [t_a, E+, E-, E+ - E-] and the POS/NEG decision has an
+            # explicit directional contrast instead of having to recover one from a single
+            # pooled vector. s_j is LEARNED, not seeded from SenticNet: §C14 measured that
+            # hard opinion-word manipulation damages the pretrained representation.
+            self.q_proj = nn.Linear(h, h)
+            self.r_proj = nn.Linear(h, h)
+            self.s_proj = nn.Linear(h, 1)
+            self.scale_t = h ** -0.5
+            self.head_torf = nn.Linear(4 * h, 3)
         self.tbrf = tbrf
         if tbrf:
             # TBRF. The measured failure is 86 POS and 35 NEG collapsing to NEU while NEU
@@ -317,6 +337,18 @@ class TextMASC(nn.Module):
         h = self.enc(input_ids=ids, attention_mask=mask).last_hidden_state
         m = mask.unsqueeze(-1).float()
         mean = (h * m).sum(1) / m.sum(1).clamp(min=1)
+        if self.torf:
+            am = amask.unsqueeze(-1).float()
+            t_a = (h * am).sum(1) / am.sum(1).clamp(min=1)          # the aspect itself
+            q = self.q_proj(t_a)
+            r = (self.r_proj(h) @ q.unsqueeze(-1)).squeeze(-1) * self.scale_t
+            sj = self.s_proj(h).squeeze(-1)                          # signed opinion score
+            neg_inf = torch.finfo(r.dtype).min
+            wp = (r + nn.functional.logsigmoid(sj)).masked_fill(mask == 0, neg_inf)
+            wn = (r + nn.functional.logsigmoid(-sj)).masked_fill(mask == 0, neg_inf)
+            Ep = (wp.softmax(-1).unsqueeze(-1) * h).sum(1)
+            En = (wn.softmax(-1).unsqueeze(-1) * h).sum(1)
+            return self.drop(torch.cat([t_a, Ep, En, Ep - En], -1))
         if self.tbrf:
             am = amask.unsqueeze(-1).float()
             q = (h * am).sum(1) / am.sum(1).clamp(min=1)          # the aspect term
@@ -330,6 +362,8 @@ class TextMASC(nn.Module):
 
     def forward(self, ids, mask, amask=None):
         z = self.features(ids, mask, amask)
+        if self.torf:
+            return self.head_torf(z).float()
         if self.tbrf:
             return self.head_tbrf(z).float()
         if self.aps:
@@ -415,6 +449,10 @@ def main():
     ap.add_argument("--score-only", action="store_true",
                     help="skip training, load <out>/best.pt and just (re-)score. Lets the "
                          "candidate anchor set change without retraining any member.")
+    ap.add_argument("--torf", action="store_true",
+                    help="Target-Opinion Relational Fusion: split target-conditioned "
+                         "attention by a learned token sentiment sign into E+ / E- pools; "
+                         "the head sees [t_a, E+, E-, E+ - E-]")
     ap.add_argument("--tbrf", action="store_true",
                     help="Target-Background Residual Fusion: the aspect queries the tweet "
                          "by attention, and the head also sees t_local - t_global")
@@ -526,7 +564,7 @@ def main():
                                 collate_fn=coll)
 
     model = TextMASC(args.model, factorized=args.factorized, aps=args.aps,
-                     tbrf=args.tbrf).to(device)
+                     tbrf=args.tbrf, torf=args.torf).to(device)
     head = [p for n, p in model.named_parameters() if not n.startswith("enc.")]
     body = [p for n, p in model.named_parameters() if n.startswith("enc.")]
     opt = torch.optim.AdamW([{"params": body, "lr": args.lr},
