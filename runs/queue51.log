@@ -1,1 +1,19 @@
 === d29_dual_s45 ===
+[dev] gold-span MASC acc 76.83 (n=1122)
+[test] gold-span MASC acc 78.40 (n=1037)
+=== d29_dual_s46 ===
+[dev] gold-span MASC acc 74.87 (n=1122)
+[test] gold-span MASC acc 76.57 (n=1037)
+=== d29_dual_s47 ===
+[dev] gold-span MASC acc 59.71 (n=1122)
+[test] gold-span MASC acc 58.53 (n=1037)
+=== d29_dualown_s45 ===
+[dev] gold-span MASC acc 75.58 (n=1122)
+[test] gold-span MASC acc 75.99 (n=1037)
+=== d29_dualown_s46 ===
+[dev] gold-span MASC acc 75.58 (n=1122)
+[test] gold-span MASC acc 77.15 (n=1037)
+=== d29_dualown_s47 ===
+[dev] gold-span MASC acc 59.71 (n=1122)
+[test] gold-span MASC acc 58.53 (n=1037)
+=== QUEUE51 DONE ===

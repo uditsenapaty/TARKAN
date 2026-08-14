@@ -2126,8 +2126,33 @@ logits and §C10 on the input text; this acts on the evidence **attribution** it
 single row and is a **silent no-op** — the same class of vacuous-loss bug as §D.26's
 batch-mean margin.
 
-*Status: 6 runs (3 paired seeds x {DUAL-1, DUAL-1+2}) against the baselines TBRF and TORF
-used — 78.69 / 78.50 / 78.50.*
+### MEASURED — negative, and **unstable**
+| seed | baseline | DUAL-1 | Δ | DUAL-1+2 | Δ |
+|---|---|---|---|---|---|
+| 45 | 78.69 | 78.40 | −0.29 | 75.99 | −2.70 |
+| 46 | 78.50 | 76.57 | −1.93 | 77.15 | −1.35 |
+| **47** | 78.50 | **58.53** | **−19.97** | **58.53** | **−19.97** |
+| mean *(excluding the collapsed seed)* | | | **−1.11** | | **−2.02** |
+
+**58.53 is exactly the NEU majority-class rate on test** — seed 47 collapsed to
+always-predict-neutral. **The same seed collapsed in BOTH arms**, so this is a
+seed-dependent optimisation failure of the dual-anchor head itself, not an interaction with
+the competition loss. Where it does train, the mechanism is negative (−1.11), and the
+cross-aspect competition makes it worse (−2.02).
+
+**Reading.** Giving the model a free-form learned opinion anchor plus a per-token relation
+MLP adds a large, unconstrained attention pathway between the aspect and every token. Nothing
+anchors *what* `o_j` should mean, so one of its optima is "attend nowhere informative and
+predict the majority class" — which is precisely what seed 47 found. §D.25's TORF used a
+bilinear affinity and split the attention by sign, which is a far more constrained
+parameterisation and never collapsed; the extra freedom here is the difference and it is a
+liability, not an advantage.
+
+**This closes the aspect↔opinion attribution family.** Over text tokens (D.29, −1.11 and
+unstable) and over image patches (§D.27 ASOE, −0.23), with sibling supervision applied at the
+final logits (§C13), at the input text (§C10), on swapped pooled evidence (§D.26 CET, −0.20)
+and on the attribution itself (D.29 competition, −2.02). Every route to "which evidence
+belongs to this aspect" is now measured and none of them helps a strong tower.
 
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
