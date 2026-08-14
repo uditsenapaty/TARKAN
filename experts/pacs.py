@@ -154,7 +154,7 @@ class PacsDS(Dataset):
             cand = [(s + 1, e), (s, e - 1), (s - 1, e), (s, e + 1), (s + 1, e + 1)]
             cand = [(a, b) for (a, b) in cand if 0 <= a < b <= L and (a, b) not in gset]
             random.shuffle(cand)
-            negs += cand[:self.n_neg]
+            negs.append(cand[:self.n_neg])      # grouped PER GOLD SPAN
         return {**it, "negs": negs}
 
 
@@ -297,8 +297,18 @@ def main():
             loss = model.crf.nll(emis, b["tags"].to(device), b["word_mask"].to(device))
             if len(gsp):
                 loss = loss + args.lam_asc * ce(lg_g, gpol)
-            # joint margin: U(gold, y*) must beat U(hard negative, argmax) by a margin
-            nsp = [(bi, s, e) for bi, ns in enumerate(b["negs"]) for (s, e) in ns]
+            # PAIRWISE hard-negative margin: every gold span against ITS OWN boundary errors.
+            # The first version compared batch MEANS, relu(m + Un.mean() - Ug.mean()), which
+            # is one scalar constraint per batch that ordinary training already satisfies --
+            # the control arm logged that term at 0.0013 by epoch 8 and 0.0000 by epoch 12
+            # WITHOUT optimising it. Weighting it would have added no gradient and returned a
+            # null result caused by the loss rather than by the hypothesis.
+            nsp, owner = [], []
+            for bi, ns_per_gold in enumerate(b["negs"]):
+                base = sum(len(g) for g in b["gold"][:bi])
+                for gi, ns in enumerate(ns_per_gold):
+                    for (s, e) in ns:
+                        nsp.append((bi, s, e)); owner.append(base + gi)
             if len(gsp) and len(nsp):
                 sm = torch.softmax(emis, -1)
                 lg_n = model.polarity(hw, nsp)
@@ -306,7 +316,8 @@ def main():
                 Ug = torch.stack([span_score(sm, bi, s, e) for (bi, s, e) in gsp]) * pg
                 Un = (torch.stack([span_score(sm, bi, s, e) for (bi, s, e) in nsp])
                       * torch.softmax(lg_n, -1).max(1).values)
-                lj = torch.relu(args.margin + Un.mean() - Ug.mean())
+                own = torch.tensor(owner, device=Un.device)
+                lj = torch.relu(args.margin + Un - Ug[own]).mean()
                 loss = loss + args.lam_joint * lj
                 tj += float(lj)
             scaler.scale(loss / args.accum).backward()

@@ -1,1 +1,10 @@
 === d22_pacs_nojoint (lam_joint 0.0) ===
+ep4 loss 1.2551 (joint 0.0294) | dev joint 63.31 @tau 0.48 | 357s
+ep8 loss 0.2176 (joint 0.0013) | dev joint 65.70 @tau 0.41 | 705s
+ep12 loss 0.0603 (joint 0.0000) | dev joint 65.74 @tau 0.48 | 1059s
+ep16 loss 0.0187 (joint 0.0000) | dev joint 66.11 @tau 0.55 | 1408s
+[dev] MATE@tau 84.70  a_selected 78.88  JOINT P 67.06 R 66.58 F1 66.82
+[test] MATE@tau 84.83  a_selected 76.91  JOINT P 65.59 R 64.90 F1 65.24
+  GATE (§C.18): a_selected on test = 76.91   vs the decoupled pipeline's 80.52
+=== d22_pacs_joint (lam_joint 0.5) ===
+=== QUEUE42 DONE ===
