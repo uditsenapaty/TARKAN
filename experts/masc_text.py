@@ -80,8 +80,16 @@ class DS(Dataset):
             second = second + " " + self.tok.sep_token + " " + self.desc[e.inst_idx]
         enc = self.tok(e.term, second, truncation="only_second",
                        max_length=self.max_len)
+        # The first segment IS the aspect term, so its token positions are known exactly
+        # without offset mapping (which bertweet's tokenizer does not provide). Layout is
+        # <s> term </s> </s> tweet </s> (or [CLS] term [SEP] ...), so the aspect occupies
+        # 1 .. len(tok(term)) - 2.
+        n0 = len(self.tok(e.term)["input_ids"])
+        amask = [0] * len(enc["input_ids"])
+        for i in range(1, min(n0 - 1, len(amask))):
+            amask[i] = 1
         return {"ids": enc["input_ids"], "y": POL2ID[e.polarity], "key": e.key,
-                "inst": e.inst_idx}
+                "inst": e.inst_idx, "amask": amask}
 
 
 def make_collate(pad_id):
@@ -93,7 +101,11 @@ def make_collate(pad_id):
             n = len(x["ids"])
             ids[i, :n] = torch.tensor(x["ids"])
             m[i, :n] = 1
-        return {"ids": ids, "mask": m,
+        am = torch.zeros((len(b), L), dtype=torch.long)
+        for i, x in enumerate(b):
+            a = x.get("amask") or []
+            am[i, :len(a)] = torch.tensor(a, dtype=torch.long)
+        return {"ids": ids, "mask": m, "amask": am,
                 "y": torch.tensor([x["y"] for x in b]),
                 "inst": torch.tensor([x["inst"] for x in b]),
                 "key": [x["key"] for x in b]}
@@ -256,7 +268,8 @@ class TextMASC(nn.Module):
     this changes the output space rather than reweighting it.
     """
 
-    def __init__(self, model_id, dropout=0.1, factorized=False, aps=False):
+    def __init__(self, model_id, dropout=0.1, factorized=False, aps=False,
+                 tbrf=False):
         super().__init__()
         from transformers import AutoConfig, AutoModel
         cfg = AutoConfig.from_pretrained(model_id)
@@ -264,6 +277,23 @@ class TextMASC(nn.Module):
         h = cfg.hidden_size
         self.drop = nn.Dropout(dropout)
         self.factorized = factorized
+        self.tbrf = tbrf
+        if tbrf:
+            # TBRF. The measured failure is 86 POS and 35 NEG collapsing to NEU while NEU
+            # recall is already 89.5 (§C.9/§D.1) -- the signature of a model answering
+            # "what is this tweet's mood" instead of "what does it say about THIS aspect".
+            # The old representation could not do otherwise: it was mean+max pooling over
+            # the whole sequence, with the aspect entering only as bracket characters.
+            #
+            # Here the aspect QUERIES the tweet (attention over all tokens, no fixed
+            # window, so negation and long-range modifiers stay reachable) and the head
+            # additionally receives t_local - t_global: what is special about this aspect
+            # RELATIVE to the tweet's overall tone.
+            self.q_proj = nn.Linear(h, h)
+            self.k_proj = nn.Linear(h, h)
+            self.v_proj = nn.Linear(h, h)
+            self.scale = h ** -0.5
+            self.head_tbrf = nn.Linear(3 * h, 3)
         self.aps = aps
         self.head = nn.Linear(2 * h, 3)
         if aps:
@@ -283,15 +313,25 @@ class TextMASC(nn.Module):
             self.head_aff = nn.Linear(2 * h, 2)     # neutral vs non-neutral
             self.head_dir = nn.Linear(2 * h, 2)     # NEG vs POS, non-neutral only
 
-    def features(self, ids, mask):
+    def features(self, ids, mask, amask=None):
         h = self.enc(input_ids=ids, attention_mask=mask).last_hidden_state
         m = mask.unsqueeze(-1).float()
         mean = (h * m).sum(1) / m.sum(1).clamp(min=1)
+        if self.tbrf:
+            am = amask.unsqueeze(-1).float()
+            q = (h * am).sum(1) / am.sum(1).clamp(min=1)          # the aspect term
+            att = (self.k_proj(h) @ self.q_proj(q).unsqueeze(-1)).squeeze(-1) * self.scale
+            att = att.masked_fill(mask == 0, -1e4).softmax(-1)
+            t_local = (att.unsqueeze(-1) * self.v_proj(h)).sum(1)  # aspect-conditioned
+            t_global = mean                                        # the tweet's overall tone
+            return self.drop(torch.cat([t_local, t_global, t_local - t_global], -1))
         mx = h.masked_fill(m == 0, -1e4).max(1).values
         return self.drop(torch.cat([mean, mx], dim=-1))
 
-    def forward(self, ids, mask):
-        z = self.features(ids, mask)
+    def forward(self, ids, mask, amask=None):
+        z = self.features(ids, mask, amask)
+        if self.tbrf:
+            return self.head_tbrf(z).float()
         if self.aps:
             sem = self.head_sem(z).float()
             ann = sem + self.head_ann(z.detach()).float()
@@ -316,7 +356,7 @@ def run(model, loader, device):
     P, Y, K = [], [], []
     for b in loader:
         with torch.autocast("cuda", dtype=torch.float16, enabled=device.type == "cuda"):
-            lg = model(b["ids"].to(device), b["mask"].to(device))
+            lg = model(b["ids"].to(device), b["mask"].to(device), b["amask"].to(device))
         if isinstance(lg, tuple) and getattr(model, "aps", False):
             P.append(torch.softmax(lg[1].float(), -1).cpu().numpy())
             Y.extend(b["y"].tolist()); K.extend(b["key"]); continue
@@ -375,6 +415,9 @@ def main():
     ap.add_argument("--score-only", action="store_true",
                     help="skip training, load <out>/best.pt and just (re-)score. Lets the "
                          "candidate anchor set change without retraining any member.")
+    ap.add_argument("--tbrf", action="store_true",
+                    help="Target-Background Residual Fusion: the aspect queries the tweet "
+                         "by attention, and the head also sees t_local - t_global")
     ap.add_argument("--aps", action="store_true",
                     help="Annotation-Policy Separation: semantic head owns the encoder "
                          "(agreement-weighted), annotation head is a zero-init residual on "
@@ -482,7 +525,8 @@ def main():
             dl[s_] = DataLoader(ds_, batch_size=args.batch, shuffle=(s_ == "train"),
                                 collate_fn=coll)
 
-    model = TextMASC(args.model, factorized=args.factorized, aps=args.aps).to(device)
+    model = TextMASC(args.model, factorized=args.factorized, aps=args.aps,
+                     tbrf=args.tbrf).to(device)
     head = [p for n, p in model.named_parameters() if not n.startswith("enc.")]
     body = [p for n, p in model.named_parameters() if n.startswith("enc.")]
     opt = torch.optim.AdamW([{"params": body, "lr": args.lr},
@@ -510,7 +554,7 @@ def main():
         for b in dl["train"]:
             opt.zero_grad(set_to_none=True)
             with torch.autocast("cuda", dtype=torch.float16, enabled=device.type == "cuda"):
-                lg = model(b["ids"].to(device), b["mask"].to(device))
+                lg = model(b["ids"].to(device), b["mask"].to(device), b["amask"].to(device))
             yb = b["y"].to(device)
             if args.aps:
                 sem, ann = lg

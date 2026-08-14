@@ -1,1 +1,5 @@
 === d19_base_s45 ===
+[dev] gold-span MASC acc 77.45 (n=1122)
+[test] gold-span MASC acc 78.69 (n=1037)
+=== d19_aps_s45 ===
+APS agreement weights: 0.15:634  0.5:303  0.75:462  1.0:1780
