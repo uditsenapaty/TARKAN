@@ -466,13 +466,17 @@ def main():
                 loss = loss + nn.functional.nll_loss(lg, yb)
             else:
                 loss = lossf(lg, yb)
-            if args.cer > 0 and CER_CONS is not None:
+            # NB: gate on EITHER component. Gating on --cer alone silently turned
+            # `--cer 0 --cer-upweight 1.3` into a plain baseline run (caught because it
+            # reproduced the baseline to the second decimal).
+            if (args.cer > 0 or args.cer_upweight > 1.0) and CER_CONS is not None:
                 ks = [tuple(k) for k in b["key"]]
                 cons = torch.tensor([CER_CONS.get(k, (0, 0))[0] for k in ks],
                                     device=device)
                 hard = torch.tensor([CER_CONS.get(k, (0, 0))[1] for k in ks],
                                     device=device, dtype=torch.bool)
-                loss = loss + args.cer * cer_loss(lg, yb, cons, hard, args.cer_margin)
+                if args.cer > 0:
+                    loss = loss + args.cer * cer_loss(lg, yb, cons, hard, args.cer_margin)
                 if args.cer_upweight > 1.0 and hard.any():
                     # replay: extra CE mass on the family's confident failures
                     loss = loss + (args.cer_upweight - 1.0) * nn.functional.cross_entropy(
