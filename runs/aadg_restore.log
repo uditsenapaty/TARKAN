@@ -1,0 +1,7 @@
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 20206.91it/s]
+description source: captions.json (3502 images)
+tau = 0.6256 (92th pct of 9170 TRAIN pairs); sim range [0.176, 0.732] median 0.563
+[train] 2101 desc | 501/3179 aspects grounded (15.8%), 2678 absence notes | u mean 0.623 | pseudo-pos 27.8%
+[dev] 727 desc | 210/1234 aspects grounded (17.0%), 1024 absence notes | u mean 0.637 | pseudo-pos 29.2%
+[test] 674 desc | 214/1178 aspects grounded (18.2%), 964 absence notes | u mean 0.632 | pseudo-pos 29.0%
+examples: ['a man in a baseball uniform talking to a group of Facebook Oklahoma is not clearly visible.', 'a Lydia with green hair sitting on a couch', 'a stone sculpture of a man and woman Barbara Hepworth is not clearly visible.', 'a painting of a tiger and a dragon in a circular frame Jessica Fortner is not clearly visible.']

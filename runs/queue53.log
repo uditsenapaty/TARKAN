@@ -5,4 +5,3 @@ description source: captions_qwen.json (3502 images)
 [test] 674 desc | 469/1178 aspects grounded (39.8%), 709 absence notes | u mean 0.779 | pseudo-pos 50.8%
 === [2] PDS members on the Qwen evidence (baselines: 78.50 / 76.76 / 79.27) ===
 --- q30_pds_btwL
---- q30_pds_deb

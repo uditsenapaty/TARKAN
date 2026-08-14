@@ -321,7 +321,7 @@ def stage_describe(ds: str, spans_dir: str | None, alpha: float, beta: float,
                 rec_y.append(1.0 if hit else 0.0)
 
         json.dump(descs, open(d / f"desc_{split}{OUT_SUFFIX}.json", "w"))
-        np.savez_compressed(d / f"aspect_{split}.npz",
+        np.savez_compressed(d / f"aspect_{split}{OUT_SUFFIX}.npz",
                             keys=np.array(rec_keys, dtype=np.int64),
                             vis=np.asarray(rec_vis, dtype=np.float32),
                             u=np.asarray(rec_u, dtype=np.float32),
