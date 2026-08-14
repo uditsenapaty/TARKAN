@@ -1248,15 +1248,8 @@ pretraining every baseline in the table inherits. Chapter D adds five independen
 saturation measurements to Chapter C's, and every one of them concerns *rearranging
 signals already in the system*.
 
-> ## ⚠⚠ RETRACTION — §D.9 AND §D.10 BELOW ARE CONFOUNDED BY A BUG. SEE §D.13.
-> Every Qwen-VL member in §D.9/§D.10 was trained with `pds_margin_loss`'s hardcoded
-> `w_pos = 0.147`, which is the inverse frequency of the **§C.25 caption teacher's**
-> 687 POS : 101 NEG. The counterfactual teacher is 1394 : 644 and needs **0.462**. Re-run
-> with the correct weight, bertweet-large goes **77.24 → 78.50 — exactly the caption
-> baseline.** The "−1.1 per member" was largely the mis-weighting, and the lesson §D.10
-> drew from it ("asking outright beats differencing") is **reversed** by the corrected
-> data. The sections are kept verbatim as a record of what was measured and when; **read
-> §D.13 for what is actually true.**
+> ## ⚠ §D.9/§D.10 WERE MEASURED WITH A MIS-WEIGHTED LOSS — magnitudes shrink, conclusions
+> ## hold. See §D.13 for the corrected numbers.
 
 ## D.9 ★★ THE IMAGE CARRIES 3× THE SIGNAL AND MAKES THE MEMBER WORSE
 
@@ -1390,29 +1383,42 @@ majority class by a factor of three. `main()` now derives the weights from whate
 are loaded (`--w-pos` / `--w-neg` to override); the derivation reproduces 0.147 / 1.000
 exactly on the caption teacher as a regression check.
 
-**Corrected, bertweet-large:**
-| teacher | w_pos used | test |
+**⚠ This section was first written after re-running ONE tower, where the fix recovered the
+entire deficit (77.24 → 78.50) and appeared to overturn §D.9/§D.10 completely. Re-running
+the other two shows that was premature. Both the bug and my over-correction are recorded.**
+
+| tower | caption | counterfactual **as reported** (w_pos 0.147 ✗) | counterfactual **corrected** (0.462 ✓) |
+|---|---|---|---|
+| bertweet-large | 78.50 | 77.24 | **78.50** (+1.26) |
+| deberta-v3-large | 76.76 | 75.60 | 75.31 (−0.29) |
+| roberta-large | 79.27 | 78.21 | 77.92 (−0.29) |
+| **mean** | **78.18** | 77.02 | **77.24** (+0.23) |
+
+**The fix helps exactly one tower.** Mean gain is **+0.23**, not the +1.26 bertweet-large
+suggested, so §D.9/§D.10's finding survives at **−0.94** instead of −1.16.
+
+**Final standing of all three teachers, every member correctly weighted:**
+| teacher | aspects "moved" | mean test (3 towers) |
 |---|---|---|
-| caption (§C.25) | 0.147 ✓ correct | **78.50** |
-| counterfactual, as reported in §D.9 | 0.147 ✗ **wrong** | 77.24 |
-| **counterfactual, correct weights** | **0.462** | **78.50** |
-| direct image (§D.12) | 1.000 ✓ correct | 76.95 |
+| **Llama on BLIP captions (§C.25)** | 25% | **78.18** |
+| Qwen **direct** on pixels (§D.12) | 19% | 77.95 |
+| Qwen **counterfactual** on pixels (§D.9) | 76% | 77.24 |
 
-**The counterfactual teacher ties the caption teacher.** The §D.9/§D.10 "−1.1 per member"
-was largely my own mis-weighting, and two conclusions drawn from it must be withdrawn:
+Which restores both original lessons, at reduced magnitude:
+* ✓ *Asking outright beats differencing* — direct **77.95** > counterfactual **77.24**
+  (+0.71), the ordering §D.10 predicted; my one-tower retraction of it is itself withdrawn.
+* ✓ *More teacher signal is not better teacher signal* — selectivity tracks quality across
+  all three (25% → 78.18, 19% → 77.95, 76% → 77.24), and the teacher that fires on 76% of
+  aspects is the worst by a clear margin.
 
-* ✗ *"More teacher signal is not better teacher signal"* — not supported. Correctly
-  weighted, the teacher carrying 3× the evidence performs **the same**, not worse.
-* ✗ *"A counterfactual delta is the difference of two noisy estimates; asking a weak
-  teacher outright beat differencing it against itself"* — **reversed.** Correctly
-  weighted, differencing ties the caption teacher (78.50) and asking directly is the
-  weaker of the two (76.95). §D.12 was built on a lesson the bug had manufactured.
+**Caveat that limits all of it:** the tower spread on identical labels is ±1.6 (§C.1 seed
+lottery), which is larger than every gap in that table. The honest reading is **the three
+teachers are indistinguishable within noise, with a weak ordering favouring the caption
+teacher**, and no teacher variant moves the joint result off **70.43**.
 
-What survives is narrower and still useful: **an auxiliary direction loss must be balanced
-against its own teacher's class distribution, and a constant inherited from a different
-teacher silently destroys ~1.2 points.** Given §D.11, none of this changes the joint result
-— the standing number remains **70.43** — but the recorded reasoning was wrong and is
-corrected here rather than quietly left in place.
+**What is solid regardless:** an auxiliary direction loss must be balanced against **its
+own** teacher's class distribution; inheriting the constant from a different teacher cost
+1.26 on one tower and is now derived automatically.
 
 ## D.11 ★★★ WHY IT SATURATES — the residual errors are CONSENSUS errors
 
