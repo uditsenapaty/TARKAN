@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 import sys
 import time
 from pathlib import Path
@@ -47,10 +48,25 @@ NEG, NEU, POS = 0, 1, 2          # index order of POLARITIES
 
 
 class DS(Dataset):
-    def __init__(self, ex, tok, desc, vis, u, y, dirp, vis_dim, max_len=192):
+    def __init__(self, ex, tok, desc, vis, u, y, dirp, vis_dim, max_len=192, swap=False):
         self.ex, self.tok, self.desc = ex, tok, desc
         self.vis, self.u, self.dirp, self.vis_dim = vis, u, dirp, vis_dim
         self.max_len = max_len
+        self.swap = swap
+        # CET: for every aspect, the key of ANOTHER aspect in the SAME tweet. The evidence
+        # really is aspect-specific -- across 400 multi-aspect tweets the AADG visual vector
+        # differs between aspects in 304 and the aspect-image similarity u in 393 -- so
+        # substituting a sibling's evidence is a genuine intervention, not a no-op.
+        self.sib = {}
+        if swap:
+            byinst = {}
+            for e in ex:
+                byinst.setdefault(e.inst_idx, []).append(e.key)
+            for keys in byinst.values():
+                for k in keys:
+                    others = [o for o in keys if o != k]
+                    if others:
+                        self.sib[k] = others
 
     def __len__(self):
         return len(self.ex)
@@ -66,7 +82,20 @@ class DS(Dataset):
                 "key": e.key,
                 "vis": self.vis.get(e.key, np.zeros(self.vis_dim, dtype=np.float32)),
                 "u": self.u.get(e.key, 0.0),
-                "dir": self.dirp.get(e.key, np.array([0., 0., 1.], dtype=np.float32))}
+                "dir": self.dirp.get(e.key, np.array([0., 0., 1.], dtype=np.float32)),
+                **self._swap(e)}
+
+    def _swap(self, e):
+        if not self.swap:
+            return {}
+        sibs = self.sib.get(e.key)
+        if not sibs:
+            # no sibling: reuse own evidence, and mark the row so the loss skips it
+            return {"vis_s": self.vis.get(e.key, np.zeros(self.vis_dim, dtype=np.float32)),
+                    "u_s": self.u.get(e.key, 0.0), "has_s": 0.0}
+        k = sibs[random.randrange(len(sibs))]
+        return {"vis_s": self.vis.get(k, np.zeros(self.vis_dim, dtype=np.float32)),
+                "u_s": self.u.get(k, 0.0), "has_s": 1.0}
 
 
 def make_collate(pad_id):
@@ -84,7 +113,11 @@ def make_collate(pad_id):
                 "u": torch.tensor([x["u"] for x in b], dtype=torch.float),
                 "dir": torch.tensor(np.stack([x["dir"] for x in b])),
                 "y": torch.tensor([x["y"] for x in b]),
-                "key": [x["key"] for x in b]}
+                "key": [x["key"] for x in b],
+                **({"vis_s": torch.tensor(np.stack([x["vis_s"] for x in b])),
+                    "u_s": torch.tensor([x["u_s"] for x in b], dtype=torch.float),
+                    "has_s": torch.tensor([x["has_s"] for x in b], dtype=torch.float)}
+                   if "vis_s" in b[0] else {})}
     return collate
 
 
@@ -146,7 +179,17 @@ class PDSResidual(nn.Module):
             p_neu = torch.softmax(lg_base, -1)[:, NEU:NEU + 1]
             scale = self.alpha * (1.0 + self.beta * p_neu)
         lg_full = lg_base + scale * g * delta
-        return lg_full, lg_base, delta, g.squeeze(-1)
+        return lg_full, lg_base, delta, g.squeeze(-1), t_a
+
+    def evidence_delta(self, t_a, vis, sim):
+        """The residual this aspect's representation would receive from ARBITRARY evidence.
+        Reuses the encoder output, so the counterfactual is nearly free (same trick the
+        class docstring already relies on for the text-only branch)."""
+        v_a = self.vproj(vis)
+        u = torch.sigmoid(self.w_u * sim + self.b_u)
+        g = torch.sigmoid(self.w_g * u + self.b_g).unsqueeze(-1)
+        d = self.head_delta(self.drop(torch.cat([v_a, t_a], -1))).float()
+        return d, g
 
 
 def pds_continuous_loss(delta, dirp, scale=1.0, w_pos=0.147, w_neg=1.0):
@@ -285,6 +328,9 @@ def main():
     ap.add_argument("--lr", type=float, default=1e-5)
     ap.add_argument("--head-lr", type=float, default=1e-3)
     ap.add_argument("--patience", type=int, default=3)
+    ap.add_argument("--cet-swap", type=float, default=0.0,
+                    help="CET: penalise any decision shift caused by a SIBLING aspect's "
+                         "evidence (evidence-aspect binding)")
     ap.add_argument("--score-only", action="store_true",
                     help="skip training, load <out>/best.pt and just (re-)score, so the "
                          "candidate anchor set can change without retraining the member")
@@ -318,7 +364,8 @@ def main():
 
     coll = make_collate(tok.pad_token_id)
     dl = {s: DataLoader(DS(ex[s], tok, desc[s], *art[s],
-                           dirp if s == "train" else {}, vis_dim),
+                           dirp if s == "train" else {}, vis_dim,
+                           swap=(args.cet_swap > 0 and s == "train")),
                         batch_size=args.batch, shuffle=(s == "train"), collate_fn=coll)
           for s in insts}
 
@@ -345,13 +392,28 @@ def main():
                            b["u"].to(device))
             y = b["y"].to(device); dirp = b["dir"].to(device)
             if args.residual:
-                lgf, lgb, delta, _ = mo
+                lgf, lgb, delta, _, t_a = mo
                 lp = (pds_continuous_loss(delta, dirp) if args.pds_mode == "continuous"
                       else pds_margin_loss(delta, dirp, args.gamma, args.eps, args.w_none,
                                            W_POS, W_NEG))
                 loss = ce(lgf, y) + 0.5 * ce(lgb, y) + args.lambda_pds * lp
+                if args.cet_swap > 0 and "vis_s" in b:
+                    # CET: evidence belongs to an ASPECT, not to the tweet. Feeding this
+                    # aspect a SIBLING aspect's evidence must not move its decision. §C13
+                    # (sibling-logit) and §C10 (sibling marking) acted on the final logits
+                    # and on the input text; this corrupts the evidence-aspect BINDING,
+                    # which nothing has tested. The intervention is real: across 400
+                    # multi-aspect tweets the AADG visual vector differs between aspects in
+                    # 304 and the similarity u in 393.
+                    ds, gs = model.evidence_delta(t_a, b["vis_s"].to(device),
+                                                  b["u_s"].to(device))
+                    ds = model.alpha * gs * ds
+                    hs_ = b["has_s"].to(device)
+                    off = (ds[:, POS] - ds[:, NEU]).abs() + (ds[:, NEG] - ds[:, NEU]).abs()
+                    if float(hs_.sum()) > 0:
+                        loss = loss + args.cet_swap * (hs_ * off).sum() / hs_.sum()
             else:
-                lgf, lgt, _ = mo
+                lgf, lgt, _ = mo[:3]
                 lp = pds_loss(lgf, lgt, dirp, args.margin, args.w_none)
                 loss = ce(lgf, y) + args.lambda_pds * lp
             scaler.scale(loss).backward(); scaler.unscale_(opt)
