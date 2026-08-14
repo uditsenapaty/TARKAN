@@ -143,7 +143,7 @@ class PacsDS(Dataset):
             for (s, e, p) in inst.aspects:
                 if s in row and (e - 1) in row:
                     gold.append((row[s], row[e - 1] + 1)); pol.append(POL2ID[p])
-                    dets.append(det.get((ii, s, e), 1.0) if det else 1.0)
+                    dets.append(det.get((ii, s, e), 0.83) if det else 0.83)
             self.items.append({
                 "input_ids": enc["input_ids"],
                 "word_index": [first[w] for w in keep],
@@ -252,6 +252,26 @@ def a_selected(pairs, gold):
     return (100.0 * sc / st if st else 0.0), st, mt
 
 
+@torch.no_grad()
+def a_gold(model, loader, device, insts):
+    """Polarity accuracy of the head on ALL gold spans -- the §C.18 reference quantity
+    (81.20 for the decoupled ensemble). `a_selected - a_gold` is the anti-correlation:
+    -0.68 in the decoupled pipeline, and PACS is claiming to make it positive."""
+    model.eval()
+    ok = tot = 0
+    for b in loader:
+        gsp = [(bi, s, e) for bi, g in enumerate(b["gold"]) for (s, e) in g]
+        if not gsp:
+            continue
+        y = torch.tensor([p for pl in b["pol"] for p in pl], device=device)
+        with torch.autocast("cuda", dtype=torch.float16, enabled=device.type == "cuda"):
+            hw = model.words(b["input_ids"].to(device), b["attention_mask"].to(device),
+                             b["word_index"].to(device))
+        pred = model.polarity(hw, gsp).argmax(-1)
+        ok += int((pred == y).sum()); tot += len(gsp)
+    return 100.0 * ok / tot if tot else 0.0
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="microsoft/deberta-v3-large")
@@ -272,6 +292,11 @@ def main():
     ap.add_argument("--lam-det", type=float, default=0.0,
                     help="weight of the determinability ranking (the direct §C.18 fix)")
     ap.add_argument("--margin-det", type=float, default=0.15)
+    ap.add_argument("--det-mode", choices=["utility", "rank"], default="utility",
+                    help="'utility' = absolute threshold at q=0.5 (correct); 'rank' = the "
+                         "pure ordering used by the first ablation")
+    ap.add_argument("--det-alpha", type=float, default=1.0,
+                    help="Laplace smoothing on q = (k + alpha) / (4 + 2 alpha)")
     ap.add_argument("--det-buffer", default="data/cer_train.npz")
     ap.add_argument("--cand-thr", type=float, default=0.12)
     ap.add_argument("--out", required=True)
@@ -289,7 +314,11 @@ def main():
     det = None
     if args.lam_det > 0:
         z = np.load(args.det_buffer)
-        det = {(int(k[0]), int(k[1]), int(k[2])): float(n) / 4.0
+        a = args.det_alpha
+        # q_hat = P(polarity correct), Laplace-smoothed. Raw k/4 asserts q=0 for k=0, which
+        # §D.11 forbids: four correlated towers failing together is a shared blind spot, not
+        # proof the label is unknowable. Smoothing keeps it an estimate.
+        det = {(int(k[0]), int(k[1]), int(k[2])): (float(n) + a) / (4.0 + 2.0 * a)
                for k, n in zip(z["keys"], z["n_right"])}
         import collections as _c
         h = _c.Counter(round(v, 2) for v in det.values())
@@ -353,18 +382,28 @@ def main():
             # This is the population that matters: §D.1 found only 125 of 1032 kept
             # predictions are non-gold spans, so boundary contrast alone attacks the smaller
             # pot. 356 of 3179 train aspects (11.2%) have NO OOF tower correct.
-            if args.lam_det > 0 and len(gsp) > 1:
+            if args.lam_det > 0 and len(gsp) > 0:
                 sm2 = torch.softmax(emis, -1)
                 A = torch.stack([span_score(sm2, bi, s, e) for (bi, s, e) in gsp])
-                d = torch.tensor([x for dl_ in b["det"] for x in dl_], device=A.device,
+                q = torch.tensor([x for dl_ in b["det"] for x in dl_], device=A.device,
                                  dtype=A.dtype)
-                gap = d[:, None] - d[None, :]                  # positive where i is easier
-                sel = gap > 0.24
-                if sel.any():
-                    diff = A[:, None] - A[None, :]
-                    ld = torch.relu(args.margin_det * gap - diff)[sel].mean()
-                    loss = loss + args.lam_det * ld
-                    td += float(ld)
+                if args.det_mode == "rank":
+                    gap = q[:, None] - q[None, :]
+                    sel = gap > 0.24
+                    ld = (torch.relu(args.margin_det * gap
+                                     - (A[:, None] - A[None, :]))[sel].mean()
+                          if sel.any() else A.sum() * 0.0)
+                else:
+                    # ABSOLUTE signed utility. A pairwise ranking on q is identical to one on
+                    # u = 2q-1 (monotone affine), so the real content of "extract iff q > 0.5"
+                    # is a THRESHOLD, not an ordering: push A above 0.5 where u > 0 and below
+                    # it where u < 0, with strength |u|. Expected error is 2(1-q) if extracted
+                    # and 1 if skipped, so q = 0.5 is the true indifference point.
+                    u = 2.0 * q - 1.0
+                    ld = (u.abs() * torch.relu(args.margin_det
+                                               - torch.sign(u) * (A - 0.5))).mean()
+                loss = loss + args.lam_det * ld
+                td += float(ld)
             scaler.scale(loss / args.accum).backward()
             if (i + 1) % args.accum == 0:
                 scaler.unscale_(opt)
@@ -397,12 +436,15 @@ def main():
         pairs, spans = assemble(pr, args.lam_u, best_tau)
         j = score_joint(pairs, gp[s]); m = score_spans(spans, gs[s])
         a, nsel, nmiss = a_selected(pairs, gp[s])
-        res[s] = {"joint": j, "MATE_at_tau": m, "a_selected": a,
+        ag = a_gold(model, dl[s], device, insts[s])
+        res[s] = {"joint": j, "MATE_at_tau": m, "a_selected": a, "a_gold": ag,
+                  "anticorrelation": a - ag,
                   "n_selected_gold": nsel, "n_missed_gold": nmiss}
-        print(f"[{s}] MATE@tau {m['F1']:.2f}  a_selected {a:.2f}  "
-              f"JOINT P {j['P']:.2f} R {j['R']:.2f} F1 {j['F1']:.2f}")
-    print(f"\n  GATE (§C.18): a_selected on test = {res['test']['a_selected']:.2f}   "
-          f"vs the decoupled pipeline's 80.52")
+        print(f"[{s}] MATE@tau {m['F1']:.2f}  a_selected {a:.2f}  a_gold {ag:.2f}  "
+              f"delta {a-ag:+.2f}  JOINT P {j['P']:.2f} R {j['R']:.2f} F1 {j['F1']:.2f}")
+    print(f"\n  GATE (§C.18): a_selected - a_gold on test = "
+          f"{res['test']['anticorrelation']:+.2f}   (the decoupled pipeline's is -0.68; "
+          f"PACS succeeds only if this turns POSITIVE without wrecking MATE)")
     json.dump(res, open(out / "metrics.json", "w"), indent=2, default=float)
 
 
