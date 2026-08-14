@@ -1468,6 +1468,55 @@ The member-oracle ceiling — fixing all 140 — would be F1 **83.9**, which is 
 84.5-ish perfect-selector ceiling §D.1 found from the other direction. The entire 70.4 → 84
 gap is per-example model selection, and it is inaccessible.
 
+## D.15 ★★ FACTORIZED POLARITY AND CONSENSUS-ERROR REPLAY — both negative, one instructive
+
+Two mechanisms aimed at §D.11 rather than around it. **TARKAN's core is untouched** —
+anchors, teacher evidence, KG, KAN, auxiliary ASC and student-only inference are unchanged;
+only the polarity head and its auxiliary losses differ. bertweet-large, seed 45, 6 epochs,
+identical recipe:
+
+| variant | dev | **test** | Δ |
+|---|---|---|---|
+| **baseline** | **77.45** | **78.69** | — |
+| factorized head | 76.92 | 77.72 | −0.97 |
+| **CER** (margin 0.5 + replay 2.0) | 69.70 | **74.35** | **−4.34** |
+| both | 72.64 | 75.89 | −2.80 |
+
+**(a) Factorized `P(non-neutral) × P(POS | non-neutral)` — −0.97.** §D.1 put 158 of 186
+errors at the minority↔NEU boundary, and the hypothesis was that a flat 3-way softmax makes
+one decision answer two questions (*is this polarised* / *which way*) with NEU competing as
+a third direction. Changing the output space so the direction head never sees NEU does not
+help. Unlike §C.9 and §C.12 this was a geometry change rather than a reweighting, and it
+lands in the same place.
+
+*Implementation note that nearly produced a false negative:* supervising only the two heads
+leaves the composition uncalibrated — bertweet-base fell to **56.5, below the 58.5 majority
+class**, against a 73.8 baseline. Adding an NLL term on the composed log-probs fixes it
+(73.08). The factorisation is a structural prior on the decision, **not** a replacement for
+supervising it. Had the broken version been run straight on the strong tower it would have
+been recorded as "factorized polarity fails" for entirely the wrong reason.
+
+**(b) CER — −4.34, and the failure is the interesting part.** CER trains against the
+family's own confident failures: 653 OOF training aspects whose signature matches the test
+failures closely (0.65/4 members right vs 3.62/4 on correct ones; 347 of 653 collapsing to
+NEU; NEG worst at 35.9% of its class). The precondition was verified before any training
+code was written, and the loss fires *only* where the family agreed confidently and wrongly
+— unlike §C.12's margin, which fired on every minority example.
+
+**Its premise is nonetheless half wrong, and that sharpens §D.11.** CER assumes the
+consensus is wrong because the family learned a shared *shortcut* — something learnable
+away. But §D.11 also measured **39 of 179 test failures where no member of 19 is right**,
+and the training buffer necessarily contains the same population. Those are most plausibly
+annotation noise or genuine ambiguity, and **nothing distinguishes "shared shortcut" from
+"wrong label" from the outside.** Forcing the model onto them teaches noise, which is
+exactly what a −4.34 collapse with dev falling further (−7.75) looks like.
+
+**So §D.11 should be read one level deeper: the residual errors are not merely errors the
+model family shares — a substantial part of them is irreducible.** That reframes the
+remaining 2.5 F1 as partly unavailable rather than merely hard to reach, and it is
+consistent with the perfect-selector (84.5) and member-oracle (83.9) ceilings both sitting
+well below 100 on a pool that contains the right span.
+
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
 Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:
