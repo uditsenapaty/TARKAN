@@ -215,22 +215,81 @@ def sibling_logit_loss(logits, y, inst, margin=1.0):
     return torch.relu(term)[mask].mean()
 
 
+NEU_ID = POL2ID["NEU"]
+CER_CONS = None      # {key: (consensus_label, is_hard)} -- filled by main()
+
+
+def cer_loss(logits, y, consensus, is_hard, margin=1.0):
+    """D15 — Consensus-Error Replay: push the gold logit ABOVE the logit of whatever the
+    model family confidently agreed on, on the examples where that agreement is wrong.
+
+    §D.11 measured the residual errors as *consensus* errors: on the 179 wrong-polarity
+    test cases only 3.9 of 19 members are right (vs 17.4 on the correct ones), and just 7
+    have majority support. Adding voters cannot fix that, and §D.2 showed no selector can
+    pick the right minority. The remaining move is to train against the shortcut itself.
+
+    The OOF buffer has the same signature as the test failures (0.65/4 members right vs
+    3.62/4; 347 of 653 collapse to NEU; NEG worst at 35.9%), so it is a faithful proxy.
+
+    This is NOT §C.12's minority margin, which pushed POS/NEG above NEU for every minority
+    example and backfired by satisfying the margin on already-easy cases. Here the margin
+    is against the *specific wrong label the family agreed on*, only on examples where that
+    agreement was confident and wrong -- so it can only fire where the shortcut fires.
+    """
+    if is_hard.sum() == 0:
+        return logits.sum() * 0.0
+    lg = logits[is_hard]
+    gold = lg.gather(1, y[is_hard][:, None]).squeeze(1)
+    cons = lg.gather(1, consensus[is_hard][:, None]).squeeze(1)
+    return torch.relu(margin + cons - gold).mean()
+
+
 class TextMASC(nn.Module):
-    def __init__(self, model_id, dropout=0.1):
+    """`factorized` splits the 3-way softmax into P(non-neutral) x P(POS | non-neutral).
+
+    §D.1 measured 158 of 186 polarity errors as minority<->NEU with NEG recall 57.4. A flat
+    3-way softmax makes one decision answer two different questions -- *is this polarised*
+    and *which way* -- so NEU competes directly with POS and NEG as a third direction. Under
+    the factorisation the direction head never sees NEU at all: it is trained only on
+    POS/NEG examples, and the neutrality gate is a separate binary decision. §C.9 (class
+    weighting) and §C.12 (minority margin) both stayed inside the flat softmax and failed;
+    this changes the output space rather than reweighting it.
+    """
+
+    def __init__(self, model_id, dropout=0.1, factorized=False):
         super().__init__()
         from transformers import AutoConfig, AutoModel
         cfg = AutoConfig.from_pretrained(model_id)
         self.enc = AutoModel.from_pretrained(model_id, dtype=torch.float32)
         h = cfg.hidden_size
         self.drop = nn.Dropout(dropout)
+        self.factorized = factorized
         self.head = nn.Linear(2 * h, 3)
+        if factorized:
+            self.head_aff = nn.Linear(2 * h, 2)     # neutral vs non-neutral
+            self.head_dir = nn.Linear(2 * h, 2)     # NEG vs POS, non-neutral only
 
-    def forward(self, ids, mask):
+    def features(self, ids, mask):
         h = self.enc(input_ids=ids, attention_mask=mask).last_hidden_state
         m = mask.unsqueeze(-1).float()
         mean = (h * m).sum(1) / m.sum(1).clamp(min=1)
         mx = h.masked_fill(m == 0, -1e4).max(1).values
-        return self.head(self.drop(torch.cat([mean, mx], dim=-1))).float()
+        return self.drop(torch.cat([mean, mx], dim=-1))
+
+    def forward(self, ids, mask):
+        z = self.features(ids, mask)
+        if not self.factorized:
+            return self.head(z).float()
+        return self.head_aff(z).float(), self.head_dir(z).float()
+
+
+def factorized_logits(aff, dirn):
+    """Compose the two heads into the 3-way log-probabilities everything downstream wants:
+    log P(NEU) = log(1-p_aff);  log P(POS) = log p_aff + log p_dir;  NEG symmetric."""
+    la = torch.log_softmax(aff, -1)          # [:,0]=neutral, [:,1]=non-neutral
+    ld = torch.log_softmax(dirn, -1)         # [:,0]=NEG,     [:,1]=POS
+    out = torch.stack([la[:, 1] + ld[:, 0], la[:, 0], la[:, 1] + ld[:, 1]], -1)
+    return out                               # POLARITIES order: NEG, NEU, POS
 
 
 @torch.no_grad()
@@ -240,6 +299,10 @@ def run(model, loader, device):
     for b in loader:
         with torch.autocast("cuda", dtype=torch.float16, enabled=device.type == "cuda"):
             lg = model(b["ids"].to(device), b["mask"].to(device))
+        if isinstance(lg, tuple):                       # factorized heads
+            lg = factorized_logits(*lg)
+            P.append(torch.exp(lg.float()).cpu().numpy())
+            Y.extend(b["y"].tolist()); K.extend(b["key"]); continue
         P.append(torch.softmax(lg.float(), -1).cpu().numpy())
         Y.extend(b["y"].tolist())
         K.extend(b["key"])
@@ -291,6 +354,18 @@ def main():
     ap.add_argument("--score-only", action="store_true",
                     help="skip training, load <out>/best.pt and just (re-)score. Lets the "
                          "candidate anchor set change without retraining any member.")
+    ap.add_argument("--factorized", action="store_true",
+                    help="split the 3-way softmax into P(non-neutral) x P(POS|non-neutral); "
+                         "the direction head is trained on POS/NEG examples only")
+    ap.add_argument("--cer", type=float, default=0.0,
+                    help="weight of the Consensus-Error Replay margin (see cer_loss)")
+    ap.add_argument("--cer-margin", type=float, default=1.0)
+    ap.add_argument("--cer-upweight", type=float, default=1.0,
+                    help="extra CE mass on the family's confident failures")
+    ap.add_argument("--cer-buffer", default="data/cer_train.npz")
+    ap.add_argument("--cer-conf", type=float, default=0.7,
+                    help="a training aspect joins the buffer when the OOF consensus is "
+                         "wrong AND more confident than this")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
 
@@ -298,6 +373,18 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
     LEX = load_lexicon() if args.opinion_dropout > 0 else {}
+
+    if args.cer > 0 or args.cer_upweight > 1.0:
+        global CER_CONS
+        z = np.load(args.cer_buffer)
+        CER_CONS = {}
+        n_hard = 0
+        for k, c, cf, gd in zip(z["keys"], z["consensus"], z["conf"], z["gold"]):
+            hard = bool(c != gd and cf > args.cer_conf)
+            CER_CONS[(int(k[0]), int(k[1]), int(k[2]))] = (int(c), hard)
+            n_hard += hard
+        print(f"CER buffer: {n_hard} confident consensus FAILURES of {len(CER_CONS)} "
+              f"train aspects (conf > {args.cer_conf})", flush=True)
     if LEX:
         print(f"opinion lexicon: {len(LEX)} words |polarity|>=0.3", flush=True)
 
@@ -331,7 +418,7 @@ def main():
             dl[s_] = DataLoader(ds_, batch_size=args.batch, shuffle=(s_ == "train"),
                                 collate_fn=coll)
 
-    model = TextMASC(args.model).to(device)
+    model = TextMASC(args.model, factorized=args.factorized).to(device)
     head = [p for n, p in model.named_parameters() if not n.startswith("enc.")]
     body = [p for n, p in model.named_parameters() if n.startswith("enc.")]
     opt = torch.optim.AdamW([{"params": body, "lr": args.lr},
@@ -360,7 +447,36 @@ def main():
             opt.zero_grad(set_to_none=True)
             with torch.autocast("cuda", dtype=torch.float16, enabled=device.type == "cuda"):
                 lg = model(b["ids"].to(device), b["mask"].to(device))
-            loss = lossf(lg, b["y"].to(device))
+            yb = b["y"].to(device)
+            if args.factorized:
+                aff, dirn = lg
+                y_aff = (yb != NEU_ID).long()
+                loss = nn.functional.cross_entropy(aff, y_aff)
+                nz = yb != NEU_ID
+                if nz.any():        # direction head never sees NEU as a competing class
+                    y_dir = (yb[nz] == POL2ID["POS"]).long()
+                    loss = loss + nn.functional.cross_entropy(dirn[nz], y_dir)
+                lg = factorized_logits(aff, dirn)
+                # Supervise the COMPOSED decision too. Training only the two heads leaves
+                # the composition uncalibrated -- measured: bertweet-base 3 epochs went
+                # 59.7 -> 56.5 (below the 58.5 majority class) against a 73.8 baseline,
+                # because nothing was optimising the 3-way objective the model is scored on.
+                # The factorisation is a structural prior on the decision, not a
+                # replacement for supervising it.
+                loss = loss + nn.functional.nll_loss(lg, yb)
+            else:
+                loss = lossf(lg, yb)
+            if args.cer > 0 and CER_CONS is not None:
+                ks = [tuple(k) for k in b["key"]]
+                cons = torch.tensor([CER_CONS.get(k, (0, 0))[0] for k in ks],
+                                    device=device)
+                hard = torch.tensor([CER_CONS.get(k, (0, 0))[1] for k in ks],
+                                    device=device, dtype=torch.bool)
+                loss = loss + args.cer * cer_loss(lg, yb, cons, hard, args.cer_margin)
+                if args.cer_upweight > 1.0 and hard.any():
+                    # replay: extra CE mass on the family's confident failures
+                    loss = loss + (args.cer_upweight - 1.0) * nn.functional.cross_entropy(
+                        lg[hard], yb[hard])
             if args.minority_margin > 0:
                 loss = loss + minority_margin_loss(lg, b["y"].to(device),
                                                    args.minority_margin)
