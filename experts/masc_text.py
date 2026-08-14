@@ -524,6 +524,8 @@ def main():
                     help="encoder LR for stage 1; 0 = same as --lr")
     ap.add_argument("--pre-save", default=None,
                     help="write the post-stage-1 encoder here for reuse by other members")
+    ap.add_argument("--pre-only", action="store_true",
+                    help="stop after stage 1 and save the encoder (one run per backbone)")
     ap.add_argument("--pre-init", default=None,
                     help="load a saved intermediate encoder instead of running stage 1")
     ap.add_argument("--ckpt", default=None,
@@ -691,6 +693,14 @@ def main():
         if args.pre_save:
             from experts.absa_extra import save_encoder
             save_encoder(model, Path(args.pre_save) / "enc.pt")
+            if args.pre_only:
+                # encoder-only transfer: the head is NOT carried over, because PDS and PDQ
+                # have different heads and every member must start from the same place
+                json.dump({"model": args.model, "pre_data": args.pre_data,
+                           "pre_epochs": args.pre_epochs},
+                          open(Path(args.pre_save) / "pre.json", "w"), indent=2)
+                print("pre-only: stopping after stage 1", flush=True)
+                return
         # stage 2 must start from a clean optimiser state and a fresh schedule, otherwise
         # the LR is already decayed to ~0 when the in-domain data finally arrives
         opt = torch.optim.AdamW([{"params": body, "lr": args.lr},
