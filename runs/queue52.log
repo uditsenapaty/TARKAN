@@ -1,1 +1,25 @@
 === [1] Qwen2.5-VL descriptions for every referenced image ===
+3502 images to describe
+  8/3502  1.80s/img  eta 105m
+  208/3502  1.35s/img  eta 74m
+  408/3502  1.34s/img  eta 69m
+  608/3502  1.34s/img  eta 65m
+  808/3502  1.34s/img  eta 60m
+  1008/3502  1.34s/img  eta 56m
+  1208/3502  1.34s/img  eta 51m
+  1408/3502  1.34s/img  eta 47m
+  1608/3502  1.34s/img  eta 42m
+  1808/3502  1.34s/img  eta 38m
+  2008/3502  1.34s/img  eta 33m
+  2208/3502  1.34s/img  eta 29m
+  2408/3502  1.34s/img  eta 24m
+  2608/3502  1.34s/img  eta 20m
+  2808/3502  1.34s/img  eta 16m
+  3008/3502  1.34s/img  eta 11m
+  3208/3502  1.34s/img  eta 7m
+  3408/3502  1.34s/img  eta 2m
+wrote 3502 Qwen descriptions -> /teamspace/studios/this_studio/data/aadg/twitter2015/captions_qwen.json
+  1860693.jpg: A man in a blue suit holds a gift box with a bow, standing outdoors near a green fence.
+  195984.jpg: The image features a promotional poster for the Million Youth March, commemorating its 15th anniversary, scheduled for September 7, 2013, in Harlem, N
+  871618.jpg: A person wearing glasses and a camouflage shirt makes a peace sign with their hand while standing in a room with a computer monitor, a red blanket, an
+=== QUEUE52 DONE ===
