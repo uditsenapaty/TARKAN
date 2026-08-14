@@ -1248,6 +1248,16 @@ pretraining every baseline in the table inherits. Chapter D adds five independen
 saturation measurements to Chapter C's, and every one of them concerns *rearranging
 signals already in the system*.
 
+> ## ⚠⚠ RETRACTION — §D.9 AND §D.10 BELOW ARE CONFOUNDED BY A BUG. SEE §D.13.
+> Every Qwen-VL member in §D.9/§D.10 was trained with `pds_margin_loss`'s hardcoded
+> `w_pos = 0.147`, which is the inverse frequency of the **§C.25 caption teacher's**
+> 687 POS : 101 NEG. The counterfactual teacher is 1394 : 644 and needs **0.462**. Re-run
+> with the correct weight, bertweet-large goes **77.24 → 78.50 — exactly the caption
+> baseline.** The "−1.1 per member" was largely the mis-weighting, and the lesson §D.10
+> drew from it ("asking outright beats differencing") is **reversed** by the corrected
+> data. The sections are kept verbatim as a record of what was measured and when; **read
+> §D.13 for what is actually true.**
+
 ## D.9 ★★ THE IMAGE CARRIES 3× THE SIGNAL AND MAKES THE MEMBER WORSE
 
 `experts/masc_qwenvl.py --counterfactual`. Qwen2.5-VL-7B (4-bit, T4) sees the **original
@@ -1329,6 +1339,80 @@ than under-supplied.
 `masc_qwenvl.py` now caches the raw arms `p_img` / `p_txt` and `experts/remap_direction.py`
 re-thresholds on CPU, so any future sweep is free; the first run saved only the mapped
 labels and cost one extra teacher pass.
+
+## D.12 QWEN-VL AS A **DIRECT** IMAGE TEACHER — the missing cell of the 2×2
+
+`masc_qwenvl.py --direct-teacher`. Ask the same question §C.25 asks Llama, but of a model
+looking at the **actual image** rather than a BLIP caption of it. One forward pass, not two.
+
+| teacher | POS | NEG | no-shift | skew | conf |
+|---|---|---|---|---|---|
+| Llama on captions (§C.25) | 687 | 101 | 75% | 6.8 : 1 POS | 0.795 |
+| Qwen counterfactual (§D.9) | 1394 | 644 | 36% | 2.16 : 1 POS | — |
+| **Qwen direct on pixels** | 214 | **382** | **81%** | **0.56 : 1 — NEG-leaning** | 0.666 |
+
+It is the most selective of the three and the only **NEG-leaning** one — which is the
+direction §D.1 says we most need (NEG recall 57.4, the worst number in the campaign).
+
+**The mechanism transfers to the student exactly as designed:**
+| 3-member average | acc | **NEG R** | NEU R | POS R |
+|---|---|---|---|---|
+| caption teacher | 80.14 | **52.2** | 86.2 | 78.5 |
+| **direct image teacher** | 79.36 | **59.3** | 85.0 | 75.7 |
+
+**+7.1 NEG recall** for −0.78 accuracy. The teacher's lean became the student's behaviour.
+
+**Per tower (all with correctly derived weights):** bertweet-large 76.95 (−1.55 vs caption),
+deberta-v3-large **78.40 (+1.64**, the best deberta PDS member on any teacher), roberta-large
+78.50 (−0.77). Mean **77.95 vs 78.18** — level with the caption teacher, with a ±1.6 spread
+across towers on identical labels that is the §C.1 seed lottery rather than a teacher effect.
+
+**And the ensemble does not move.** Every configuration lands below the standing 70.43:
+| ensemble | test |
+|---|---|
+| core12 + caption + counterfactual + 8B (**standing best**, 19) | **70.43** |
+| core12 + direct + 8B (16) | 69.98 |
+| core12 + caption + direct + 8B (19) | 70.07 |
+| all PDS families + 8B (22) | 70.20 |
+
+**This is the cleanest instance of §D.11 in the campaign.** The mechanism is confirmed
+working, aimed at the correct diagnosed failure, and buys +7.1 on exactly the class we are
+worst at — and it converts to nothing, because a member that fixes NEG cases the consensus
+gets wrong is simply outvoted by the consensus.
+
+## D.13 ⚠★★ CORRECTION — §D.9/§D.10 WERE MEASURED WITH A MIS-WEIGHTED LOSS
+
+`pds_margin_loss` hardcoded `w_pos = 0.147 / w_neg = 1.0`, the inverse frequencies of the
+**§C.25 caption teacher's** 687 POS : 101 NEG — its docstring said so explicitly. Every
+Qwen-VL member in §D.9/§D.10 inherited those constants while its own teacher was
+1394 : 644 (needing `w_pos` **0.462**), so the auxiliary loss under-used the teacher's
+majority class by a factor of three. `main()` now derives the weights from whatever labels
+are loaded (`--w-pos` / `--w-neg` to override); the derivation reproduces 0.147 / 1.000
+exactly on the caption teacher as a regression check.
+
+**Corrected, bertweet-large:**
+| teacher | w_pos used | test |
+|---|---|---|
+| caption (§C.25) | 0.147 ✓ correct | **78.50** |
+| counterfactual, as reported in §D.9 | 0.147 ✗ **wrong** | 77.24 |
+| **counterfactual, correct weights** | **0.462** | **78.50** |
+| direct image (§D.12) | 1.000 ✓ correct | 76.95 |
+
+**The counterfactual teacher ties the caption teacher.** The §D.9/§D.10 "−1.1 per member"
+was largely my own mis-weighting, and two conclusions drawn from it must be withdrawn:
+
+* ✗ *"More teacher signal is not better teacher signal"* — not supported. Correctly
+  weighted, the teacher carrying 3× the evidence performs **the same**, not worse.
+* ✗ *"A counterfactual delta is the difference of two noisy estimates; asking a weak
+  teacher outright beat differencing it against itself"* — **reversed.** Correctly
+  weighted, differencing ties the caption teacher (78.50) and asking directly is the
+  weaker of the two (76.95). §D.12 was built on a lesson the bug had manufactured.
+
+What survives is narrower and still useful: **an auxiliary direction loss must be balanced
+against its own teacher's class distribution, and a constant inherited from a different
+teacher silently destroys ~1.2 points.** Given §D.11, none of this changes the joint result
+— the standing number remains **70.43** — but the recorded reasoning was wrong and is
+corrected here rather than quietly left in place.
 
 ## D.11 ★★★ WHY IT SATURATES — the residual errors are CONSENSUS errors
 
