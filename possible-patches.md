@@ -1779,6 +1779,100 @@ by precision, and diluting it with two low-precision voters cannot help even whe
 decorrelated. **The extraction side is now measured as saturated too, closing the last
 ensemble axis in the project.**
 
+## D.22–D.24 ★★★ THE COUPLING ROUTE, AND WHY THE 74.68 ORACLE IS UNREACHABLE
+
+§C.18 is the sharpest structural finding in the project: MASC scores **81.20** on all gold
+spans, **80.52** on MATE-extracted spans, **86.73** on MATE-*missed* spans. The extractor
+selects the spans its own classifier is worst at, while MADSC's published numbers imply the
+opposite sign. Three experiments attacked it. All fail, and together they explain why.
+
+### The arithmetic first — and a threshold both ChatGPT and I got wrong
+Micro-F1 is `2·TP/(|pred|+|gold|)`, so dropping a prediction with correctness probability
+`q` **improves** F1 exactly when `q < F1/2` — **0.353** here, not the intuitive 0.5. The
+`q > 0.5` rule minimises *error count* (`2(1−q)` vs `1`), which is a different objective and
+over-drops. With **oracle** `q`:
+
+| cut | drop | TP lost | projected F1 |
+|---|---|---|---|
+| **q < 0.353** | 187 | 25.2 | **74.68** |
+| q < 0.50 | 253 | 53.6 | 74.28 |
+
+**74.68 clears the 72.9 bar.** Everything below is about whether `q` is obtainable.
+
+### D.22 — PACS: make the extractor internalise `q`. **−2.22, opposite sign**
+One encoder, BIO-CRF anchor head + span-polarity head, trained so the anchor score prefers
+polarity-determinable spans (`experts/pacs.py`).
+
+| | control (`lam_det` 0) | determinability-ranked |
+|---|---|---|
+| MATE@τ | 84.83 | 85.17 |
+| **`a_selected`** | **76.91** | **74.00** |
+| joint | 65.24 | **63.02** |
+
+The selected spans became **harder** for its own classifier. Forcing the anchor score to
+encode difficulty fights the tagging objective and damages both.
+
+*Two bugs found before they could fake a result*, both caught by printing intermediates
+rather than the final metric: (a) a polarity→emissions feedback gate with **both** the gate
+scalar and its projection zero-initialised, giving `∂L/∂α = fb = 0` and `∂L/∂fb = α = 0` — a
+dead branch with identically zero gradient forever; (b) a margin comparing batch **means**,
+`relu(m + Un.mean() − Ug.mean())`, which ordinary training already satisfies (the control
+logged it at 0.0000 by epoch 12 *without optimising it*). Both would have produced
+"coupling does nothing" as an artifact of the loss.
+
+Also note PACS cannot be a standalone system: hard parameter sharing costs extraction
+(MATE 84.83 vs the dedicated 85.77–87.01), so it starts at joint 65.24.
+
+### D.23 — predict `q` from the text instead. **AUC 0.705 < the product's 0.733**
+`experts/qpredict.py`, trained on 3635 OOF MATE candidates (gold → `q`, non-gold → 0), used
+as the acceptance score via `decide.py --qhat`: test **69.81** (q̂ alone) and **69.96**
+(mixed), both below the standing 70.43.
+
+`q` itself was first improved and validated. Replacing the `k/4` vote count with the mean
+OOF `P(gold)` over four architecturally distinct towers, and testing **cross-family
+transfer** — estimate `q` from 2 towers, predict whether the *other* 2 get it right:
+
+| estimator | mean AUC over all 6 splits |
+|---|---|
+| vote count `k/4` | 0.8545 |
+| **mean softmax `P(gold)`** | **0.9064** |
+
+So per-example polarity difficulty is a largely **model-independent** property, not merely
+the shared blind spot §D.11 warned about — and vote-counting discards real information
+(k=2 spans span `q` 0.29–0.71).
+
+### D.24 — use member DISAGREEMENT, which §D.2 never tested
+§D.2's features used the entropy of the *averaged* distribution, never inter-member
+disagreement. Agreement is a genuinely new feature and it *does* improve ranking:
+
+| acceptance score | AUC | dev | **test F1** |
+|---|---|---|---|
+| geometric product | 0.7334 | 70.16 | **70.43** |
+| product × agreement | **0.7670** | 70.19 | 69.70 |
+| product³ × agreement | — | 70.19 | **70.64** |
+
+**+0.034 AUC converts to nothing** — dev flat at 70.16–70.19 while test scatters 69.70–70.64,
+all inside the §D.20 ±1.31 floor. Third independent confirmation of §C.24's "improving the
+judge's AUC by +0.02 did not convert into F1".
+
+### ★★★ THE MECHANISM — why the oracle is unreachable
+| source of `q` | AUC for "pair is correct" |
+|---|---|
+| **other classifiers + the gold labels** | **0.906** |
+| geometric product | 0.733 |
+| a model reading the **text** | 0.705 |
+| **member disagreement** (no labels) | 0.650 |
+
+**`q` is a property of model competence, not a readable property of the input.** It is
+recoverable at 0.906 only by running independent classifiers *and comparing them to the
+answer*. Strip the labels and the same ensemble's disagreement carries 0.650 — barely above
+MASC confidence. So the 74.68 oracle is not a target: **the information that would fix the
+selection exists only once you already know the answer.**
+
+That is the deepest statement of the §D.2 ceiling, and it closes the coupling route. It also
+explains §D.11 without contradiction: the residual errors are consensus errors *and* the
+consensus cannot tell which of its own answers are the wrong ones.
+
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
 Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:

@@ -1,0 +1,5 @@
+{
+  "model": "vinai/bertweet-large",
+  "seed": 42,
+  "n_train": 3635
+}

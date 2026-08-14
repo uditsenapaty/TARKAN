@@ -1,1 +1,11 @@
 === d22c_det (--lam-det 1.0 --lam-joint 0.0) ===
+determinability buffer: 0.0:356  0.25:278  0.5:303  0.75:462  1.0:1780
+ep4 loss 1.3929 (joint 0.1229 det 0.1065) | dev joint 62.25 @tau 0.50 | 394s
+ep8 loss 0.3111 (joint 0.0676 det 0.0862) | dev joint 64.54 @tau 0.25 | 756s
+ep12 loss 0.1395 (joint 0.0548 det 0.0840) | dev joint 65.45 @tau 0.44 | 1138s
+ep16 loss 0.1063 (joint 0.0531 det 0.0838) | dev joint 65.48 @tau 0.13 | 1526s
+[dev] MATE@tau 84.96  a_selected 77.60  JOINT P 65.47 R 66.40 F1 65.93
+[test] MATE@tau 85.17  a_selected 74.00  JOINT P 62.14 R 63.93 F1 63.02
+  GATE (§C.18): a_selected on test = 74.00   vs the decoupled pipeline's 80.52
+=== d22c_det_both (--lam-det 1.0 --lam-joint 0.5) ===
+determinability buffer: 0.17:356  0.33:278  0.5:303  0.67:462  0.83:1780
