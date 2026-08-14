@@ -70,10 +70,13 @@ def mix(A, B, w, delta=None):
     return p / p.sum(1, keepdims=True)
 
 
-def score(S, A, B, w, k, delta=None):
+def score(S, A, B, w, k, delta=None, qh=None, qmix=1.0):
     p = mix(A, B, w, delta)
-    return np.exp((k * np.log(np.clip(S, 1e-9, 1)) +
-                   np.log(p.max(1))) / (k + 1)), p.argmax(1)
+    base = np.exp((k * np.log(np.clip(S, 1e-9, 1)) + np.log(p.max(1))) / (k + 1))
+    if qh is None:
+        return base, p.argmax(1)
+    q = np.clip(qh, 1e-6, 1.0)
+    return np.exp(qmix * np.log(q) + (1 - qmix) * np.log(np.clip(base, 1e-9, 1))), p.argmax(1)
 
 
 def prf(tp, npred, ngold):
@@ -104,10 +107,23 @@ def main():
     ap.add_argument("--gate-grid", type=float, nargs="*", default=[],
                     help="also try the selective gate at these deltas (see mix()). Costs a "
                          "third dev-fitted scalar, so it only wins if dev says so clearly.")
+    ap.add_argument("--qhat", default=None,
+                    help="dir with qhat_{dev,test}.npz from experts/qpredict.py -- a direct "
+                         "estimate of P(pair correct). Micro-F1 is 2*TP/(|pred|+|gold|), so "
+                         "the optimal acceptance cut is q > F1/2 (~0.353 here), not 0.5.")
+    ap.add_argument("--qhat-mix", type=float, default=1.0,
+                    help="1.0 = q_hat alone, 0.0 = the geometric product, in between = "
+                         "geometric interpolation of the two")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
     d = Path(args.pool)
     D = {s: load(d, s) for s in ("dev", "test")}
+    QH = {}
+    if args.qhat:
+        for sp in ("dev", "test"):
+            z = np.load(Path(args.qhat) / f"qhat_{sp}.npz")
+            QH[sp] = {(int(k[0]), int(k[1]), int(k[2])): float(v)
+                      for v, k in zip(z["q"], z["keys"])}
 
     taus = np.arange(0.0, 0.999, 0.005)
     print(f"{'w':>5} {'tau':>6} {'dev F1':>7} | {'TEST P':>7} {'R':>7} {'F1':>7} "
@@ -115,8 +131,16 @@ def main():
     best = None
     rows_out = []
     for w in args.w_grid:
-        sd, jd = score(D["dev"][1], D["dev"][2], D["dev"][3], w, args.k)
-        st, jt = score(D["test"][1], D["test"][2], D["test"][3], w, args.k)
+        qd = qt = None
+        if QH:
+            rows_d = json.load(open(d / "pool_dev.json"))["rows"]
+            rows_t = json.load(open(d / "pool_test.json"))["rows"]
+            qd = np.array([QH["dev"].get((r["inst"], r["s"], r["e"]), 0.5) for r in rows_d])
+            qt = np.array([QH["test"].get((r["inst"], r["s"], r["e"]), 0.5) for r in rows_t])
+        sd, jd = score(D["dev"][1], D["dev"][2], D["dev"][3], w, args.k, None, qd,
+                       args.qhat_mix)
+        st, jt = score(D["test"][1], D["test"][2], D["test"][3], w, args.k, None, qt,
+                       args.qhat_mix)
         bd = max((evaluate(sd, jd, D["dev"][4], t, NGOLD["dev"])["F1"], t) for t in taus)
         dev_f1, tau = bd
         sc = evaluate(st, jt, D["test"][4], tau, NGOLD["test"])
