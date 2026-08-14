@@ -1,1 +1,31 @@
 === mate_btwL (vinai/bertweet-large) ===
+ep1 loss 9.6186 | dev MATE P 64.72 R 79.95 F1 71.53 | 59s
+ep2 loss 2.4519 | dev MATE P 78.90 R 84.31 F1 81.52 | 113s
+ep3 loss 1.7169 | dev MATE P 79.92 R 85.12 F1 82.43 | 170s
+ep4 loss 1.2915 | dev MATE P 80.11 R 87.61 F1 83.70 | 226s
+ep5 loss 0.9348 | dev MATE P 80.65 R 86.19 F1 83.33 | 284s
+ep6 loss 0.7202 | dev MATE P 80.91 R 87.25 F1 83.96 | 333s
+ep7 loss 0.4999 | dev MATE P 82.12 R 85.56 F1 83.81 | 389s
+ep8 loss 0.3667 | dev MATE P 82.23 R 86.19 F1 84.16 | 439s
+ep9 loss 0.2446 | dev MATE P 81.77 R 87.17 F1 84.38 | 496s
+ep10 loss 0.2070 | dev MATE P 83.00 R 84.40 F1 83.69 | 555s
+ep11 loss 0.1784 | dev MATE P 81.20 R 86.99 F1 83.99 | 605s
+ep12 loss 0.1559 | dev MATE P 82.55 R 85.56 F1 84.03 | 654s
+ep13 loss 0.1195 | dev MATE P 81.46 R 86.54 F1 83.92 | 702s
+[dev] MATE P 81.77 R 87.17 F1 84.38
+[test] MATE P 81.88 R 87.17 F1 84.45
+  "test": {
+=== mate_robL (roberta-large) ===
+ep1 loss 10.5219 | dev MATE P 69.98 R 71.48 F1 70.72 | 58s
+ep2 loss 2.5143 | dev MATE P 79.08 R 82.53 F1 80.77 | 118s
+ep3 loss 1.8126 | dev MATE P 80.42 R 86.01 F1 83.12 | 175s
+ep4 loss 1.3761 | dev MATE P 76.68 R 90.55 F1 83.04 | 232s
+ep5 loss 1.0018 | dev MATE P 81.18 R 88.06 F1 84.48 | 282s
+ep6 loss 0.7342 | dev MATE P 78.30 R 86.81 F1 82.33 | 340s
+ep7 loss 0.5727 | dev MATE P 80.94 R 85.56 F1 83.19 | 389s
+ep8 loss 0.4255 | dev MATE P 82.39 R 85.47 F1 83.90 | 438s
+ep9 loss 0.3284 | dev MATE P 82.74 R 86.27 F1 84.47 | 487s
+[dev] MATE P 81.18 R 88.06 F1 84.48
+[test] MATE P 79.82 R 87.37 F1 83.43
+  "test": {
+=== QUEUE41 DONE ===

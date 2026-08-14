@@ -1751,9 +1751,33 @@ it was never tried.** The project's own stated principle — *"diversity, not in
 strength, is what they contribute"* (`masc_text` docstring) — was applied to polarity and
 never to extraction.
 
-*Status: running* — bertweet-large and roberta-large MATE members on the §C.6 recipe.
-Marginal-averaging over architecturally diverse taggers is the one untested ensemble axis
-left, and unlike the polarity side it has never been shown saturated.
+**MEASURED — negative, and below the §D.20 detection floor.** bertweet-large and
+roberta-large taggers on the §C.6 recipe, combined by marginal averaging:
+
+| MATE member set | dev | test P | test R | **test F1** |
+|---|---|---|---|---|
+| 5 deberta (standing) | 86.49 | 85.00 | 89.10 | **87.01** |
+| + bertweet-large | 86.79 | 85.00 | 89.10 | 87.01 |
+| + roberta-large | 86.79 | 84.90 | 88.91 | 86.86 |
+| **+ both** | **87.00** | 84.74 | 88.91 | **86.78** |
+| one-per-architecture (3) | 86.27 | 82.40 | 88.04 | 85.13 |
+| *bertweet-large alone* | 84.38 | 81.88 | 87.17 | *84.45* |
+| *roberta-large alone* | 84.44 | 79.60 | 87.27 | *83.26* |
+
+Dev rises monotonically with diversity while test falls monotonically — a ninth inversion,
+and dev-argmax again selects the worst test cell. **But the whole spread is 0.23, a fifth of
+the ±1.31 single-pair detection floor, so the honest statement is that every one of these
+sets scores the same.** The gap was real as a *gap*; filling it changes nothing measurable.
+
+Verified not a bug: adding bertweet-large genuinely alters the averaged marginals
+(max |Δ| 0.1665) and swaps **14 spans in, 14 spans out** on test — the identical P/R/F1 is a
+coincidence of that reshuffle, confirmed by inspection rather than assumed.
+
+Both new taggers are individually much weaker on precision (81.88 and 79.60 vs the deberta
+ensemble's 85.00), which is the likely mechanism: the BIO-CRF marginal average is dominated
+by precision, and diluting it with two low-precision voters cannot help even when they are
+decorrelated. **The extraction side is now measured as saturated too, closing the last
+ensemble axis in the project.**
 
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
