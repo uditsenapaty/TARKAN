@@ -115,9 +115,21 @@ def span_score(emis_sm, b, s, e):
 
 
 class PacsDS(Dataset):
-    def __init__(self, insts, tok, max_len=160, train=False, n_neg=3):
+    def __init__(self, insts, tok, max_len=160, train=False, n_neg=3, det=None):
+        """`det` maps (inst_idx, word_start, word_end) -> determinability in [0,1]: the
+        fraction of independent OOF towers that get this aspect's POLARITY right.
+
+        §C.18 says the extractor preferentially selects gold spans whose polarity is
+        undeterminable (80.52 on extracted vs 86.73 on missed). The arithmetic for fixing
+        that is unusually clean: extracting a gold span whose polarity will be wrong yields
+        one false positive AND one false negative, whereas skipping it yields only the false
+        negative -- the gold pair is missed either way. **De-prioritising undeterminable
+        spans is therefore strictly beneficial**, and it is D.4's "drop 72 false positives"
+        implemented as representation learning rather than the post-hoc selection §D.2
+        measured as impossible.
+        """
         self.items, self.train, self.n_neg = [], train, n_neg
-        for inst in insts:
+        for ii, inst in enumerate(insts):
             enc = tok(inst.tokens, is_split_into_words=True, truncation=True,
                       max_length=max_len)
             first = {}
@@ -127,16 +139,17 @@ class PacsDS(Dataset):
             keep = [w for w in range(len(inst.tokens)) if w in first]
             row = {w: r for r, w in enumerate(keep)}          # word idx -> word-row
             tags = obi_tags(inst)
-            gold, pol = [], []
+            gold, pol, dets = [], [], []
             for (s, e, p) in inst.aspects:
                 if s in row and (e - 1) in row:
                     gold.append((row[s], row[e - 1] + 1)); pol.append(POL2ID[p])
+                    dets.append(det.get((ii, s, e), 1.0) if det else 1.0)
             self.items.append({
                 "input_ids": enc["input_ids"],
                 "word_index": [first[w] for w in keep],
                 "tags": [tags[w] for w in keep],
                 "kept": keep, "n_words": len(inst.tokens),
-                "gold": gold, "pol": pol, "n_rows": len(keep),
+                "gold": gold, "pol": pol, "det": dets, "n_rows": len(keep),
             })
 
     def __len__(self):
@@ -175,6 +188,7 @@ def collate(batch, pad_id):
             "word_mask": wmask, "lengths": [len(b["word_index"]) for b in batch],
             "kept": [b["kept"] for b in batch], "n_words": [b["n_words"] for b in batch],
             "gold": [b["gold"] for b in batch], "pol": [b["pol"] for b in batch],
+            "det": [b["det"] for b in batch],
             "negs": [b.get("negs", []) for b in batch]}
 
 
@@ -255,6 +269,10 @@ def main():
     ap.add_argument("--margin", type=float, default=0.2)
     ap.add_argument("--lam-u", type=float, default=1.0,
                     help="exponent on polarity confidence inside U (0 = pure anchor score)")
+    ap.add_argument("--lam-det", type=float, default=0.0,
+                    help="weight of the determinability ranking (the direct §C.18 fix)")
+    ap.add_argument("--margin-det", type=float, default=0.15)
+    ap.add_argument("--det-buffer", default="data/cer_train.npz")
     ap.add_argument("--cand-thr", type=float, default=0.12)
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
@@ -268,8 +286,18 @@ def main():
     insts = {s: load(args.dataset, s) for s in ("train", "dev", "test")}
     gp = {s: gold_pairs(v) for s, v in insts.items()}
     gs = {s: gold_spans(v) for s, v in insts.items()}
+    det = None
+    if args.lam_det > 0:
+        z = np.load(args.det_buffer)
+        det = {(int(k[0]), int(k[1]), int(k[2])): float(n) / 4.0
+               for k, n in zip(z["keys"], z["n_right"])}
+        import collections as _c
+        h = _c.Counter(round(v, 2) for v in det.values())
+        print("determinability buffer: " + "  ".join(f"{k}:{h[k]}" for k in sorted(h)),
+              flush=True)
     coll = lambda b: collate(b, tok.pad_token_id)
-    dl = {s: DataLoader(PacsDS(v, tok, args.max_len, train=(s == "train")),
+    dl = {s: DataLoader(PacsDS(v, tok, args.max_len, train=(s == "train"),
+                               det=(det if s == "train" else None)),
                         batch_size=args.batch, shuffle=(s == "train"), collate_fn=coll)
           for s, v in insts.items()}
 
@@ -285,7 +313,7 @@ def main():
 
     best, best_ep, t0 = -1.0, -1, time.time()
     for ep in range(1, args.epochs + 1):
-        model.train(); tot = tj = 0.0
+        model.train(); tot = tj = td = 0.0
         for i, b in enumerate(dl["train"]):
             with torch.autocast("cuda", dtype=torch.float16, enabled=device.type == "cuda"):
                 hw = model.words(b["input_ids"].to(device), b["attention_mask"].to(device),
@@ -320,6 +348,23 @@ def main():
                 lj = torch.relu(args.margin + Un - Ug[own]).mean()
                 loss = loss + args.lam_joint * lj
                 tj += float(lj)
+            # DETERMINABILITY RANKING -- the direct §C.18 fix. Among GOLD spans, the anchor
+            # score must rank the polarity-determinable ones above the undeterminable ones.
+            # This is the population that matters: §D.1 found only 125 of 1032 kept
+            # predictions are non-gold spans, so boundary contrast alone attacks the smaller
+            # pot. 356 of 3179 train aspects (11.2%) have NO OOF tower correct.
+            if args.lam_det > 0 and len(gsp) > 1:
+                sm2 = torch.softmax(emis, -1)
+                A = torch.stack([span_score(sm2, bi, s, e) for (bi, s, e) in gsp])
+                d = torch.tensor([x for dl_ in b["det"] for x in dl_], device=A.device,
+                                 dtype=A.dtype)
+                gap = d[:, None] - d[None, :]                  # positive where i is easier
+                sel = gap > 0.24
+                if sel.any():
+                    diff = A[:, None] - A[None, :]
+                    ld = torch.relu(args.margin_det * gap - diff)[sel].mean()
+                    loss = loss + args.lam_det * ld
+                    td += float(ld)
             scaler.scale(loss / args.accum).backward()
             if (i + 1) % args.accum == 0:
                 scaler.unscale_(opt)
@@ -334,7 +379,8 @@ def main():
             f = score_joint(pairs, gp["dev"])["F1"]
             if f > bf:
                 bf, bt = f, float(tau)
-        print(f"ep{ep} loss {tot/len(dl['train']):.4f} (joint {tj/len(dl['train']):.4f}) "
+        print(f"ep{ep} loss {tot/len(dl['train']):.4f} (joint {tj/len(dl['train']):.4f} "
+              f"det {td/len(dl['train']):.4f}) "
               f"| dev joint {bf:.2f} @tau {bt:.2f} | {time.time()-t0:.0f}s", flush=True)
         if bf > best:
             best, best_ep, best_tau = bf, ep, bt
@@ -342,6 +388,7 @@ def main():
 
     model.load_state_dict(torch.load(out / "best.pt", map_location=device))
     res = {"model": args.model, "seed": args.seed, "best_dev_joint": best,
+           "lam_det": args.lam_det,
            "best_epoch": best_ep, "tau": best_tau, "lam_u": args.lam_u,
            "lam_joint": args.lam_joint, "margin": args.margin}
     print("=" * 72)
