@@ -1,117 +1,284 @@
-# Session Handoff — TARKAN Chapter D: freeze the pool, re-derive the target, exhaust every lever
+# PACS — Polarity-Aware Candidate State: full observed results and findings
 
-## Where it started
-Chapter C ended at "every axis is saturated" with a best-measured 71.37 (~70.5 under strict
-dev-selection) against the MADSC bar of 72.9, and a standing goal to beat every t2015
-baseline. Two deferred items were named: fold the §C.23 evidence product into one command,
-and choose between a Qwen-7B member and VLP-MABSA weights for the next GPU spend. Hardware
-unchanged: one Tesla T4 16 GB, fp16 only.
+**Verdict: negative. The coupling route is closed, and the reason generalises.**
+Everything below is measured on t2015 only. No t2017 was used anywhere in this work.
 
-## Decisions locked + what shipped
-- **Everything is committed and pushed** to `https://github.com/uditsenapaty/TARKAN.git`
-  main. Chapter D is commits `bc92e56 … 3447bdf` plus the final standing.
-- **The pool is now frozen** (`experts/pool.py` → `pools/`, read by `experts/anatomy.py`
-  and `experts/decide.py`). Every §C.24 selection experiment had silently rebuilt the pool
-  underneath itself; now a negative is attributable to the selector. This also discharges
-  the "one command" debt — `decide.py` applies the whole rule with two fitted scalars.
-- **The baseline was reconciled downward and this matters.** The frozen pool reproduces
-  §C.23's core-8 on **dev to 0.01** (69.37 vs 69.36) and 0.57 lower on test, entirely from
-  τ tie-breaking. §C.26 had already ruled 71.37 non-selectable. **Chapter D measures
-  against 70.37, so the honest gap was +2.53, not +1.53.**
-- **FINAL RESULT: joint F1 70.43** (P 70.46 / R 70.40, MATE@τ 87.70, `a` 80.31), from the
-  only rule with no fitted weights — all 19 members equal-weight, τ tuned on dev. It is
-  simultaneously the **dev-best and test-best** configuration of the chapter.
-  **Clears 15 of 19 baselines. SGBIS 71.1 / DQPSA 71.9 / VLHA 72.5 / MADSC 72.9 remain
-  above. The goal is NOT met.**
+---
 
-## The findings (this is the session's actual output)
-1. **§D.1 — polarity loses 2.02x what extraction loses.** Of 1037 test gold pairs: 92 lost to
-   extraction, **186 to polarity**, 759 recoverable. Reverses §C.19, which had directed the
-   eight experiments after it. NEG recall 57.4; 158 of 186 errors are minority<->NEU.
-2. **§D.2 — a selector fitted directly ON TEST cannot beat the honest one** (70.77 vs 70.83)
-   against a perfect-selector ceiling of 84.52. Selection is closed because the information
-   is absent, not because dev is noisy.
-3. **§D.11 — the residual errors are CONSENSUS errors.** On the 179 wrong-polarity cases only
-   3.9/19 members are right (vs 17.4/19 on correct ones) and just **7 have majority support**.
-   Adding voters provably cannot help.
-4. **§D.16 — a large part of the gap is annotation noise.** Of 750 OOF consensus failures,
-   92-93% are recoverable below confidence 0.90 but only **26% above 0.95** — and those 425
-   ultra-confident cases are the majority. Part of the remaining 2.5 is *unavailable*.
-5. **§D.20 — THE NOISE FLOOR: +/-1.31 F1 for a single run-pair.** TBRF scored -0.58, -0.29,
-   +0.67 on three paired seeds (mean -0.07). **Almost every per-patch verdict in Chapters C
-   and D rests on one run-pair and is below that floor** — the CER +0.58, the PDS +0.26, the
-   C7 gate +0.10 were never detectable. The saturation conclusion survives (it rests on many
-   independent measurements in the same 70.1-70.6 band); the per-mechanism bookkeeping does
-   not. **Rule: use >=3 paired seeds and report the paired mean.**
-6. **§D.18 — independent validation is the only control that has ever falsified a positive
-   here.** CER's t2015 replication across three architectures went to +0.02 on t2017. (t2017
-   is now out of bounds by user direction — t2015 and t2017 are separate experiments — and
-   those artifacts are quarantined under `quarantine_t2017/`.)
+## 1. The hypothesis and why it was worth testing
 
-## Measured negatives (do not re-run these)
-| lever | test | vs 70.37 |
+§C.18 is the sharpest structural finding in the project:
+
+| MASC accuracy measured on | value |
+|---|---|
+| all gold spans (`a_gold`) | **81.20** |
+| spans MATE actually extracts (`a_selected`) | **80.52** |
+| spans MATE **misses** | **86.73** |
+
+The extractor systematically selects the spans its own classifier is **worst** at. The
+anti-correlation is `a_selected − a_gold = −0.68`. MADSC's published numbers imply the
+opposite sign (`a` 84.18 against 82.34 gold-span, i.e. **+1.84**) — a ~2.5-point swing in
+`a`, almost exactly our joint gap.
+
+The cause is structural and self-inflicted: Chapters C/D deliberately built MATE and MASC as
+*decorrelated* model families, which is ideal for ensembling and exactly wrong for joint
+MABSA.
+
+**Why this reframed the target.** The bar had been read as "get `a` to 83.1 on all gold
+spans", which is above every published number. But spans at **86.73** accuracy already exist
+in this system — they are simply not selected. Holding MATE@τ at 87.8, moving `a_selected`
+from 80.4 to ~83.5 clears 72.9. That is a selection problem inside a population we already
+have, not a demand for SOTA polarity.
+
+---
+
+## 2. The arithmetic — including a threshold error worth recording
+
+Micro-F1 is `2·TP/(|pred| + |gold|)`. Dropping a prediction whose probability of being
+correct is `q` therefore improves F1 exactly when
+
+```
+q < F1/2          (derivation: 2(TP−q)/(K−1+G) > 2TP/(K+G)  ⇔  q < TP/(K+G) = F1/2)
+```
+
+which is **0.353** at our operating point (TP 728, kept 1032, gold 1037, F1 70.6).
+
+**Both I and the ChatGPT proposal initially used `q > 0.5`.** That rule minimises *expected
+error count* (`2(1−q)` if extracted vs `1` if skipped) — a different objective — and it
+over-drops. With **oracle** knowledge of `q`:
+
+| cut | predictions dropped | TP lost | projected F1 |
+|---|---|---|---|
+| **q < 0.353** (correct for F1) | 187 | 25.2 | **74.68** |
+| q < 0.40 | 205 | 32.1 | 74.66 |
+| q < 0.50 (the intuitive rule) | 253 | 53.6 | 74.28 |
+
+**74.68 clears the 72.9 bar.** Everything that follows is about whether `q` is obtainable
+without the answers.
+
+---
+
+## 3. The determinability signal `q`, and its validation
+
+`q` = probability that a candidate's polarity will be predicted correctly, estimated from
+four architecturally distinct out-of-fold towers (`oof_btwL`, `oof_btw`, `oof_deb`,
+`oof_twrob`).
+
+**Estimator choice, measured not assumed.** Vote-counting (`k/4`) throws away most of the
+signal — within the k=2 bucket the true `q` spans 0.29–0.71:
+
+| k of 4 towers correct | n | `q` range | mean `q` |
+|---|---|---|---|
+| 0 | 356 | 0.00–0.35 | 0.055 |
+| 1 | 278 | 0.13–0.50 | 0.297 |
+| 2 | 303 | 0.29–0.71 | 0.508 |
+| 3 | 462 | 0.43–0.86 | 0.717 |
+| 4 | 1780 | 0.68–1.00 | 0.961 |
+
+**Cross-family transfer test.** Estimate `q` from 2 towers, then predict whether the *other*
+2 architectures get the same aspect right:
+
+| q from | predicts | AUC (vote count) | AUC (mean softmax) |
+|---|---|---|---|
+| btwL+btw | deb+twrob | 0.8744 | **0.9217** |
+| btwL+deb | btw+twrob | 0.8439 | 0.9022 |
+| btwL+twrob | btw+deb | 0.8533 | 0.9028 |
+| btw+deb | btwL+twrob | 0.8554 | 0.9049 |
+| btw+twrob | btwL+deb | 0.8454 | 0.9023 |
+| deb+twrob | btwL+btw | 0.8547 | 0.9046 |
+| **mean** | | **0.8545** | **0.9064** |
+
+So per-example polarity difficulty is a largely **model-independent** property of examples —
+**not** merely the shared blind spot §D.11 warned about — and the softmax estimator is worth
+**+0.05 AUC** over vote-counting. Reference: §D.2 measured MASC max-probability at AUC
+**0.659** for the same target.
+
+`q` is saved in `data/qdet_train.npz` (3179 aspects). 779 (24.5%) fall below 0.5; 576
+(18.1%) below the correct 0.353 cut.
+
+---
+
+## 4. PACS itself — architecture and results
+
+`experts/pacs.py`. One encoder, two heads:
+
+```
+deberta-v3-large ─► word representations hw
+                      ├── proj → BIO emissions → linear-chain CRF   (anchor / MATE)
+                      └── span pooling [mean, first, last] → MLP    (polarity / MASC)
+
+  U(s) = A(s) · P(ŷ|s)^λ          A(s) = mean(1 − P(O)) over the span
+```
+
+Both heads read the **same** `hw`, so a joint loss backprops through both at once — which is
+what a post-hoc product over frozen scores structurally cannot do. TARKAN's identity is
+preserved: BIO anchor generation with a CRF, aspect-conditioned polarity, student-only
+inference.
+
+### Results (seed 42, 16 epochs, identical recipe throughout)
+
+| arm | MATE@τ dev | MATE@τ test | `a_selected` dev | **`a_selected` test** | joint dev | **joint test** |
+|---|---|---|---|---|---|---|
+| **control** (`lam_joint` 0, `lam_det` 0) | 84.70 | 84.83 | 78.88 | **76.91** | 66.82 | **65.24** |
+| **determinability-ranked** (`lam_det` 1.0) | 84.96 | 85.17 | 77.60 | **74.00** | 65.93 | **63.02** |
+| Δ | +0.26 | +0.34 | −1.28 | **−2.91** | −0.89 | **−2.22** |
+
+**The result is negative and of the opposite sign to the hypothesis.** Training the extractor
+to prefer polarity-determinable spans made its selected spans **harder** for its own
+classifier (`a_selected` −2.91) and cost 2.22 joint F1. At −2.22 this is well clear of the
+§D.20 ±1.31 single-pair detection floor, so it is a real degradation rather than noise.
+
+Reading: forcing the anchor score to encode difficulty **fights the tagging objective** and
+damages both. MATE@τ rose slightly (+0.34) while the polarity of what it selected collapsed.
+
+### A structural limit found while designing the control
+Hard parameter sharing costs extraction before PACS even starts: the shared-encoder control
+gets MATE@τ **84.83** against the dedicated tagger's **85.77** and the 5-member ensemble's
+**87.01**. PACS therefore begins at joint 65.24 and **cannot be a standalone system** — no
+coupling gain closes 5+ points to the 70.4 ensemble. Its only plausible use was as a
+better-ranked *candidate source*, which §5–6 then tested directly and more cheaply.
+
+---
+
+## 5. Two bugs found before they could fake a result
+
+Both would have produced a *plausible null* attributable to the hypothesis rather than to the
+code. Both were caught by printing intermediate quantities, not the final metric.
+
+**(a) Double zero-init dead branch.** The first version had a polarity→emissions feedback
+gate with **both** the gate scalar `alpha` and its projection `fb` zero-initialised:
+
+```
+∂L/∂alpha = fb    = 0        ∂L/∂fb = alpha = 0
+```
+
+Both parameters had **identically zero gradient forever**. The branch was dead code that
+looked principled and printed a plausible `alpha +0.000`. It was also applied only to gold
+spans during training and **never at inference** — train/test inconsistent. Removed; the
+joint margin is the actual coupling.
+
+**(b) Vacuous batch-mean margin.** The hard-negative loss compared batch **means**:
+
+```
+lj = relu(margin + Un.mean() − Ug.mean())
+```
+
+That is one scalar constraint per batch, which ordinary training already satisfies. The
+control arm logs the term even though `lam_joint = 0` there, and it read **0.0013 by epoch 8
+and 0.0000 by epoch 12 without ever being optimised.** Running the coupled arm would have
+returned "coupling does nothing" as an artifact of the loss. Replaced with a true pairwise
+margin — every gold span against **its own** boundary errors,
+`relu(m + U_neg − U_gold[owner]).mean()` — verified on a live batch (15 gold spans → 45
+negatives, every negative owned by a gold span in the same sentence, spot-checks are genuine
+boundary shifts).
+
+**(c) Conceptual, also corrected.** The first formulation treated "0 of 4 towers correct" as
+a ground-truth *indeterminability label*, which contradicts §D.11's own finding that residual
+errors are **consensus** errors. `q` was made a Laplace-smoothed estimate,
+`q̂ = (k+α)/(4+2α)`, and the loss given an absolute threshold rather than a pure ranking —
+noting that mapping `d = k/4` to `u = 2q−1` changes **nothing** in a pairwise ranking loss,
+since it is a monotone affine transform. The real content of the `q > 0.5` insight is a
+threshold, which the pairwise form never had.
+
+---
+
+## 6. Follow-up probes: why PACS failed
+
+### 6a. Predict `q` from the text instead (`experts/qpredict.py`)
+Rather than force the extractor to internalise `q`, estimate it in a separate model and apply
+it at decision time. Trained on **3635 OOF MATE candidates** (gold span → `q`, non-gold span
+→ 0; 815 non-gold, mean target 0.563, 36.2% below the 0.353 cut), 4 epochs, loss 0.686 →
+0.465. Consumed by `decide.py --qhat`.
+
+| acceptance score | dev | **test** |
 |---|---|---|
-| 8B decoder at a dev-tuned mixing weight | 69.63 | −0.74 |
-| union pool (BIO ∪ PDQ-MATE, +24 reachable gold spans) | 68.91 | −1.46 |
-| option-order TTA on the 8B member | 79.56 (member) | −0.48 |
-| selective NEU-boundary gate / per-class weights / NEU-escape | all | invert dev↔test |
-| Qwen-VL image teacher → PDS members | 77.24 / 75.60 / 78.21 | −1.1 each |
-| CER / RER / factorized polarity (§D.15-D.17) | 11 configs, ±0.6 scatter | flat; killed on t2017 |
-| TBRF aspect-vs-background fusion (§D.20) | 3 paired seeds | **−0.07, flat** |
-| MATE architectural diversity (§D.21) | 87.01 → 86.78 | flat, below the floor |
-| VLP-MABSA backbone (Chapter A, already done) | 68.42 / graft 69.30 | **worse than 70.32** |
+| geometric product (standing) | **70.16** | **70.43** |
+| q̂ alone (`--qhat-mix 1.0`) | 69.52 | 69.81 |
+| q̂ × product (`--qhat-mix 0.5`) | 70.03 | 69.96 |
 
-## Key files
-- `possible-patches.md` — **read first.** Chapter D is §D.0–D.10 plus the final standing.
-- `experts/pool.py` · `anatomy.py` · `decide.py` — freeze the pool, diagnose it, decide.
-- `experts/masc_llm.py` — QLoRA 8B MASC member, restricted-vocab A/B/C scoring in training
-  as well as inference. dev 78.88 / test 80.04.
-- `experts/masc_qwenvl.py` · `remap_direction.py` — Qwen2.5-VL on the original image, as a
-  member (built, **not run** — 4.52 h) and as a counterfactual teacher (run). Caches
-  `p_img`/`p_txt` so re-thresholding is free CPU.
-- `runs/queue26.sh` … `queue30.sh` — every Chapter D GPU job, in order.
+Below baseline. The reason is directly measurable:
 
-## Running state
-- Background processes: **none.** All queues completed; GPU free.
-- The 4.52 h Qwen-VL MASC member was deliberately **not** run: §D.8 measured a decorrelated
-  member at −0.74, so another one is poor value for that much GPU.
+| score | AUC for "this (span, polarity) pair is correct" |
+|---|---|
+| **oracle `q`** — other classifiers **+ gold labels** | **0.906** |
+| geometric product (standing) | 0.7334 |
+| **learned q̂ from the text** | **0.7049** |
+| span evidence S | 0.6938 |
+| MASC max probability | 0.6605 |
 
-## Verification
-- `git status -sb` → clean, `## main...origin/main`.
-- Scorer gate: AoM's dumped predictions must re-score to **68.19** (P 67.45 / R 68.95).
-  Note this is ~0.4 *stricter* than AoM's published 68.6 — §B.6 resolved the metric
-  deliberately in the conservative direction, so all our numbers carry that penalty.
-- `python3 experts/decide.py --pool pools/final19 --w-grid 0.0` → dev 70.16 / test 70.43.
-- `python3 experts/anatomy.py --pool pools/best15` → reproduces §D.1 and §D.2.
-- Run multi-arg member lists under **bash**, not zsh (zsh does not word-split unquoted vars).
+The learned predictor is **worse than the product it replaces**.
 
-## Deferred + open questions
-- **The one untested component class: VLP-MABSA pretraining**, reachable via AoM's official
-  checkpoint already reproduced in `graft/` at 68.42; needs the legacy py3.8 / torch1.13 /
-  transformers3.4 env. **But §D.6/D.8/D.10 say a new *member* will not convert**, so it
-  would have to enter as a *backbone* — a different and much larger project.
-- Open: **how to report.** 70.43 is defensible and selection-free. Chapter C's 71.37 is not
-  dev-selectable and should not be quoted as the system score.
-- Open: t2017 was not touched this session. Also untried as a *labelled variant*: t2017
-  train as auxiliary MASC supervision (§B4 rejected pooling for MATE on a prior-shift
-  argument that does not apply to MASC; the fairness objection does stand).
+### 6b. Use member disagreement — a feature §D.2 never tested
+§D.2's eleven features used the entropy of the **averaged** distribution, never inter-member
+disagreement. At test time we do have 19 members' behaviour, so this is the computable proxy
+for whatever scores 0.906.
 
-## Pick up here
-**Every lever obtainable on a T4 is now measured, including the one repeatedly held in
-reserve.** VLP-MABSA's pretraining = AoM's official checkpoint = 68.42 on this pipeline, and
-the best graft ensemble was 69.30 — both *below* the standing 70.32-70.62. Every stronger
-backbone is unobtainable (DQPSA's Baidu link expired with unresponsive authors; VLHA no
-weights; SGBIS no code; CORSA no weights), so AoM was the self-service ceiling and this
-pipeline already beats it by ~1.9.
+| score | AUC | dev | **test F1** |
+|---|---|---|---|
+| geometric product | 0.7334 | 70.16 | **70.43** |
+| member agreement alone | 0.6502 | — | — |
+| member variance | 0.6609 | — | — |
+| **product × agreement** | **0.7670** | 70.19 | 69.70 |
+| product² × agreement | — | 70.18 | 70.06 |
+| product³ × agreement | — | 70.19 | 70.64 |
 
-Clearing 72.9 needs **`a` = 83.1** (best published 82.34) or **MATE@τ = 90.6** (best
-published 88.2) — beating published SOTA on a subtask, in a setup that cannot *detect* an
-improvement below 1.3 F1 from a single run (§D.20). §A15 reached the same verdict from the
-MLLM side: the gap is **model-class, not effort or architecture**, and closing it needs a
->=48 GB card.
+**+0.034 AUC converts to nothing.** Dev is flat at 70.16–70.19 while test scatters
+69.70–70.64, entirely inside the ±1.31 floor. Third independent confirmation of §C.24's
+"improving the judge's AUC by +0.02 did not convert into F1".
 
-**Recommendation: stop spending GPU below the noise floor.** The defensible deliverable is
-the diagnostic chapter — §D.1 (the loss decomposition reversal), §D.2 (a test-fitted selector
-cannot beat the honest one), §D.11 (consensus errors), §D.16 (the recoverability curve), and
-§D.20 (the measured detection floor, which indicts single-run patch evaluation as a
-methodology) — reported alongside 70.32 and an explicit account of what the bar would require.
+---
+
+## 7. ★ The mechanism — why the 74.68 oracle is unreachable
+
+| source of `q` | AUC |
+|---|---|
+| other classifiers **compared to the gold labels** | **0.906** |
+| the geometric product | 0.733 |
+| a model reading the **text** | 0.705 |
+| the same ensemble's **disagreement, without labels** | 0.650 |
+
+**`q` is a property of model competence, not a readable property of the input.** It is
+recoverable at 0.906 only by running independent classifiers *and comparing them to the
+answer*. Strip the labels and the identical ensemble's disagreement carries 0.650 — barely
+above MASC confidence.
+
+So **74.68 was never a target**: the information that would fix the selection exists only
+once you already know the answer. This is the deepest statement of the §D.2 ceiling (a
+selector fitted directly on test cannot beat the honest one), and it reconciles with §D.11
+rather than contradicting it — the residual errors are consensus errors **and** the consensus
+cannot identify which of its own answers are the wrong ones.
+
+---
+
+## 8. What this closes, and what it does not
+
+**Closed.** The extraction↔polarity coupling route, by three independent attacks: internalise
+`q` in the extractor (−2.22), predict `q` from text (AUC 0.705 < 0.733), estimate it from
+member disagreement (+0.034 AUC → 0.0 F1).
+
+**Not overturned.** §C.18 remains a true and interesting observation about the system — the
+extractor really does select the spans its classifier handles worst. What PACS establishes is
+that the anti-correlation is **not actionable**, because acting on it requires a competence
+estimate that only the labels provide.
+
+**Standing result unchanged: 70.32** (choice-free, all correct members equal-weight) /
+**70.62** (fixed 19-member structure). 15 of 19 t2015 baselines cleared; SGBIS 71.1,
+DQPSA 71.9, VLHA 72.5, MADSC 72.9 remain above.
+
+---
+
+## 9. Artifacts
+
+| path | contents |
+|---|---|
+| `experts/pacs.py` | PACS: shared encoder, BIO-CRF anchor head + span-polarity head, joint margin, determinability ranking (`--lam-det`, `--det-mode utility\|rank`) |
+| `experts/qpredict.py` | text model predicting P(pair correct) on OOF MATE candidates |
+| `experts/decide.py --qhat` | consumes q̂ as the acceptance score (`--qhat-mix`) |
+| `data/qdet_train.npz` | `q` per train aspect (mean OOF P(gold) over 4 towers) + vote counts |
+| `runs/d22_pacs_nojoint/` | the control arm (MATE@τ 84.83, `a_selected` 76.91, joint 65.24) |
+| `runs/d22c_det/` | determinability-ranked arm (MATE@τ 85.17, `a_selected` 74.00, joint 63.02) |
+| `runs/qpred_btwL/` | q̂ scores for dev/test |
+| `runs/queue42.sh` · `queue43.sh` · `queue44.sh` · `queue45.sh` | the four PACS/q̂ job scripts, in order |
+
+**Reproduce the arithmetic without a GPU:**
+`python3 experts/decide.py --pool pools/final19 --w-grid 0.0` → dev 70.16 / test 70.43.
