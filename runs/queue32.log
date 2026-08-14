@@ -1,0 +1,11 @@
+=== qpds_deb_bal ===
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 76.55971479500892,
+  "test_acc_goldspan": 75.31340405014465
+}
+=== qpds_robL_bal ===
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 76.6488413547237,
+  "test_acc_goldspan": 77.91706846673095
+}
+=== QUEUE32 DONE ===

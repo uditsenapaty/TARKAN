@@ -1,0 +1,39 @@
+=== d15_base ===
+ep1 loss 0.8584 | dev acc 67.02 | 53s
+ep2 loss 0.5886 | dev acc 74.42 | 109s
+ep3 loss 0.3829 | dev acc 77.45 | 167s
+ep4 loss 0.2324 | dev acc 77.18 | 225s
+ep5 loss 0.1255 | dev acc 76.65 | 278s
+ep6 loss 0.0628 | dev acc 77.27 | 331s
+[dev] gold-span MASC acc 77.45 (n=1122)
+[test] gold-span MASC acc 78.69 (n=1037)
+=== d15_fact ===
+ep1 loss 1.8672 | dev acc 70.14 | 53s
+ep2 loss 1.2985 | dev acc 74.96 | 109s
+ep3 loss 0.8070 | dev acc 76.83 | 167s
+ep4 loss 0.4855 | dev acc 76.83 | 226s
+ep5 loss 0.3088 | dev acc 75.58 | 280s
+ep6 loss 0.1147 | dev acc 76.92 | 332s
+[dev] gold-span MASC acc 76.92 (n=1122)
+[test] gold-span MASC acc 77.72 (n=1037)
+=== d15_cer ===
+CER buffer: 653 confident consensus FAILURES of 3179 train aspects (conf > 0.7)
+ep1 loss 2.6355 | dev acc 59.71 | 53s
+ep2 loss 2.6270 | dev acc 59.27 | 109s
+ep3 loss 2.2020 | dev acc 61.85 | 162s
+ep4 loss 1.6743 | dev acc 63.37 | 220s
+ep5 loss 1.1346 | dev acc 67.29 | 278s
+ep6 loss 0.6998 | dev acc 69.70 | 336s
+[dev] gold-span MASC acc 69.70 (n=1122)
+[test] gold-span MASC acc 74.35 (n=1037)
+=== d15_both ===
+CER buffer: 653 confident consensus FAILURES of 3179 train aspects (conf > 0.7)
+ep1 loss 4.0336 | dev acc 59.80 | 54s
+ep2 loss 3.2614 | dev acc 64.88 | 110s
+ep3 loss 2.7409 | dev acc 69.16 | 168s
+ep4 loss 1.9940 | dev acc 68.81 | 227s
+ep5 loss 1.2280 | dev acc 71.66 | 280s
+ep6 loss 0.6851 | dev acc 72.64 | 338s
+[dev] gold-span MASC acc 72.64 (n=1122)
+[test] gold-span MASC acc 75.89 (n=1037)
+=== QUEUE33 DONE ===

@@ -1,0 +1,7 @@
+=== d15_base_deb ===
+[dev] gold-span MASC acc 77.18 (n=1122)
+[test] gold-span MASC acc 78.21 (n=1037)
+=== d15_base_robL ===
+[dev] gold-span MASC acc 78.07 (n=1122)
+[test] gold-span MASC acc 78.11 (n=1037)
+=== QUEUE37 DONE ===

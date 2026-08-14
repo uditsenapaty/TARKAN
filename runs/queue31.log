@@ -1,0 +1,56 @@
+=== [1] direct image teacher, full TRAIN split ===
+/home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages/bitsandbytes/backends/cuda/ops.py:944: UserWarning: inner dimension (3420) is not aligned for fast kernel with blocksize=64, falling back to slower implementation.
+  warn(
+wrote 3179 DIRECT Qwen-VL direction labels -> data/pds_qdirect/twitter2015
+distribution: {'POS': 214, 'NEG': 382, 'NONE': 2583}
+mean confidence 0.666
+=== [2] PDS member on DIRECT image directions: qdpds_btwL ===
+[test] gold-span MASC acc 76.95
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 70,
+  "best_dev_acc": 77.54010695187165,
+  "best_epoch": 7,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 77.54010695187165,
+  "test_acc_goldspan": 76.95274831243974
+}
+=== [2] PDS member on DIRECT image directions: qdpds_deb ===
+[test] gold-span MASC acc 78.40
+[test] scored 1178 predicted spans
+{
+  "model": "microsoft/deberta-v3-large",
+  "seed": 70,
+  "best_dev_acc": 77.89661319073083,
+  "best_epoch": 3,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 77.89661319073083,
+  "test_acc_goldspan": 78.39922854387656
+}
+=== [2] PDS member on DIRECT image directions: qdpds_robL ===
+[test] gold-span MASC acc 78.50
+[test] scored 1178 predicted spans
+{
+  "model": "roberta-large",
+  "seed": 70,
+  "best_dev_acc": 77.89661319073083,
+  "best_epoch": 6,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 77.89661319073083,
+  "test_acc_goldspan": 78.49566055930569
+}
+=== QUEUE31 DONE ===
+=== [3] counterfactual teacher, CORRECT weights (confound check) ===
+[test] gold-span MASC acc 78.50
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 70,
+  "best_dev_acc": 76.55971479500892,
+  "best_epoch": 5,
+  "lambda_pds": 0.5,
+  "dev_acc_goldspan": 76.55971479500892,
+  "test_acc_goldspan": 78.49566055930569
+}
+=== QUEUE31B DONE ===

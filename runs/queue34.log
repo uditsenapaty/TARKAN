@@ -1,0 +1,10 @@
+=== d15_cer_m05 ===
+[dev] gold-span MASC acc 78.79 (n=1122)
+[test] gold-span MASC acc 79.27 (n=1037)
+=== d15_cer_r13 ===
+[dev] gold-span MASC acc 77.45 (n=1122)
+[test] gold-span MASC acc 78.69 (n=1037)
+=== d15_cer_c95 ===
+[dev] gold-span MASC acc 77.81 (n=1122)
+[test] gold-span MASC acc 78.98 (n=1037)
+=== QUEUE34 DONE ===

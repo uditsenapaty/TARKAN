@@ -1,0 +1,19 @@
+=== base_btwL ===
+[dev] gold-span MASC acc 67.43 (n=1176)
+[test] gold-span MASC acc 68.48 (n=1234)
+=== cer_btwL ===
+[dev] gold-span MASC acc 66.67 (n=1176)
+[test] gold-span MASC acc 68.80 (n=1234)
+=== base_deb ===
+[dev] gold-span MASC acc 66.75 (n=1176)
+[test] gold-span MASC acc 68.48 (n=1234)
+=== cer_deb ===
+[dev] gold-span MASC acc 67.60 (n=1176)
+[test] gold-span MASC acc 69.53 (n=1234)
+=== base_robL ===
+[dev] gold-span MASC acc 67.52 (n=1176)
+[test] gold-span MASC acc 68.72 (n=1234)
+=== cer_robL ===
+[dev] gold-span MASC acc 64.46 (n=1176)
+[test] gold-span MASC acc 67.42 (n=1234)
+=== QUEUE38 DONE ===

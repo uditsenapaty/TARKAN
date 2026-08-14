@@ -1,0 +1,33 @@
+=== d15_cer_m02 ===
+[dev] gold-span MASC acc 76.29 (n=1122)
+[test] gold-span MASC acc 79.17 (n=1037)
+=== d15_cer_m10 ===
+[dev] gold-span MASC acc 76.83 (n=1122)
+[test] gold-span MASC acc 76.76 (n=1037)
+=== d15_cer_r13b ===
+[dev] gold-span MASC acc 75.22 (n=1122)
+[test] gold-span MASC acc 77.15 (n=1037)
+=== d15_cer_deb ===
+[dev] gold-span MASC acc 77.27 (n=1122)
+[test] gold-span MASC acc 78.88 (n=1037)
+=== d15_cer_robL ===
+[dev] gold-span MASC acc 76.11 (n=1122)
+[test] gold-span MASC acc 78.59 (n=1037)
+=== QUEUE35 DONE ===
+=== d16_rer ===
+CER buffer: 305 replayed failures of 3179 train aspects (conf>0.7, recoverable=True, kernel=False, total weight 305.0)
+[dev] gold-span MASC acc 77.81 (n=1122)
+[test] gold-span MASC acc 78.69 (n=1037)
+=== d16_rer_k ===
+CER buffer: 305 replayed failures of 3179 train aspects (conf>0.7, recoverable=True, kernel=True, total weight 107.7)
+[dev] gold-span MASC acc 77.09 (n=1122)
+[test] gold-span MASC acc 78.69 (n=1037)
+=== d16_rer_k10 ===
+CER buffer: 305 replayed failures of 3179 train aspects (conf>0.7, recoverable=True, kernel=True, total weight 107.7)
+[dev] gold-span MASC acc 78.07 (n=1122)
+[test] gold-span MASC acc 77.34 (n=1037)
+=== d16_rer_rep ===
+CER buffer: 305 replayed failures of 3179 train aspects (conf>0.7, recoverable=True, kernel=True, total weight 107.7)
+[dev] gold-span MASC acc 75.85 (n=1122)
+[test] gold-span MASC acc 78.50 (n=1037)
+=== QUEUE36 DONE ===
