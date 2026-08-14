@@ -2039,6 +2039,51 @@ Clearing 72.9 needs `a` ≈ 83.1 or MATE@τ ≈ 90.6 — both above published SO
 says the entire class of TARKAN-native evidence refinements is structurally unable to supply
 it at our operating strength. **That is the closing statement of the campaign.**
 
+## D.28 ★★ TTP — aspect-image grounding is LEARNABLE and POLARITY-IRRELEVANT
+
+Direct response to §D.27's law. If evidence mechanisms have negative marginal value above a
+baseline of ~77.93 and our towers sit above it, stop adding mechanisms and try to move the
+**base representation** instead. TTP stage 1 uses **no polarity labels**: symmetric InfoNCE
+between the aspect representation `t_a` and its own *routed* image evidence `E_a`.
+
+*Design refinement that made it well-posed:* ordinary aspect-image alignment is degenerate
+here — two aspects of one tweet **share an image**, so they would be positives for each other
+and the objective would teach the encoder to ignore the aspect. Because `E_a` is
+aspect-**routed** and instance batching puts siblings in the same batch, siblings become
+**hard negatives** and the objective becomes exactly "which evidence belongs to A vs B",
+label-free.
+
+| arm | stage-1 contrastive | **test** | Δ vs control |
+|---|---|---|---|
+| control (identical architecture, no stage 1) | — | **77.82** | — |
+| TTP, encoder trained in stage 1 | 2.09 → 1.63 | 58.05 | **−19.8** |
+| **TTP, encoder frozen in stage 1** | **1.44 → 0.78** | **77.34** | **−0.48** |
+
+**Stage 1 genuinely learns.** Chance-level InfoNCE at batch 8 is ln(8) = 2.079; frozen stage 1
+reaches **0.78**, far below it. The routing really does learn to ground an aspect in image
+regions. **And it transfers nothing to polarity: −0.48.**
+
+> **This is the sharpest statement of the visual result in the project: aspect-image grounding
+> is LEARNABLE and POLARITY-IRRELEVANT.** Not "the model cannot find the aspect in the image"
+> — it can, well above chance — but finding it does not help sentiment. That subsumes Chapter
+> B §7c ("visual stream contributes ~0"), §C.7's gate (+0.10), §D.9/D.12's teachers and
+> §D.27's ASOE into a single mechanism.
+
+### ⚠ A retraction inside this section
+The −19.8 collapse was first attributed to the task being "near-unlearnable (only 0.45 nats
+below chance)". **That reading was produced by my own bug** and is withdrawn. `--ttp-freeze`
+initially froze the encoder only in the *optimizer*, leaving `requires_grad=True`, so its
+gradients accumulated unbounded across stage 1 (`popt.zero_grad()` never touches params it
+does not own) and `clip_grad_norm_(model.parameters())` computed a norm over those exploding
+grads, crushing head updates until it overflowed — NaN from epoch 1 and a 10.90 collapse.
+With autograd-level freezing and clipping scoped to the optimised parameters, stage 1 reaches
+0.78. **What survives: training the text encoder against this objective costs 19.8 points.
+What does not: any claim about the task being unlearnable.**
+
+Fifth loss/training bug in Chapter D caught by watching intermediate quantities rather than
+the final metric — and the only one that had already produced a confident wrong conclusion
+before being caught.
+
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
 Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:

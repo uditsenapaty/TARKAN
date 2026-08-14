@@ -1,0 +1,11 @@
+[TTP] ep1 contrastive 1.4420 | 24s
+[TTP] ep2 contrastive 0.9222 | 45s
+[TTP] ep3 contrastive 0.8486 | 64s
+[TTP] ep4 contrastive 0.7766 | 83s
+ep2 loss 0.9335 (suf 0.0000 own 0.0000 sep 0.0000) | dev acc 75.40 | alpha +0.053 | 301s
+ep4 loss 0.4329 (suf 0.0000 own 0.0000 sep 0.0000) | dev acc 77.54 | alpha +0.051 | 527s
+ep6 loss 0.1637 (suf 0.0000 own 0.0000 sep 0.0000) | dev acc 77.72 | alpha +0.047 | 744s
+ep8 loss 0.0438 (suf 0.0000 own 0.0000 sep 0.0000) | dev acc 77.54 | alpha +0.047 | 964s
+[dev] gold-span MASC acc 77.72
+[test] gold-span MASC acc 77.34
+=== QUEUE50 DONE ===
