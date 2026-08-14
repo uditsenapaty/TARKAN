@@ -2154,6 +2154,62 @@ final logits (§C13), at the input text (§C10), on swapped pooled evidence (§D
 and on the attribution itself (D.29 competition, −2.02). Every route to "which evidence
 belongs to this aspect" is now measured and none of them helps a strong tower.
 
+## D.30 ★★★ BETTER DESCRIPTIONS, DOUBLED GROUNDING, ZERO POLARITY GAIN
+
+The best-evidenced lever in the campaign, and it is null. MADSC's own ablation isolates the
+description generator on t2015 JMASA — **GPT-4o 72.9 · LLaVA 72.1 · BLIP2 71.8** — and every
+aspect-aware description in this repo was built from **BLIP**, their weakest setting, priced
+at **−1.1** in their table. Separately, **MADSC without its modality gate scores 70.7**, which
+is essentially our 70.32–70.62: we sit almost exactly at MADSC-minus-its-visual-mechanism.
+
+So: 3502 descriptions regenerated with **Qwen2.5-VL-7B reading the original pixels** (no BLIP
+anywhere in the path, `experts/qwen_describe.py`), then AADG rebuilt on them with dual
+similarity, greedy one-to-one matching and the TRAIN-ECDF `u` **all unchanged**. Only the
+description source differs.
+
+**The evidence signal improved substantially:**
+| | BLIP | **Qwen** |
+|---|---|---|
+| description length | 10.8 words | **29.8** |
+| aspects grounded (train) | 27.8% | **49.6%** |
+| mean calibrated alignment `u` | 0.623 | **0.774** |
+
+Qualitatively the gap is exactly what MADSC's mechanism needs. For a tweet whose aspect is
+*"Million Youth March"*, BLIP writes *"a poster for a concert with a man in a hoodie"* —
+containing nothing the aspect can align to — while Qwen reads the poster: *"promotional poster
+for the Million Youth March, commemorating its 15th anniversary, September 7, 2013, Harlem"*.
+
+**And polarity does not move:**
+| tower | BLIP | Qwen | Δ |
+|---|---|---|---|
+| bertweet-large | 78.50 | 78.50 | +0.00 |
+| deberta-v3-large | 76.76 | 74.64 | −2.12 |
+| roberta-large | 79.27 | 79.07 | −0.20 |
+| **mean** | **78.18** | **77.40** | **−0.77** |
+
+> **We nearly doubled the fraction of aspects that can be grounded in the image and polarity
+> accuracy did not improve at all.** That is far stronger evidence than any previous visual
+> negative, because the usual escape hatch — "the evidence was too weak to gate on" — is now
+> closed by measurement. §C.7's gate (+0.10), §D.28's "grounding is learnable but
+> polarity-irrelevant" and §D.27's ASOE (−0.23) were all run on 10.8-word captions that often
+> omit the entity entirely; that is no longer the explanation.
+
+**Reading.** The description quality is not the bottleneck in *this* pipeline. It may well be
+in MADSC's — their gate feeds a BART-based unified backbone and their ablation removes the
+gate from a system built around it — but transplanting the better description into our
+evidence path yields nothing. Combined with §D.28, the conclusion is that **our visual channel
+carries almost no polarity-relevant information regardless of how well the image is
+described.**
+
+*Bug worth recording:* the `--suffix` patch had wrong indentation and never matched the
+`aspect_` writer, so the first Qwen AADG run wrote `desc_*_qwen.json` correctly but
+**overwrote `aspect_*.npz`**, the evidence file every existing member was built on. The
+"write alongside, never over" precaution was defeated by a patch that silently did not apply,
+and it surfaced only as three members exiting instantly with `FileNotFoundError`. Recovered
+because AADG is deterministic given its captions — regenerated to identical values
+(u 0.623 / y 0.278) — but with a non-reproducible teacher this would have destroyed the
+baseline mid-comparison.
+
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
 Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:

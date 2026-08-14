@@ -5,3 +5,12 @@ description source: captions_qwen.json (3502 images)
 [test] 674 desc | 469/1178 aspects grounded (39.8%), 709 absence notes | u mean 0.779 | pseudo-pos 50.8%
 === [2] PDS members on the Qwen evidence (baselines: 78.50 / 76.76 / 79.27) ===
 --- q30_pds_btwL
+[dev] gold-span MASC acc 77.45
+[test] gold-span MASC acc 78.50
+--- q30_pds_deb
+[dev] gold-span MASC acc 76.56
+[test] gold-span MASC acc 74.64
+--- q30_pds_robL
+[dev] gold-span MASC acc 78.07
+[test] gold-span MASC acc 79.07
+=== QUEUE53 DONE ===
