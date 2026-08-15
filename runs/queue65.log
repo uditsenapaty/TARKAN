@@ -1,0 +1,128 @@
+=== [0] the one missing backbone encoder: bertweet-base ===
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 15563.43it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-base
+Key                       | Status     |  | 
+--------------------------+------------+--+-
+lm_head.decoder.bias      | UNEXPECTED |  | 
+lm_head.layer_norm.weight | UNEXPECTED |  | 
+lm_head.layer_norm.bias   | UNEXPECTED |  | 
+lm_head.dense.weight      | UNEXPECTED |  | 
+lm_head.dense.bias        | UNEXPECTED |  | 
+lm_head.bias              | UNEXPECTED |  | 
+lm_head.decoder.weight    | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+stage 1: intermediate training on [twitter,rest,laptop,mams]
+  twitter   6248 aspects
+  rest      3608 aspects
+  laptop    2328 aspects
+  mams     11186 aspects
+  pre-ep1 loss 0.7568 | t2015 dev acc (zero-shot) 69.34 | 170s
+  pre-ep2 loss 0.4398 | t2015 dev acc (zero-shot) 70.32 | 333s
+  saved intermediate encoder (199 tensors) -> runs/ext_enc_btw/enc.pt
+pre-only: stopping after stage 1
+=== [1/3] text members (2) ===
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 14696.39it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-base
+Key                       | Status     |  | 
+--------------------------+------------+--+-
+lm_head.bias              | UNEXPECTED |  | 
+lm_head.decoder.weight    | UNEXPECTED |  | 
+lm_head.dense.bias        | UNEXPECTED |  | 
+lm_head.layer_norm.weight | UNEXPECTED |  | 
+lm_head.decoder.bias      | UNEXPECTED |  | 
+lm_head.layer_norm.bias   | UNEXPECTED |  | 
+lm_head.dense.weight      | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+  loaded intermediate encoder (199 tensors) <- runs/ext_enc_btw/enc.pt
+ep1 loss 0.6690 | dev acc 73.62 | 24s
+ep2 loss 0.4309 | dev acc 76.74 | 50s
+ep3 loss 0.2628 | dev acc 78.88 | 75s
+ep4 loss 0.1472 | dev acc 76.65 | 100s
+ep5 loss 0.0760 | dev acc 78.16 | 122s
+ep6 loss 0.0480 | dev acc 78.16 | 144s
+early stop
+[dev] gold-span MASC acc 78.88 (n=1122)
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 77.53 (n=1037)
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-base",
+  "seed": 43,
+  "best_dev_acc": 78.87700534759358,
+  "best_epoch": 3,
+  "dev_acc_goldspan": 78.87700534759358,
+  "test_acc_goldspan": 77.53134040501446
+}
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights:   1%|          | 3/390 [00:00<00:53,  7.20it/s]Loading weights:  77%|███████▋  | 301/390 [00:00<00:00, 743.64it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 546.68it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+class counts [368.0, 1883.0, 928.0] -> weights [1.448, 0.64, 0.912]
+  loaded intermediate encoder (390 tensors) <- runs/ext_enc_deb/enc.pt
+ep1 loss 0.7719 | dev acc 76.56 | 143s
+ep2 loss 0.5375 | dev acc 79.06 | 282s
+ep3 loss 0.3462 | dev acc 78.88 | 425s
+ep4 loss 0.1765 | dev acc 77.99 | 564s
+ep5 loss 0.0836 | dev acc 77.90 | 709s
+early stop
+[dev] gold-span MASC acc 79.06 (n=1122)
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 78.69 (n=1037)
+[test] scored 1178 predicted spans
+{
+  "model": "microsoft/deberta-v3-large",
+  "seed": 71,
+  "best_dev_acc": 79.05525846702317,
+  "best_epoch": 2,
+  "dev_acc_goldspan": 79.05525846702317,
+  "test_acc_goldspan": 78.68852459016394
+}
+=== [2/3] PDS members (6) — cheaper, run first ===
+PDS labels 3179 | POS-shift 687 NEG-shift 101 no-shift 2391
+PDS direction weights: w_pos 0.147  w_neg 1.000
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 13388.35it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  loaded intermediate encoder (391 tensors) <- runs/ext_enc_btwL/enc.pt
+/teamspace/studios/this_studio/experts/masc_pds.py:435: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)
+  tot += loss.item(); tpds += float(lp)
+ep1 loss 1.0512 (pds 0.0037) | dev acc 76.02 | 105s
+ep2 loss 0.6750 (pds 0.0000) | dev acc 76.20 | 211s
+ep3 loss 0.4925 (pds 0.0000) | dev acc 77.63 | 321s
+ep4 loss 0.3239 (pds 0.0000) | dev acc 77.90 | 432s
+ep5 loss 0.1394 (pds 0.0000) | dev acc 73.35 | 540s
+ep6 loss 0.0665 (pds 0.0000) | dev acc 77.27 | 644s
+runs/queue65.sh: line 35: 2702953 Killed                  python3 experts/masc_pds.py --residual --model "$2" --pre-init "runs/ext_enc_$3" --seed "$4" --lambda-pds 0.5 --w-none 0.0 --spans $S --out "runs/e33_$1"

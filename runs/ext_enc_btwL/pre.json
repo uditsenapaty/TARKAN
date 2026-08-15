@@ -1,0 +1,5 @@
+{
+  "model": "vinai/bertweet-large",
+  "pre_data": "twitter,rest,laptop,mams",
+  "pre_epochs": 2
+}

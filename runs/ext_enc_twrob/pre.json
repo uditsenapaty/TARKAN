@@ -1,0 +1,5 @@
+{
+  "model": "cardiffnlp/twitter-roberta-base-sentiment-latest",
+  "pre_data": "twitter,rest,laptop,mams",
+  "pre_epochs": 2
+}

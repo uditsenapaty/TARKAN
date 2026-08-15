@@ -21,7 +21,7 @@ STD_MATE="runs/mate_deb_s42 runs/mate_deb_s43 runs/mate_deb_s44 runs/mate_probeA
 CTL_MATE="runs/d33_ctl_mate_s42 runs/d33_ctl_mate_s43 runs/d33_ctl_mate_s44 runs/mate_probeA runs/mate_probeB"
 PRE_MATE="runs/d33_pre_mate_s42 runs/d33_pre_mate_s43 runs/d33_pre_mate_s44 runs/mate_probeA runs/mate_probeB"
 
-run () { python3 experts/pool.py --mate "$2" --masc $MASC --rerank runs/rerank \
+run () { python3 experts/pool.py --mate $2 --masc $MASC --rerank runs/rerank \
            --pdqmate runs/pdqmate_btwL --cand-thr 0.12 --out "pools/$1" > /dev/null
          printf "%-24s " "$1"
          python3 experts/decide.py --pool "pools/$1" --w-grid 0.0 2>&1 | grep "dev-best"; }

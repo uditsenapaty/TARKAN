@@ -1,0 +1,5 @@
+{
+  "model": "microsoft/deberta-v3-large",
+  "pre_data": "twitter,rest,laptop,mams",
+  "pre_epochs": 2
+}

@@ -1,0 +1,233 @@
+=== [ctl s42] bertweet-large, t2015 only ===
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 16684.40it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+ep1 loss 0.8709 | dev acc 70.94 | 99s
+ep2 loss 0.5690 | dev acc 77.54 | 207s
+ep3 loss 0.4080 | dev acc 76.47 | 321s
+ep4 loss 0.2925 | dev acc 77.01 | 426s
+ep5 loss 0.1656 | dev acc 76.65 | 527s
+early stop
+[dev] gold-span MASC acc 77.54 (n=1122)
+[test] gold-span MASC acc 77.34 (n=1037)
+{
+  "model": "vinai/bertweet-large",
+  "seed": 42,
+  "best_dev_acc": 77.54010695187165,
+  "best_epoch": 2,
+  "dev_acc_goldspan": 77.54010695187165,
+  "test_acc_goldspan": 77.33847637415622
+}
+=== [pre s42] bertweet-large, 2 epochs external -> t2015 ===
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 16653.75it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+stage 1: intermediate training on [twitter,rest,laptop]
+  twitter   6248 aspects
+  rest      3608 aspects
+  laptop    2328 aspects
+  pre-ep1 loss 0.7026 | t2015 dev acc (zero-shot) 70.68 | 364s
+  pre-ep2 loss 0.4146 | t2015 dev acc (zero-shot) 71.21 | 722s
+stage 2: fine-tuning on t2015 train
+ep1 loss 0.6531 | dev acc 73.26 | 100s
+ep2 loss 0.4792 | dev acc 78.34 | 198s
+ep3 loss 0.3354 | dev acc 77.27 | 300s
+ep4 loss 0.1960 | dev acc 77.63 | 396s
+ep5 loss 0.1143 | dev acc 76.29 | 495s
+early stop
+[dev] gold-span MASC acc 78.34 (n=1122)
+[test] gold-span MASC acc 79.36 (n=1037)
+{
+  "model": "vinai/bertweet-large",
+  "seed": 42,
+  "best_dev_acc": 78.34224598930481,
+  "best_epoch": 2,
+  "dev_acc_goldspan": 78.34224598930481,
+  "test_acc_goldspan": 79.36354869816779
+}
+=== [ctl s43] bertweet-large, t2015 only ===
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 15579.26it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+ep1 loss 0.9090 | dev acc 59.80 | 102s
+ep2 loss 0.6919 | dev acc 71.84 | 203s
+ep3 loss 0.4651 | dev acc 75.58 | 311s
+ep4 loss 0.3302 | dev acc 77.27 | 415s
+ep5 loss 0.2248 | dev acc 77.81 | 519s
+ep6 loss 0.1180 | dev acc 77.18 | 621s
+[dev] gold-span MASC acc 77.81 (n=1122)
+[test] gold-span MASC acc 78.01 (n=1037)
+{
+  "model": "vinai/bertweet-large",
+  "seed": 43,
+  "best_dev_acc": 77.80748663101605,
+  "best_epoch": 5,
+  "dev_acc_goldspan": 77.80748663101605,
+  "test_acc_goldspan": 78.01350048216008
+}
+=== [pre s43] bertweet-large, 2 epochs external -> t2015 ===
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 12892.29it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+stage 1: intermediate training on [twitter,rest,laptop]
+  twitter   6248 aspects
+  rest      3608 aspects
+  laptop    2328 aspects
+  pre-ep1 loss 0.6883 | t2015 dev acc (zero-shot) 69.43 | 374s
+  pre-ep2 loss 0.4165 | t2015 dev acc (zero-shot) 68.63 | 749s
+stage 2: fine-tuning on t2015 train
+ep1 loss 0.6455 | dev acc 72.28 | 98s
+ep2 loss 0.4725 | dev acc 76.83 | 201s
+ep3 loss 0.3127 | dev acc 77.81 | 305s
+ep4 loss 0.1645 | dev acc 79.14 | 408s
+ep5 loss 0.0692 | dev acc 77.81 | 512s
+ep6 loss 0.0533 | dev acc 78.88 | 609s
+[dev] gold-span MASC acc 79.14 (n=1122)
+[test] gold-span MASC acc 79.46 (n=1037)
+{
+  "model": "vinai/bertweet-large",
+  "seed": 43,
+  "best_dev_acc": 79.14438502673798,
+  "best_epoch": 4,
+  "dev_acc_goldspan": 79.14438502673798,
+  "test_acc_goldspan": 79.4599807135969
+}
+=== [ctl s44] bertweet-large, t2015 only ===
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 9962.17it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+ep1 loss 0.8311 | dev acc 68.00 | 101s
+ep2 loss 0.5789 | dev acc 73.17 | 202s
+ep3 loss 0.4010 | dev acc 76.11 | 306s
+ep4 loss 0.2783 | dev acc 76.74 | 410s
+ep5 loss 0.1693 | dev acc 76.83 | 513s
+ep6 loss 0.0719 | dev acc 76.02 | 618s
+[dev] gold-span MASC acc 76.83 (n=1122)
+[test] gold-span MASC acc 78.21 (n=1037)
+{
+  "model": "vinai/bertweet-large",
+  "seed": 44,
+  "best_dev_acc": 76.8270944741533,
+  "best_epoch": 5,
+  "dev_acc_goldspan": 76.8270944741533,
+  "test_acc_goldspan": 78.20636451301833
+}
+=== [pre s44] bertweet-large, 2 epochs external -> t2015 ===
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 9482.21it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+stage 1: intermediate training on [twitter,rest,laptop]
+  twitter   6248 aspects
+  rest      3608 aspects
+  laptop    2328 aspects
+  pre-ep1 loss 0.6970 | t2015 dev acc (zero-shot) 69.52 | 370s
+  pre-ep2 loss 0.4179 | t2015 dev acc (zero-shot) 72.10 | 735s
+stage 2: fine-tuning on t2015 train
+ep1 loss 0.6385 | dev acc 74.78 | 98s
+ep2 loss 0.4598 | dev acc 76.65 | 199s
+ep3 loss 0.3318 | dev acc 77.09 | 305s
+ep4 loss 0.1842 | dev acc 76.20 | 412s
+ep5 loss 0.0926 | dev acc 75.40 | 511s
+ep6 loss 0.0385 | dev acc 75.67 | 609s
+early stop
+[dev] gold-span MASC acc 77.09 (n=1122)
+[test] gold-span MASC acc 78.98 (n=1037)
+{
+  "model": "vinai/bertweet-large",
+  "seed": 44,
+  "best_dev_acc": 77.09447415329768,
+  "best_epoch": 3,
+  "dev_acc_goldspan": 77.09447415329768,
+  "test_acc_goldspan": 78.9778206364513
+}
+=== PAIRED SUMMARY (gold-span MASC accuracy) ===
+ seed  dev ctl  dev pre   d dev  test ctl  test pre  d test
+   42    77.54    78.34   +0.80     77.34     79.36   +2.03
+   43    77.81    79.14   +1.34     78.01     79.46   +1.45
+   44    76.83    77.09   +0.27     78.21     78.98   +0.77
+ mean    77.39    78.19   +0.80     77.85     79.27   +1.41
+paired sd(test delta) 0.63

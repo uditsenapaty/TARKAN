@@ -1,0 +1,8 @@
+{
+  "model": "roberta-large",
+  "seed": 92,
+  "best_dev_acc": 78.87700534759358,
+  "best_epoch": 4,
+  "dev_acc_goldspan": 78.87700534759358,
+  "test_acc_goldspan": 79.74927675988428
+}

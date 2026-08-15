@@ -1,0 +1,241 @@
+=== [A] intermediate encoders, one per backbone ===
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 13854.58it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+stage 1: intermediate training on [twitter,rest,laptop,mams]
+  twitter   6248 aspects
+  rest      3608 aspects
+  laptop    2328 aspects
+  mams     11186 aspects
+  pre-ep1 loss 0.6561 | t2015 dev acc (zero-shot) 70.77 | 702s
+  pre-ep2 loss 0.4090 | t2015 dev acc (zero-shot) 71.48 | 1398s
+  saved intermediate encoder (391 tensors) -> runs/ext_enc_btwL/enc.pt
+pre-only: stopping after stage 1
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights:   1%|          | 3/390 [00:01<03:26,  1.87it/s]Loading weights:  55%|█████▌    | 215/390 [00:01<00:01, 174.59it/s]Loading weights: 100%|██████████| 390/390 [00:01<00:00, 223.71it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+stage 1: intermediate training on [twitter,rest,laptop,mams]
+  twitter   6248 aspects
+  rest      3608 aspects
+  laptop    2328 aspects
+  mams     11186 aspects
+  pre-ep1 loss 0.7155 | t2015 dev acc (zero-shot) 66.40 | 1012s
+  pre-ep2 loss 0.4108 | t2015 dev acc (zero-shot) 72.73 | 2019s
+  saved intermediate encoder (390 tensors) -> runs/ext_enc_deb/enc.pt
+pre-only: stopping after stage 1
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights:  17%|█▋        | 66/389 [00:00<00:00, 651.98it/s]Loading weights:  35%|███▌      | 138/389 [00:00<00:00, 676.84it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 1554.03it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: roberta-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+stage 1: intermediate training on [twitter,rest,laptop,mams]
+  twitter   6248 aspects
+  rest      3608 aspects
+  laptop    2328 aspects
+  mams     11186 aspects
+  pre-ep1 loss 0.6700 | t2015 dev acc (zero-shot) 70.41 | 692s
+  pre-ep2 loss 0.4201 | t2015 dev acc (zero-shot) 71.03 | 1382s
+  saved intermediate encoder (391 tensors) -> runs/ext_enc_robL/enc.pt
+pre-only: stopping after stage 1
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 6219.06it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: cardiffnlp/twitter-roberta-base-sentiment-latest
+Key                        | Status     |  | 
+---------------------------+------------+--+-
+classifier.dense.weight    | UNEXPECTED |  | 
+classifier.out_proj.weight | UNEXPECTED |  | 
+classifier.dense.bias      | UNEXPECTED |  | 
+classifier.out_proj.bias   | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+stage 1: intermediate training on [twitter,rest,laptop,mams]
+  twitter   6248 aspects
+  rest      3608 aspects
+  laptop    2328 aspects
+  mams     11186 aspects
+  pre-ep1 loss 0.6419 | t2015 dev acc (zero-shot) 69.79 | 158s
+  pre-ep2 loss 0.4005 | t2015 dev acc (zero-shot) 71.03 | 309s
+  saved intermediate encoder (199 tensors) -> runs/ext_enc_twrob/enc.pt
+pre-only: stopping after stage 1
+=== [B] towers initialised from them ===
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 15169.91it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  loaded intermediate encoder (391 tensors) <- runs/ext_enc_btwL/enc.pt
+ep1 loss 0.7010 | dev acc 75.58 | 95s
+ep2 loss 0.4630 | dev acc 77.90 | 194s
+ep3 loss 0.3445 | dev acc 77.63 | 293s
+ep4 loss 0.1836 | dev acc 78.07 | 386s
+ep5 loss 0.0922 | dev acc 77.90 | 484s
+ep6 loss 0.0406 | dev acc 78.43 | 577s
+[dev] gold-span MASC acc 78.43 (n=1122)
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 79.75 (n=1037)
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 90,
+  "best_dev_acc": 78.43137254901961,
+  "best_epoch": 6,
+  "dev_acc_goldspan": 78.43137254901961,
+  "test_acc_goldspan": 79.74927675988428
+}
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights:   1%|          | 3/390 [00:00<01:07,  5.72it/s]Loading weights:  62%|██████▏   | 240/390 [00:00<00:00, 510.90it/s]Loading weights:  99%|█████████▊| 385/390 [00:00<00:00, 721.64it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 530.48it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+  loaded intermediate encoder (390 tensors) <- runs/ext_enc_deb/enc.pt
+ep1 loss 0.6953 | dev acc 75.04 | 138s
+ep2 loss 0.4889 | dev acc 78.88 | 280s
+ep3 loss 0.3016 | dev acc 78.79 | 426s
+ep4 loss 0.1453 | dev acc 77.72 | 560s
+ep5 loss 0.0829 | dev acc 76.74 | 695s
+early stop
+[dev] gold-span MASC acc 78.88 (n=1122)
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 80.14 (n=1037)
+[test] scored 1178 predicted spans
+{
+  "model": "microsoft/deberta-v3-large",
+  "seed": 91,
+  "best_dev_acc": 78.87700534759358,
+  "best_epoch": 2,
+  "dev_acc_goldspan": 78.87700534759358,
+  "test_acc_goldspan": 80.13500482160077
+}
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 10278.60it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: roberta-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  loaded intermediate encoder (391 tensors) <- runs/ext_enc_robL/enc.pt
+ep1 loss 0.7011 | dev acc 74.06 | 94s
+ep2 loss 0.4968 | dev acc 76.47 | 190s
+ep3 loss 0.3940 | dev acc 77.81 | 290s
+ep4 loss 0.2610 | dev acc 78.88 | 391s
+ep5 loss 0.1556 | dev acc 77.18 | 491s
+ep6 loss 0.0802 | dev acc 77.54 | 585s
+[dev] gold-span MASC acc 78.88 (n=1122)
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 79.75 (n=1037)
+[test] scored 1178 predicted spans
+{
+  "model": "roberta-large",
+  "seed": 92,
+  "best_dev_acc": 78.87700534759358,
+  "best_epoch": 4,
+  "dev_acc_goldspan": 78.87700534759358,
+  "test_acc_goldspan": 79.74927675988428
+}
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 25345.15it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: cardiffnlp/twitter-roberta-base-sentiment-latest
+Key                        | Status     |  | 
+---------------------------+------------+--+-
+classifier.out_proj.weight | UNEXPECTED |  | 
+classifier.out_proj.bias   | UNEXPECTED |  | 
+classifier.dense.weight    | UNEXPECTED |  | 
+classifier.dense.bias      | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+  loaded intermediate encoder (199 tensors) <- runs/ext_enc_twrob/enc.pt
+ep1 loss 0.6561 | dev acc 74.96 | 22s
+ep2 loss 0.4258 | dev acc 73.08 | 44s
+ep3 loss 0.2673 | dev acc 77.54 | 65s
+ep4 loss 0.1755 | dev acc 77.90 | 88s
+ep5 loss 0.0942 | dev acc 78.16 | 111s
+ep6 loss 0.0495 | dev acc 77.18 | 134s
+[dev] gold-span MASC acc 78.16 (n=1122)
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 78.11 (n=1037)
+[test] scored 1178 predicted spans
+{
+  "model": "cardiffnlp/twitter-roberta-base-sentiment-latest",
+  "seed": 93,
+  "best_dev_acc": 78.16399286987522,
+  "best_epoch": 5,
+  "dev_acc_goldspan": 78.16399286987522,
+  "test_acc_goldspan": 78.1099324975892
+}
+=== [C] pool + decide ===
+  all 4 new towers have span-scored probabilities
+f_standing-19......     0.00  0.410   70.43 |   70.66   70.59   70.62   87.80  80.44  <- dev-best
+f_+ext-23..........     0.00  0.420   70.57 |   70.81   70.40   70.60   87.62  80.57  <- dev-best
+f_ext-only-4.......     0.00  0.445   70.20 |   71.20   69.14   70.16   86.89  80.74  <- dev-best
