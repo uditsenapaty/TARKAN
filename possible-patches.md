@@ -2351,23 +2351,37 @@ After stage 1 and **before any t2015 aspect is seen**, on t2015 dev:
 | **external-only (zero-shot)** | **71.21** |
 | fully fine-tuned tower | 77–78 |
 
-### Seed 42 pair — bertweet-large, identical recipe
-| | dev | **test** |
-|---|---|---|
-| control | 77.54 | 77.34 |
-| **intermediate** | **78.34** | **79.36** |
-| Δ | +0.80 | **+2.03** |
+### ★★★ The paired battery — bertweet-large, identical recipe, 3 seeds
+| seed | dev ctl | dev pre | Δ dev | test ctl | test pre | **Δ test** |
+|---|---|---|---|---|---|---|
+| 42 | 77.54 | 78.34 | +0.80 | 77.34 | 79.36 | **+2.03** |
+| 43 | 77.81 | 79.14 | +1.34 | 78.01 | 79.46 | **+1.45** |
+| 44 | 76.83 | 77.09 | +0.27 | 78.21 | 78.98 | **+0.77** |
+| **mean** | 77.39 | 78.19 | **+0.80** | 77.85 | **79.27** | **+1.41** |
+
+**paired sd 0.63 · SE 0.36 · t(2) = 3.90 · six of six deltas positive.**
+
+**This is the first lever in the campaign that is positive on every seed AND on both
+splits.** Every Chapter-C/D mechanism either inverted between dev and test (§C.26, §D.14,
+§D.21 — nine documented inversions) or sat inside §D.20's ±1.31 floor. Caveats kept
+explicit: t(2)=3.90 is p≈0.06 two-tailed and three seeds is thin, so the 6/6 sign
+consistency is the stronger evidence; and the controls (mean test 77.85) sit *below* the
+standing `masc_btwL_s45` (79.75) while matching it on dev — i.e. the standing member is
+test-lucky, so the paired Δ is the trustworthy quantity, not the absolute level.
 
 ### ★★ The mechanism is the OPPOSITE of the prediction
-Predicted: 6001 external NEG aspects lift NEG. Measured (test):
+Predicted: 6001 external NEG aspects lift NEG. Measured per-class on test, all three seeds:
 
-| | NEG (113) | NEU (607) | POS (317) | ALL |
+| seed | Δ NEG (n=113) | Δ NEU (n=607) | Δ POS (n=317) | Δ ALL |
 |---|---|---|---|---|
-| control | 62.83 | 86.49 | 64.98 | 77.34 |
-| intermediate | **46.02** | **90.77** | **69.40** | 79.36 |
-| Δ | **−16.81** | +4.28 | +4.42 | **+2.03** |
+| 42 | **−16.81** | +4.28 | +4.42 | +2.03 |
+| 43 | −1.77 | +3.46 | −1.26 | +1.45 |
+| 44 | −6.19 | +0.82 | +3.15 | +0.77 |
+| **mean** | **−8.26** | **+2.85** | **+2.10** | **+1.41** |
 
-NEG **collapses** −16.8; the whole gain is NEU and POS, which are 924 of 1037 aspects.
+Weighting the class means by their counts reconstructs +1.41 exactly. NEG is damaged in
+**every** seed; the gain is NEU and POS, which are 924 of 1037 aspects. So the lever is a
+**trade**, not a uniform lift.
 Reading: external NEG is lexically explicit ("the food was terrible"); t2015's NEG is an
 entity the tweet complains about **implicitly**, and a sharper review-trained boundary calls
 those neutral. Consistent with §D.9 measuring the image at 3× the text signal — if t2015 NEG
