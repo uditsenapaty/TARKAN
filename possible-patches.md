@@ -2733,6 +2733,72 @@ the relevance gate at **+0.10**, so restoring both would most likely add ablatio
 ≈0 rather than points — but the paper cannot claim five components until they are in the
 pipeline. Restoring KG is ~0.5h/dataset; a KAN member needs implementing first.
 
+## D.35 ★★★ KAN, AND THE ORACLE GATE — the visual path's headroom is +0.10, already taken
+
+The paper's fusion head finally exists here (`experts/kan.py`, 2 layers × 256, grid 5,
+spline order 3). Verified before use, because a mislabelled MLP would fake this result:
+B-spline basis sums to 1 on the grid interior, **no parameter has zero gradient**, 1.78M
+head params against the MLP's 0.20M (2.89M vs 0.53M non-encoder in the full member).
+Spline weights get small noise rather than zeros — a zero branch times a zero scale is the
+identically-dead gradient §D.22 found in PACS.
+
+**Run the diagnostic before the head.** The decisive question was never KAN width (§A
+measured capacity flat) but whether the visual stream carries anything conditional on the
+aspect. Four arms, bertweet-large seed 50, identical recipe, only the head/streams differ:
+
+| arm | dev | **test** | mean gate |
+|---|---|---|---|
+| **A** text only (gate hard-closed) | **77.99** | **77.72** | 0.000 |
+| **B** text + visual, MLP | 77.27 | 77.24 | 0.488 |
+| **B − A** | **−0.72** | **−0.48** | |
+
+Adding vision makes the member **worse on both splits**, with the gate open at 0.49 — it is
+not a gate that quietly closed and reduced to a text model. It admits half the visual signal
+and pays for it.
+
+### ★★★ The stratified breakdown — the mechanism is RIGHT, the headroom is not
+`experts/strata.py`, terciles of the TRAIN-ECDF-calibrated `u`:
+
+| stratum | n | A text | B text+vis | Δ |
+|---|---|---|---|---|
+| image-irrelevant | 346 | 80.64 | 79.77 | **−0.87** |
+| weak-correspondence | 345 | 75.94 | 75.07 | **−0.87** |
+| **image-useful** | 346 | 76.59 | **76.88** | **+0.29** |
+| single-aspect | 416 | 78.12 | 78.12 | +0.00 |
+| **multi-aspect** | 621 | 77.46 | 76.65 | **−0.81** |
+| ALL | 1037 | 77.72 | 77.24 | −0.48 |
+
+**The sign is correct exactly where the hypothesis predicts.** Visual evidence helps where
+aspect-image similarity is high and hurts where it is not. TARKAN's premise survives; what
+fails is that the useful stratum is one third of the data and the harm on the other two
+thirds is 3× larger. And the damage concentrates in **multi-aspect** instances (−0.81 on
+621) against **zero** on single-aspect — one image, several aspects, the same evidence
+pulled toward all of them, which is what §C.13 and the sibling loss attacked from the input
+and logit sides.
+
+### ★★★ THE ORACLE GATE — and why the fusion head cannot matter
+Admit visual only in the stratum where it helps, hard-close it elsewhere:
+
+| | gold-span acc |
+|---|---|
+| text only | 77.73 |
+| text + visual (MLP) | 77.24 |
+| **ORACLE gate (perfect per-stratum admission)** | **77.82** |
+| **headroom of a PERFECT modality gate** | **+0.10** |
+| §C.7's measured calibrated gate | **+0.10** |
+
+**The gate is already sitting exactly on its own ceiling.** A fusion head can only recombine
+what the gate admits, so no head — KAN, interaction-KAN, or anything else — can extract more
+than +0.10 from this stream. This is the cleanest closure of the visual path in the project,
+and it explains the whole family retroactively: §C.7 gate +0.10, §D.9/§D.13 image carries 3×
+the signal but the member gets worse, §D.26 CET −0.20, §D.27 ASOE −0.23, §D.30 grounding
+coverage doubled for −0.77, §D.32 evidence-source ensembling −0.86. Six measurements, one
+cause: **the admissible information is +0.10 wide.**
+
+**Deviation recorded:** the KG stream of the paper's `[t_a ; v_a ; g_a]` is absent
+(`data/kg_index` gone, §D.34), so the interaction set is the 2-modality subset
+`[t, v, t⊙v, |t−v|]` rather than the intended 8-term 3-modality one.
+
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
 Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:
