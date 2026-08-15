@@ -101,13 +101,33 @@ def make_collate(pad_id, vis_dim):
 
 
 class GatedMASC(nn.Module):
-    def __init__(self, model_id, vis_dim=512, dropout=0.1, fuse="convex"):
+    """MADSC gate + the paper's KAN fusion head, in three forms.
+
+    `--head mlp`  : the incumbent Linear over the fused vector.
+    `--head kan`  : the paper as written — a 2-layer width-256 KAN over the SAME fused
+                    vector. Chapter A measured this family flat.
+    `--head ikan` : interaction-KAN. Rather than asking a KAN to discover cross-modal
+                    structure inside one wide concatenation, project each modality to 192
+                    with its own LayerNorm and hand the KAN the interaction variables
+                    explicitly:  [t', v', t'*v', |t'-v'|].
+                    The text path stays a *residual baseline* (z_text = W_t t'), and the
+                    KAN supplies a correction scaled by alpha, initialised **0.1 and not
+                    zero** — a zero branch times a zero scale is the identically-dead
+                    gradient §D.22 found in PACS.
+
+    The KG stream `g_a` of the paper's `[t_a ; v_a ; g_a]` is absent here: data/kg_index
+    and data/kg_evidence do not exist (§D.34). The interaction set is therefore the
+    2-modality subset of the intended 3-modality one.
+    """
+
+    def __init__(self, model_id, vis_dim=512, dropout=0.1, fuse="convex",
+                 head="mlp", dproj=192, kan_width=256):
         super().__init__()
         from transformers import AutoConfig, AutoModel
         cfg = AutoConfig.from_pretrained(model_id)
         self.enc = AutoModel.from_pretrained(model_id, dtype=torch.float32)
         h = cfg.hidden_size
-        self.fuse = fuse
+        self.fuse, self.head_kind = fuse, head
         self.vproj = nn.Linear(vis_dim, h)
         self.drop = nn.Dropout(dropout)
         # Eq. 9 / Eq. 13: four learnable scalars, exactly as in the paper
@@ -115,7 +135,26 @@ class GatedMASC(nn.Module):
         self.b_u = nn.Parameter(torch.tensor(-2.0))
         self.w_g = nn.Parameter(torch.tensor(2.0))
         self.b_g = nn.Parameter(torch.tensor(-1.0))
-        self.head = nn.Linear(h if fuse == "convex" else 3 * h, 3)
+
+        d_in = h if fuse == "convex" else 3 * h
+        if head == "mlp":
+            self.head = nn.Linear(d_in, 3)
+        elif head == "kan":
+            from experts.kan import KAN
+            self.head = KAN([d_in, kan_width, 3])
+        elif head == "ikan":
+            from experts.kan import KAN
+            self.pt = nn.Linear(h, dproj)
+            self.pv = nn.Linear(h, dproj)
+            self.nt = nn.LayerNorm(dproj)
+            self.nv = nn.LayerNorm(dproj)
+            self.head = nn.Linear(dproj, 3)              # residual TEXT baseline
+            self.kan = KAN([4 * dproj, kan_width, 3])
+            self.alpha = nn.Parameter(torch.tensor(0.1))
+        else:
+            raise ValueError(head)
+        self.last_norms = None
+        self.no_vis = False
 
     def forward(self, ids, mask, term_mask, vis, sim):
         hs = self.enc(input_ids=ids, attention_mask=mask).last_hidden_state
@@ -127,8 +166,20 @@ class GatedMASC(nn.Module):
 
         u = torch.sigmoid(self.w_u * sim + self.b_u)                 # Eq. 9
         g = torch.sigmoid(self.w_g * u + self.b_g).unsqueeze(-1)     # Eq. 13
-        z = g * v_a + (1.0 - g) * t_a                                # Eq. 14
+        if self.no_vis:      # stream ablation: text only, gate hard-closed
+            g = g * 0.0
 
+        if self.head_kind == "ikan":
+            t = self.nt(self.pt(t_a))
+            v = self.nv(self.pv(v_a * g))          # gate still admits the visual evidence
+            # the diagnostic the proposal asks for: comparable scales before fusion, or the
+            # KAN spends capacity learning "text is 10x bigger than visual"
+            self.last_norms = (float(t.norm(dim=-1).mean()), float(v.norm(dim=-1).mean()))
+            x = torch.cat([t, v, t * v, (t - v).abs()], dim=-1)
+            lg = self.head(self.drop(t)) + self.alpha * self.kan(x)
+            return lg.float(), u, g.squeeze(-1)
+
+        z = g * v_a + (1.0 - g) * t_a                                # Eq. 14
         feat = z if self.fuse == "convex" else torch.cat([z, t_a, ctx], dim=-1)
         return self.head(self.drop(feat)).float(), u, g.squeeze(-1)
 
@@ -157,6 +208,15 @@ def main():
     ap.add_argument("--desc", default="data/aadg/twitter2015")
     ap.add_argument("--spans", default=None)
     ap.add_argument("--fuse", choices=["convex", "concat"], default="convex")
+    ap.add_argument("--head", choices=["mlp", "kan", "ikan"], default="mlp",
+                    help="mlp = incumbent Linear; kan = the paper's 2-layer "
+                         "width-256 KAN over the same fused vector; ikan = "
+                         "interaction-KAN over [t,v,t*v,|t-v|] with a residual "
+                         "text baseline")
+    ap.add_argument("--dproj", type=int, default=192)
+    ap.add_argument("--kan-width", type=int, default=256)
+    ap.add_argument("--no-vis", action="store_true",
+                    help="stream ablation: hard-close the gate, text only")
     ap.add_argument("--lambda-conf", type=float, default=0.5)
     ap.add_argument("--seed", type=int, default=50)
     ap.add_argument("--epochs", type=int, default=8)
@@ -186,7 +246,13 @@ def main():
                         batch_size=args.batch, shuffle=(s == "train"), collate_fn=coll)
           for s in ("train", "dev", "test")}
 
-    model = GatedMASC(args.model, vis_dim, fuse=args.fuse).to(device)
+    model = GatedMASC(args.model, vis_dim, fuse=args.fuse, head=args.head,
+                      dproj=args.dproj, kan_width=args.kan_width).to(device)
+    model.no_vis = args.no_vis
+    nh = sum(p.numel() for n, p in model.named_parameters()
+             if not n.startswith('enc.'))
+    print(f"head={args.head} no_vis={args.no_vis} non-encoder params {nh/1e6:.2f}M",
+          flush=True)
     body = [p for n, p in model.named_parameters() if n.startswith("enc.")]
     head = [p for n, p in model.named_parameters() if not n.startswith("enc.")]
     opt = torch.optim.AdamW([{"params": body, "lr": args.lr},
