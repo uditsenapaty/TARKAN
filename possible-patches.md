@@ -2533,10 +2533,73 @@ which inflated both. Corrected above.)*
 **72.3–72.7 — still short of 72.9.** Both are linear extrapolations from a single 4-member
 swap; the top of the range is the optimistic end.
 
+### ★★★ THE EXTRACTION SIDE — asymmetric zero-shot, but the fine-tune is POSITIVE
+Zero-shot after stage 1, on t2015 dev, before any t2015 example is seen:
+
+| task | zero-shot | baseline |
+|---|---|---|
+| polarity (MASC) | **71.21** | 59.2 majority |
+| **extraction (MATE)** | **16.93** (P 36.15 / R 11.05) | — |
+
+**The transfer is asymmetric.** Sentiment is a domain-general relation between an opinion
+and a target; *what counts as an aspect* is a dataset-specific annotation convention —
+t2015 annotates named entities, SemEval annotates product/food nouns.
+
+**But the asymmetry does NOT survive fine-tuning**, and predicting a negative from it was
+wrong. Seed 42, deberta tagger, identical recipe:
+
+| | dev | **test** | test P | test R |
+|---|---|---|---|---|
+| control | 85.51 | 85.43 | 83.84 | 87.08 |
+| **intermediate** | **86.25** | **86.00** | 83.87 | **88.24** |
+| Δ | **+0.74** | **+0.57** | +0.03 | **+1.16** |
+
+**The gain is entirely RECALL at flat precision** — which is the only kind that helps here,
+because the binding constraint is the 92 gold spans that are never candidates. The external
+corpora teach transferable span structure even though their notion of which spans are
+aspects is wrong for t2015.
+
+### ★★★ ONE SWAPPED MATE MEMBER — and pool recall finally moves
+D.33 MASC swap held fixed; only 1 of the 5 MATE members replaced:
+
+| pool | dev | **test** | MATE@τ | a | pool recall dev/test |
+|---|---|---|---|---|---|
+| MATE std-5 | 70.78 | 70.70 | 87.62 | 80.68 | 89.75% / 91.13% |
+| **MATE 1-of-5 intermediate** | **71.16** | **71.28** | **87.98** | **81.02** | **90.11% / 91.32%** |
+
+**test 71.28 clears SGBIS (71.1)** — the first baseline to fall since Chapter C. The
+mechanism is the predicted one: pool recall rises, τ drops 0.420 → 0.345 to admit the newly
+reachable spans, and **R goes 70.49 → 72.03** against the bar's 73.1. `a` rises too (+0.34)
+even though only the extraction member changed, because a different candidate set changes
+which spans polarity is scored on.
+
+**Honest discount:** at matched τ the swap is **+0.12 to +0.35 (mean +0.25)**, so about half
+the +0.58 was a favourable dev-τ draw.
+
+### ⚠ THE τ QUESTION IS CLOSED — two label-free rules, both null
+The matched-τ table showed the *standing* pool scoring 71.23 at τ=0.320 against 70.70 at its
+dev-selected 0.420, suggesting the τ rule was systematically costing ~0.5. Two principled
+alternatives, neither of which touches test labels:
+
+| rule | standing-19 | SWAP-4-ext | MATE-1of5 |
+|---|---|---|---|
+| dev-argmax (incumbent) | 70.62 | 70.70 | 71.28 |
+| count-match (τ s.t. \|pred\| = 1.513 × n_sent, rate fitted on TRAIN) | 70.23 (**−0.39**) | 70.52 (−0.18) | 70.78 (**−0.50**) |
+| isotonic-calibrated §D.22 cut, accept q > F1/2 | 70.53 (−0.09) | 70.76 (+0.06) | 71.05 (−0.23) |
+
+The count rate is accurate (predicts 1020 test gold against the true 1037) and still loses,
+because the F1 optimum is not at P=R. The calibrated rule lands at q > 0.352–0.356 keeping
+~1032 candidates — i.e. it **reproduces dev-argmax**, confirming the incumbent threshold is
+already correctly placed. **The 0.5 apparently available at τ=0.32 is test noise, not a
+fixable bias.** Stop looking at τ.
+
 ### Status
-`queue60` complete. `queue63`/`queue64` complete (above). `queue61` (external supervision on
-the extraction side) running; then `queue65` (rebuild the remaining 14 members), then
+`queue60`, `queue63`, `queue64` complete. `queue61` (extraction, seed 42 done and positive)
+running; then `queue65` (rebuild the remaining 14 members), `queue66` (NEG recovery),
 `queue62` (MAMS ablation).
+
+**Standing best: 71.28** (D.33 MASC swap + 1-of-5 MATE swap, dev-selected τ) — **16 of 19
+t2015 baselines cleared.** DQPSA 71.9, VLHA 72.5, MADSC 72.9 remain.
 
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
