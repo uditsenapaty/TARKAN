@@ -2502,9 +2502,41 @@ swap already delivered 3 of them. And the two routes are now separable:
 * **extraction** — **92 gold spans (8.87%) are not candidates at all.** Recovering ~30 of
   them at 75% accuracy is worth the same 23 pairs, and is what `queue61` attacks directly.
 
+### ★★ §D.2's CEILING RE-MEASURED — selection stays closed, but the ceiling MOVES
+§D.2 fitted an 11-feature logistic **directly on test** and got 70.77 against the honest
+product's 70.37, concluding *"the information is absent, not merely hard to estimate."*
+D.33 adds information, so the ceiling is a moving target. Re-measured with the correct
+protocol (honest = fit **and** threshold on dev, evaluate on test):
+
+| pool | honest | **cheating upper bound** |
+|---|---|---|
+| standing-19 | 70.80 | **71.05** |
+| SWAP-4-ext-19 | 70.47 | **71.43** |
+| *geometric product, same pools* | *70.62 / 70.91* | |
+
+**Selection is still closed** — the honest logistic (70.47–70.80) does not beat the
+parameter-free geometric product (70.62–70.91), reproducing §D.2 and §C.24 for the third
+time. **But the cheating ceiling rose +0.38 from swapping 21% of members**, confirming the
+missing information really was missing and that supervision supplies some of it. Extra
+combiner sophistication remains worthless; better members do not.
+
+*(Method note: the first pass selected the acceptance threshold on test in **both** arms,
+which inflated both. Corrected above.)*
+
+### Projection for the full rebuild — two estimators, stated as a range
+| estimator | basis | a | joint @ MATE 87.80 |
+|---|---|---|---|
+| from tower gains | members +0.63 ⇒ ensemble +0.63 | 81.07 | 71.2 |
+| from the measured swap | a +0.24 per 21% of members ⇒ +1.14 | 81.58 | 71.6 |
+
+**Range: a 81.1–81.6, joint 71.2–71.6.** With a +1.4 extraction gain that becomes
+**72.3–72.7 — still short of 72.9.** Both are linear extrapolations from a single 4-member
+swap; the top of the range is the optimistic end.
+
 ### Status
 `queue60` complete. `queue63`/`queue64` complete (above). `queue61` (external supervision on
-the extraction side) running; `queue62` (MAMS ablation) queued.
+the extraction side) running; then `queue65` (rebuild the remaining 14 members), then
+`queue62` (MAMS ablation).
 
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
