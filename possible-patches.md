@@ -2449,9 +2449,25 @@ already extracts. It does not govern supervision the model simply never had.
 **Four D.33 towers alone beat all nineteen standing members on polarity: a 80.74 vs 80.44.**
 The other fifteen — every PDQ and PDS member included — are net-negative on that axis.
 
-**And the absorption is now quantified: four members each +0.63 better moved the ensemble's
-`a` by +0.13 (addition) / +0.24 (swap). The 19-member log-average absorbs ~80% of any
-member-level gain.** That is §B.8's and §C.24's saturation, measured as a number.
+**⚠ The gain is PROPORTIONAL, not absorbed — first reading was wrong.** Four members each
++0.63 better moved the ensemble's `a` by +0.13 (addition) / +0.24 (swap), which looks like
+80% absorption but is not: 4 of 19 members is **21% of the ensemble**, and
+0.21 × 0.63 = **0.13**, exactly the measured addition value. Nothing was absorbed; the lever
+was applied to a fifth of the ensemble.
+
+**Consequence — this is the projection `queue65` is spending 3 GPU-hours against:**
+
+| configuration | MATE@τ | a | joint |
+|---|---|---|---|
+| standing | 87.80 | 80.44 | 70.62 |
+| D.33 swap (4 of 19) | 87.80 | 80.68 | **70.91** |
+| full rebuild, all 19 (projected) | 87.80 | ~81.07 | ~71.2 |
+| full rebuild + MATE +1.4 | 89.2 | ~81.07 | ~72.3 |
+| **BAR** | | | **72.9** |
+
+Both levers landing at their measured magnitudes still leaves **~0.6 short**: at a ≈ 81.07
+the bar needs MATE@τ **89.92**, i.e. **+2.1**, not the +1.4 the polarity side delivered.
+Stated before the runs finish, not after.
 
 ### ⚠ The MATE@τ drop is a τ ARTIFACT, not a trade
 Every arm that changes the MASC members shows MATE@τ falling 87.80 → 87.62, which makes no
