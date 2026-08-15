@@ -2776,24 +2776,68 @@ thirds is 3× larger. And the damage concentrates in **multi-aspect** instances 
 pulled toward all of them, which is what §C.13 and the sibling loss attacked from the input
 and logit sides.
 
-### ★★★ THE ORACLE GATE — and why the fusion head cannot matter
-Admit visual only in the stratum where it helps, hard-close it elsewhere:
+### ⚠ THE STRATUM ORACLE IS +0.10 — but that is the WRONG ORACLE (corrected)
+Admitting visual only in the stratum where it helps gives 77.82 against text-only's 77.73,
+i.e. **+0.10**, which coincides exactly with §C.7's measured calibrated gate. That looked
+like a clean closure and was **reported as one. It is too coarse**: a 3-bucket oracle
+averages within terciles and hides per-example structure. The right ceiling for a
+*per-aspect* reliability γ_a is the per-example oracle:
 
-| | gold-span acc |
+| | test acc |
 |---|---|
-| text only | 77.73 |
-| text + visual (MLP) | 77.24 |
-| **ORACLE gate (perfect per-stratum admission)** | **77.82** |
-| **headroom of a PERFECT modality gate** | **+0.10** |
-| §C.7's measured calibrated gate | **+0.10** |
+| text only | 77.72 |
+| text + visual | 77.24 |
+| stratum oracle (3 buckets) | 77.82 (+0.10) |
+| **PER-EXAMPLE oracle router** | **83.90 (+6.17)** |
 
-**The gate is already sitting exactly on its own ceiling.** A fusion head can only recombine
-what the gate admits, so no head — KAN, interaction-KAN, or anything else — can extract more
-than +0.10 from this stream. This is the cleanest closure of the visual path in the project,
-and it explains the whole family retroactively: §C.7 gate +0.10, §D.9/§D.13 image carries 3×
-the signal but the member gets worse, §D.26 CET −0.20, §D.27 ASOE −0.23, §D.30 grounding
-coverage doubled for −0.77, §D.32 evidence-source ensembling −0.86. Six measurements, one
-cause: **the admissible information is +0.10 wide.**
+```
+both right 737 · only-text 69 · only-visual 64 · both wrong 167
+```
+
+**64 aspects are solved by the visual member and missed by the text member.** The visual
+stream is *not* information-free, and every "the image contributes nothing" reading of
+§C.7/§D.9/§D.26/§D.30 overstated the case. The cancellation diagnosis is correct: a good
++ on one third and a bad − on two thirds aggregates to ≈0.
+
+### ★★★ BUT γ_a IS NOT ESTIMABLE — the gate's own input is blind to the decision
+The routing decision only exists on the **133 cases where the two members disagree**
+(64 visual-right vs 69 text-right — a coin flip). AUC for "visual is the right choice":
+
+| candidate signal for γ_a | AUC |
+|---|---|
+| **`u` — the calibrated aspect-image similarity the gate is BUILT ON** | **0.523** |
+| `y` — the pseudo-alignment label | **0.487** (below chance) |
+| text member confidence | 0.501 |
+| KL(visual ‖ text) | 0.541 |
+| visual member confidence | 0.613 |
+| confidence gap (visual − text) | **0.634** |
+
+**The aspect-image alignment score carries no information about when the image helps.**
+This is the sharpest statement of the failure available: not capacity, not the fusion head,
+not aggregation — the variable γ_a would be conditioned on is at chance for its own
+decision. A KAN cannot route on a signal that does not know the answer.
+
+The only signal with purchase is the confidence gap (0.634), which is **post-hoc** — it
+needs both members run, so it is ensembling, not gating — and dev rejects it:
+
+| | dev | test |
+|---|---|---|
+| text | 77.99 | 77.72 |
+| log-average | 77.99 | 77.63 |
+| max-confidence router | **77.90** | **78.01** |
+
+Eleventh dev/test inversion, and §B.8 named the cause years of experiments ago: *member
+confidence ≠ correctness on the disagreement cases.*
+
+**Note also that the "teacher supervises the direction of the visual residual" half of this
+proposal is already built and measured** — that is §C.25 **PDS** (`y_Δ ∈ {−1,0,+1}`,
+signed-margin hinge on the residual), shipped in the ensemble at **+0.26**, with the Qwen
+counterfactual variant of the same teacher at **−0.94** (§D.13).
+
+So the family reconciles as: the visual stream carries **+6.17 of oracle signal**, the
+direction half of the mechanism recovers **+0.26** of it, and the routing half is blocked
+because its designed input is at chance. That is a much more precise account than
+"the image contributes nothing".
 
 **Deviation recorded:** the KG stream of the paper's `[t_a ; v_a ; g_a]` is absent
 (`data/kg_index` gone, §D.34), so the interaction set is the 2-modality subset
