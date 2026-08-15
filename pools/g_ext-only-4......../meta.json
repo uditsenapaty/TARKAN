@@ -1,0 +1,40 @@
+{
+  "dataset": "twitter2015",
+  "mate": [
+    "runs/mate_deb_s42",
+    "runs/mate_deb_s43",
+    "runs/mate_deb_s44",
+    "runs/mate_probeA",
+    "runs/mate_probeB"
+  ],
+  "masc": [
+    "runs/d33_x_btwL",
+    "runs/d33_x_deb",
+    "runs/d33_x_robL",
+    "runs/d33_x_twrob"
+  ],
+  "masc2": [],
+  "rerank": [
+    "runs/rerank"
+  ],
+  "pdqmate": [
+    "runs/pdqmate_btwL"
+  ],
+  "cand_thr": 0.12,
+  "spans": null,
+  "splits": [
+    "dev",
+    "test"
+  ],
+  "out": "pools/g_ext-only-4........",
+  "dev": {
+    "n_cand": 1234,
+    "n_gold_span_hits": 1007,
+    "n_gold": 1122
+  },
+  "test": {
+    "n_cand": 1178,
+    "n_gold_span_hits": 945,
+    "n_gold": 1037
+  }
+}

@@ -2417,13 +2417,78 @@ Right on **44 of the ensemble's 185 errors (23.8%)**, beating both its own contr
 member the ensemble already contains — and the lowest shared-blind-spot count of the three,
 which is the number §B.8 said nothing had ever moved.
 
+### The rebuilt towers — one intermediate encoder per backbone, reused
+`d33_x_deb` at test **80.14** is the **highest single-tower gold-span accuracy in the
+project** (previous ceiling 79.75), and D.33 towers hold 3 of the top 4 slots.
+
+| backbone | standing dev/test | D.33 dev/test | Δ dev | Δ test |
+|---|---|---|---|---|
+| bertweet-large | 77.01 / 79.75 | 78.43 / 79.75 | +1.42 | +0.00 |
+| deberta-v3-large | 77.90 / 79.36 | 78.88 / **80.14** | +0.98 | +0.78 |
+| roberta-large | 78.52 / 78.78 | 78.88 / **79.75** | +0.36 | +0.97 |
+| twitter-roberta | 77.09 / 77.34 | 78.16 / 78.11 | +1.07 | +0.77 |
+| **mean** | 77.63 / 78.81 | 78.59 / **79.44** | **+0.96** | **+0.63** |
+
+Eight of eight deltas non-negative across four different pretraining corpora. Zero-shot
+after stage 1, before any t2015 aspect is seen: deberta **72.73**, bertweet-large 71.48,
+roberta-large 71.03, twitter-roberta 71.03 (NEU majority 59.2).
+
+**§D.27's law is broken here, for the first time.** At a 79.36 baseline it predicts
+Δ = −0.868 × 79.36 + 67.67 = **−1.22**; measured **+0.78**. Consistent with the argument
+made before running it: the law was fitted on *mechanisms*, whose value a strong model
+already extracts. It does not govern supervision the model simply never had.
+
+### ★★★ THE CONVERSION — and the 80% absorption
+| pool | members | dev | **test** | MATE@τ | a |
+|---|---|---|---|---|---|
+| standing-19 (regression check, exact) | 19 | 70.43 | **70.62** | 87.80 | 80.44 |
+| **SWAP 4 ext for 4 standing** | **19** | **70.78** | **70.70** | 87.62 | **80.68** |
+| + ext (addition) | 23 | 70.57 | 70.60 | 87.62 | 80.57 |
+| **ext-only** | **4** | 70.20 | 70.16 | 86.89 | **80.74** |
+
+**Four D.33 towers alone beat all nineteen standing members on polarity: a 80.74 vs 80.44.**
+The other fifteen — every PDQ and PDS member included — are net-negative on that axis.
+
+**And the absorption is now quantified: four members each +0.63 better moved the ensemble's
+`a` by +0.13 (addition) / +0.24 (swap). The 19-member log-average absorbs ~80% of any
+member-level gain.** That is §B.8's and §C.24's saturation, measured as a number.
+
+### ⚠ The MATE@τ drop is a τ ARTIFACT, not a trade
+Every arm that changes the MASC members shows MATE@τ falling 87.80 → 87.62, which makes no
+mechanical sense — candidates do not depend on polarity except through τ. Holding τ fixed:
+
+| τ | standing | SWAP-ext | Δ |
+|---|---|---|---|
+| 0.400 | 70.52 (87.7×80.4) | 70.81 (87.7×80.8) | +0.29 |
+| **0.410** | 70.62 (87.8×80.4) | **70.91** (87.8×80.8) | **+0.29** |
+| 0.420 | 70.41 (87.6×80.4) | 70.70 (87.6×80.7) | +0.29 |
+| 0.430 | 70.35 | 70.65 | +0.30 |
+| 0.440 | 70.11 | 70.34 | +0.23 |
+
+MATE@τ is **identical between pools at matched τ**. The whole −0.18 was the dev-fitted τ
+jumping 0.410 → 0.420. Two defensible rules, both reported: τ refit per member set gives
+**+0.08**; τ frozen at the pipeline's 0.410 (refitting it is one more dev-fitted degree of
+freedom, and §D.14 showed those are lotteries) gives **+0.29**, consistent in sign across
+the whole τ range because it follows mechanically from `a`.
+
+### ★★★ THE GAP, RESTATED IN PAIRS — the most useful reframing in the chapter
+| | correct pairs | predictions | F1 |
+|---|---|---|---|
+| standing-19 | 732 | 1036 | 70.62 |
+| **SWAP @ τ 0.410** | **735** | 1037 | **70.91** |
+| **BAR (MADSC)** | **758** | 1041 | **72.95** |
+
+**The entire remaining gap is 23 more correct (span, polarity) pairs out of 1037.** D.33's
+swap already delivered 3 of them. And the two routes are now separable:
+
+* **polarity** — of the 945 gold spans reachable in the pool we get **735 = 77.8%**; the bar
+  needs 80.2%, i.e. +2.4 points on the reachable set.
+* **extraction** — **92 gold spans (8.87%) are not candidates at all.** Recovering ~30 of
+  them at 75% accuracy is worth the same 23 pairs, and is what `queue61` attacks directly.
+
 ### Status
-Seeds 43/44 running (`queue60`); paired sd not yet available, and **one seed is not a
-result** — §D.20's floor is ±1.31 and this project's history is dev/test inversion
-(here dev +0.80 against test +2.03). `queue63` then converts to joint F1 directly, because
-§C.24 and §D.24 both measured levers that improved a member and converted to nothing.
-`queue61` applies the same lever to extraction (the bar needs +2.83 on one factor of
-`joint = MATE@τ × a` or **+1.4 on each**); `queue62` ablates MAMS.
+`queue60` complete. `queue63`/`queue64` complete (above). `queue61` (external supervision on
+the extraction side) running; `queue62` (MAMS ablation) queued.
 
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
