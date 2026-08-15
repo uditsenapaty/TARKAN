@@ -42,6 +42,16 @@ tower roberta-large                                    robL  1e-5 8  92
 tower cardiffnlp/twitter-roberta-base-sentiment-latest twrob 2e-5 16 93
 
 echo "=== [C] pool + decide ==="
+# Guard: load_masc silently falls back from probs_span_* to probs_* (gold spans). A member
+# that missed --spans would then cover only the matched candidates and look like a weak
+# member rather than a broken one. Fail loudly instead.
+for d in runs/d33_x_btwL runs/d33_x_deb runs/d33_x_robL runs/d33_x_twrob; do
+  for s in dev test; do
+    [ -f "$d/probs_span_$s.npz" ] || { echo "MISSING $d/probs_span_$s.npz"; exit 1; }
+  done
+done
+echo "  all 4 new towers have span-scored probabilities"
+
 STANDING="runs/masc_btwL_s45 runs/masc_deb_s44 runs/masc_robL_s46 runs/masc_twrob_s42 \
 runs/masc_btw_s43 runs/masc_deb_sqrt runs/pdq_btwL_s47 runs/pdq_twrob_s43 \
 runs/pdq_btwL_itcitm runs/pdq_twrob_itcitm runs/pdq_deb_itcitm runs/pdq_robL_itcitm \
