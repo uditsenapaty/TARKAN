@@ -2559,7 +2559,57 @@ because the binding constraint is the 92 gold spans that are never candidates. T
 corpora teach transferable span structure even though their notion of which spans are
 aspects is wrong for t2015.
 
-### ★★★ ONE SWAPPED MATE MEMBER — and pool recall finally moves
+### ★★★ THE EXTRACTION PAIRED BATTERY — the tightest measurement in the campaign
+| seed | dev ctl | dev pre | Δ dev | test ctl | test pre | **Δ test** | Δ R | Δ P |
+|---|---|---|---|---|---|---|---|---|
+| 42 | 85.51 | 86.25 | +0.73 | 85.43 | 86.00 | **+0.57** | +1.16 | +0.02 |
+| 43 | 86.12 | 85.88 | −0.25 | 84.94 | 85.75 | **+0.81** | +0.39 | +1.18 |
+| 44 | 85.84 | 86.59 | +0.75 | 85.41 | 85.96 | **+0.55** | +0.19 | +0.87 |
+| **mean** | 85.82 | 86.24 | +0.41 | 85.26 | **85.90** | **+0.64** | +0.58 | +0.69 |
+
+**paired sd 0.15 · SE 0.08 · t(2) = 7.60 · 3/3 test deltas positive**, spread 0.55–0.81 —
+far tighter than the polarity battery's 0.77–2.03. **Both factors of `joint = MATE@τ × a`
+respond to the same lever**: polarity +1.41 (t=3.90), extraction +0.64 (t=7.60).
+
+### ⚠⚠ THE MATE MEMBER SET IS A LOTTERY — and 71.28 was NOT claimable
+| MATE set (D.33 MASC swap held fixed) | dev | test |
+|---|---|---|
+| std5 (3 seed + 2 probe) | 70.78 | 70.70 |
+| **1 pre(s42) + 2 seed + 2 probe** | **71.16** ← dev-argmax | **71.28** |
+| 2 pre + 1 seed + 2 probe | **71.15** | 70.92 |
+| 1 pre(s43) + 2 seed + 2 probe | 70.81 | 70.70 |
+| 1 pre(s44) + 2 seed + 2 probe | 71.08 | 70.61 |
+| 3 pre + 2 probe | 70.95 | 70.92 |
+| all 8 | 71.04 | 70.88 |
+
+**Dev separates the top two cells by 0.01 while their test scores differ by 0.36.** Test
+spans 70.61–71.28. §D.14 reproducing exactly. The 3-of-5 swap is *worse* than 1-of-5
+because the three intermediate taggers share a corpus and are error-correlated, which drops
+pool recall 91.32% → 91.03% — §D.21's diversity story again.
+
+Paired reading (recipe held constant): 3-intermediate vs 3-control is **+0.79**, consistent
+with the tower-level +0.64. Against the *standing* block only +0.22, because the standing
+taggers used a better recipe than these controls.
+
+### ★★★ THE CHOICE-FREE RESULT — and how much of it survives the strictest rule
+| configuration | dev | **test** | MATE@τ | a |
+|---|---|---|---|---|
+| baseline mate5 + masc19 | 70.43 | **70.62** | 87.80 | 80.44 |
+| mate5 + masc23 | 70.57 | 70.60 | 87.62 | 80.57 |
+| **mate8 + masc23** | 70.91 | **71.32** | **88.15** | **80.91** |
+| **mate8 + masc26 (strictly EVERY member)** | 70.95 | **70.63** | 87.73 | 80.51 |
+
+`mate8 + masc23` contains no member-set selection *given* the standing 19, and beats the
+dev-argmax lottery cell (71.28) while dodging §D.14. **But masc23 excludes the three
+`q30_pds_*` towers that §D.32 measured negative — negative is not defective, so excluding
+them IS a choice.** Under the strictest reading the answer is **70.63**, i.e. **+0.01**.
+
+**Honest summary of D.33's ensemble conversion: +0.01 strictest / +0.70 under the standing
+19-member convention.** The tower-level gains are solid and replicated; the *conversion* is
+still inside the noise band. `queue65` tests whether applying the lever to the whole
+ensemble rather than a corner of it changes that.
+
+### ONE SWAPPED MATE MEMBER — and pool recall finally moves
 D.33 MASC swap held fixed; only 1 of the 5 MATE members replaced:
 
 | pool | dev | **test** | MATE@τ | a | pool recall dev/test |
@@ -2598,8 +2648,18 @@ fixable bias.** Stop looking at τ.
 running; then `queue65` (rebuild the remaining 14 members), `queue66` (NEG recovery),
 `queue62` (MAMS ablation).
 
-**Standing best: 71.28** (D.33 MASC swap + 1-of-5 MATE swap, dev-selected τ) — **16 of 19
-t2015 baselines cleared.** DQPSA 71.9, VLHA 72.5, MADSC 72.9 remain.
+**Standing result, stated under both rules:**
+
+| rule | test | baselines cleared |
+|---|---|---|
+| **no external data at all** (Chapter D final, choice-free) | **70.32** | 15 of 19 |
+| **no external data**, fixed 19-member structure | **70.62** | 15 of 19 |
+| D.33, strictest choice-free (mate8 + masc26) | **70.63** | 15 of 19 |
+| D.33, standing 19-member convention (mate8 + masc23) | **71.32** | 16 of 19 |
+
+⚠ **71.28 was reported as "clears SGBIS" before the member-set sweep was run; that was
+premature and is retracted.** The sweep showed the cell sits at the top of a 70.61–71.28
+lottery band that dev separates by 0.01. SGBIS 71.1, DQPSA 71.9, VLHA 72.5, MADSC 72.9.
 
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
