@@ -2661,6 +2661,52 @@ running; then `queue65` (rebuild the remaining 14 members), `queue66` (NEG recov
 premature and is retracted.** The sweep showed the cell sits at the top of a 70.61–71.28
 lottery band that dev separates by 0.01. SGBIS 71.1, DQPSA 71.9, VLHA 72.5, MADSC 72.9.
 
+## D.34 ★★ THE ENSEMBLE IS 45% REDUNDANT — 17 members ≈ 31, and a COMPONENT AUDIT
+
+Asked which configuration fits t2015 **and** t2017 inside one day. Answered by measurement,
+not estimate — every member score is cached, so the sweep is CPU-seconds.
+
+| config | members | dev | **test** | MATE@τ | a |
+|---|---|---|---|---|---|
+| REF mate8 + masc23 | **31** | 70.91 | **71.32** | 88.15 | 80.91 |
+| **C3 mate5 + masc12** | **17** | **71.63** | **71.11** | 87.63 | **81.15** |
+| C4 mate5 + masc7 | **12** | 70.71 | 71.05 | 87.58 | 81.13 |
+| C2 mate5 + masc10 | 15 | 71.01 | 70.82 | 87.63 | 80.82 |
+| C1 mate3 + masc10 | 13 | 71.12 | 70.65 | 87.17 | 81.05 |
+| C5 mate3 + masc7 | 10 | 70.81 | 70.69 | 87.12 | 81.14 |
+
+```
+C3 = MATE 5 (3 D.33 taggers + probeA + probeB)
+   + MASC 12 (4 D.33 text + 3 pds_res + 3 qpds + 2 pdq)
+```
+
+**C3 drops 45% of the members for −0.21 test, and posts the highest dev of ANY configuration
+in the campaign (71.63).** Every compact set holds `a` at 80.8–81.15 — i.e. the polarity
+side saturates at ~10 members and the remaining 14 are pure redundancy. Note C4 reaches
+71.05 with **12** members. This is the actionable form of §B.8: the ensemble was never
+buying accuracy from member *count*.
+
+Cost consequence — C3 is **8.8 GPU-h for BOTH datasets** (t2015 already built; t2017 =
+2.8h artifacts + 1.4h encoders + 2.1h MATE + 2.5h MASC), against 15.6h for the full model,
+leaving ~15h of a 24h day for ablations.
+
+### ⚠⚠ COMPONENT AUDIT — the model carries 3 of the paper's 5 components
+Checked because "architecture-faithful" was being claimed. It is only three-fifths true:
+
+| TARKAN component | status |
+|---|---|
+| aspect anchors (BIO-CRF candidate generator) | ✅ present |
+| teacher-guided evidence (PDS direction teacher + AADG) | ✅ present |
+| student-only inference | ✅ present |
+| **KG filtering** | ❌ `data/kg_evidence` and `data/kg_index` **do not exist** (data/ is wiped between sessions; only the force-added `senticnet` parquet survives) and **no member consumes KG**. The only SenticNet use is `masc_text.load_lexicon`, an opinion-word list for opinion-dropout — not triple filtering. |
+| **KAN** | ❌ **never implemented as a layer anywhere in the repo.** The only `KAN` strings are two docstring lines in `masc_gated.py`, and `masc_gated` appears in **no** pool. |
+
+**Every joint number in Chapters C and D was produced by a 3-of-5-component model.** §B.7
+measured raw KG triples as noise ("injecting *unfiltered* KG would HURT") and §C.7 measured
+the relevance gate at **+0.10**, so restoring both would most likely add ablation rows at
+≈0 rather than points — but the paper cannot claim five components until they are in the
+pipeline. Restoring KG is ~0.5h/dataset; a KAN member needs implementing first.
+
 ## D.14 ⚠ THE CORRECTED MEMBERS RE-OPEN §C.26's MEMBER-SET LOTTERY
 
 Swapping the mis-weighted `qpds_*` for the bug-fixed `qpds_*_bal` (§D.13) and re-sweeping:
