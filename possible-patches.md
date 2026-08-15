@@ -1470,10 +1470,19 @@ gap is per-example model selection, and it is inaccessible.
 
 ## D.15 ★★ FACTORIZED POLARITY AND CONSENSUS-ERROR REPLAY — both negative, one instructive
 
-Two mechanisms aimed at §D.11 rather than around it. **TARKAN's core is untouched** —
-anchors, teacher evidence, KG, KAN, auxiliary ASC and student-only inference are unchanged;
-only the polarity head and its auxiliary losses differ. bertweet-large, seed 45, 6 epochs,
+Two mechanisms aimed at §D.11 rather than around it. Only the polarity head and its
+auxiliary losses differ from the Chapter-C member recipe. bertweet-large, seed 45, 6 epochs,
 identical recipe:
+
+> ⚠ **CORRECTION (see §D.34).** This section originally read *"TARKAN's core is untouched —
+> anchors, teacher evidence, KG, KAN, auxiliary ASC and student-only inference are
+> unchanged."* **That was false on two of the six.** The Chapter-C/D system has **no KG
+> filtering** (`data/kg_index`, `data/kg_evidence` do not exist; no member reads KG) and
+> **no KAN** (never implemented as a layer in this repo). KAN was implemented and measured
+> in **Chapter A**, where the fusion family KAN-vs-MLP-vs-gated came out **flat** and
+> "KAN capacity" came out **flat (±0.2)**; it did not carry into Chapters B/C because the
+> log-average ensemble of specialist towers has **no single fusion head for a KAN to be**.
+> The claim stood unchallenged across Chapter D and is retracted here.
 
 | variant | dev | **test** | Δ |
 |---|---|---|---|
@@ -2699,7 +2708,24 @@ Checked because "architecture-faithful" was being claimed. It is only three-fift
 | teacher-guided evidence (PDS direction teacher + AADG) | ✅ present |
 | student-only inference | ✅ present |
 | **KG filtering** | ❌ `data/kg_evidence` and `data/kg_index` **do not exist** (data/ is wiped between sessions; only the force-added `senticnet` parquet survives) and **no member consumes KG**. The only SenticNet use is `masc_text.load_lexicon`, an opinion-word list for opinion-dropout — not triple filtering. |
-| **KAN** | ❌ **never implemented as a layer anywhere in the repo.** The only `KAN` strings are two docstring lines in `masc_gated.py`, and `masc_gated` appears in **no** pool. |
+| **KAN** | ❌ **not in the Chapter-C/D system** — never implemented as a layer in this repo. The only `KAN` strings are two docstring lines in `masc_gated.py`, and `masc_gated` appears in **no** pool. |
+
+**KAN's real history, since "we never tried it" would be wrong.** It *was* implemented and
+measured — in **Chapter A**, to the paper's spec (2 layers × width 256, grid 5, spline
+order 3):
+
+| Chapter-A measurement | result |
+|---|---|
+| fusion family: KAN vs MLP vs gated | **flat** |
+| A-lever "KAN capacity" | **flat (±0.2)** |
+| O-lever bundle incl. KAN 768 (+ evidence-dropout 0.5→0.2, patience 8) | +2.9 joint, **as a bundle, never isolated** |
+
+It did not carry into Chapters B/C for a structural reason, not an oversight: **KAN in
+TARKAN is the fusion head**, and a log-average ensemble of specialist towers has no single
+fusion head — "fusion" is the geometric mean over 19–31 members. Restoring it therefore
+means either adding a KAN-headed member (cheap, ~1h/dataset, and §C.7/§D.26/§D.27 predict
+≈0) or reverting to the single-trunk architecture, which Chapter A measured at **65.87–69.30
+— all below the current 70.32**.
 
 **Every joint number in Chapters C and D was produced by a 3-of-5-component model.** §B.7
 measured raw KG triples as noise ("injecting *unfiltered* KG would HURT") and §C.7 measured
