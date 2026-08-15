@@ -1,0 +1,181 @@
+=== [A_mlp_textonly] ===
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 22594.36it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+head=mlp no_vis=True non-encoder params 0.53M
+ep1 loss 1.1592 | dev acc 68.72 | mean gate 0.000 | 102s
+ep2 loss 0.8380 | dev acc 76.65 | mean gate 0.000 | 208s
+ep3 loss 0.6559 | dev acc 77.27 | mean gate 0.000 | 316s
+ep4 loss 0.5129 | dev acc 75.13 | mean gate 0.000 | 422s
+ep5 loss 0.3601 | dev acc 77.99 | mean gate 0.000 | 523s
+ep6 loss 0.2691 | dev acc 77.09 | mean gate 0.000 | 630s
+ep7 loss 0.2346 | dev acc 75.85 | mean gate 0.000 | 731s
+ep8 loss 0.2163 | dev acc 76.56 | mean gate 0.000 | 832s
+early stop
+[dev] gold-span MASC acc 77.99 | mean gate 0.000
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 77.72 | mean gate 0.000
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 50,
+  "fuse": "convex",
+  "best_dev_acc": 77.98573975044563,
+  "best_epoch": 5,
+  "dev_acc_goldspan": 77.98573975044563,
+  "dev_mean_gate": 0.0,
+  "test_acc_goldspan": 77.72420443587271,
+  "test_mean_gate": 0.0
+}
+=== [B_mlp_tv] ===
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 13841.88it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+head=mlp no_vis=False non-encoder params 0.53M
+ep1 loss 1.1707 | dev acc 71.84 | mean gate 0.508 | 102s
+ep2 loss 0.8699 | dev acc 77.27 | mean gate 0.493 | 207s
+ep3 loss 0.6434 | dev acc 74.06 | mean gate 0.467 | 314s
+ep4 loss 0.4998 | dev acc 73.62 | mean gate 0.433 | 416s
+ep5 loss 0.3664 | dev acc 75.76 | mean gate 0.410 | 517s
+early stop
+[dev] gold-span MASC acc 77.27 | mean gate 0.493
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 77.24 | mean gate 0.488
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 50,
+  "fuse": "convex",
+  "best_dev_acc": 77.27272727272727,
+  "best_epoch": 2,
+  "dev_acc_goldspan": 77.27272727272727,
+  "dev_mean_gate": 0.4929060935974121,
+  "test_acc_goldspan": 77.2420443587271,
+  "test_mean_gate": 0.4875120222568512
+}
+=== [C_kan_tv] ===
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 26852.93it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+head=kan no_vis=False non-encoder params 2.89M
+ep1 loss 1.1753 | dev acc 64.08 | mean gate 0.506 | 107s
+ep2 loss 0.8836 | dev acc 59.71 | mean gate 0.491 | 215s
+ep3 loss 0.6849 | dev acc 73.71 | mean gate 0.466 | 320s
+ep4 loss 0.5215 | dev acc 74.87 | mean gate 0.435 | 432s
+ep5 loss 0.3613 | dev acc 75.04 | mean gate 0.415 | 542s
+ep6 loss 0.2654 | dev acc 76.29 | mean gate 0.405 | 651s
+ep7 loss 0.2291 | dev acc 75.67 | mean gate 0.400 | 760s
+ep8 loss 0.2134 | dev acc 77.18 | mean gate 0.399 | 864s
+[dev] gold-span MASC acc 77.18 | mean gate 0.399
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 77.43 | mean gate 0.395
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 50,
+  "fuse": "convex",
+  "best_dev_acc": 77.18360071301248,
+  "best_epoch": 8,
+  "dev_acc_goldspan": 77.18360071301248,
+  "dev_mean_gate": 0.3986968398094177,
+  "test_acc_goldspan": 77.43490838958535,
+  "test_mean_gate": 0.39486628770828247
+}
+=== [D_ikan_tv] ===
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 14780.32it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+head=ikan no_vis=False non-encoder params 2.70M
+/teamspace/studios/this_studio/experts/masc_gated.py:177: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)
+  self.last_norms = (float(t.norm(dim=-1).mean()), float(v.norm(dim=-1).mean()))
+ep1 loss 1.1595 | dev acc 75.04 | mean gate 0.511 | 106s
+ep2 loss 0.7924 | dev acc 75.40 | mean gate 0.481 | 212s
+ep3 loss 0.5729 | dev acc 77.18 | mean gate 0.458 | 322s
+ep4 loss 0.4409 | dev acc 71.30 | mean gate 0.435 | 431s
+ep5 loss 0.3307 | dev acc 76.29 | mean gate 0.421 | 535s
+ep6 loss 0.2574 | dev acc 77.01 | mean gate 0.416 | 639s
+early stop
+[dev] gold-span MASC acc 77.18 | mean gate 0.458
+[dev] scored 1234 predicted spans
+[test] gold-span MASC acc 77.92 | mean gate 0.453
+[test] scored 1178 predicted spans
+{
+  "model": "vinai/bertweet-large",
+  "seed": 50,
+  "fuse": "convex",
+  "best_dev_acc": 77.18360071301248,
+  "best_epoch": 3,
+  "dev_acc_goldspan": 77.18360071301248,
+  "dev_mean_gate": 0.458129346370697,
+  "test_acc_goldspan": 77.91706846673095,
+  "test_mean_gate": 0.4532846510410309
+}
+=== SUMMARY (gold-span MASC accuracy, identical recipe) ===
+arm                    dev    test
+A_mlp_textonly       77.99   77.72
+B_mlp_tv             77.27   77.24
+C_kan_tv             77.18   77.43
+D_ikan_tv            77.18   77.92
+
+DIAGNOSTIC  visual adds (B-A): dev -0.71  test -0.48
+KAN         concat-KAN (C-B): dev -0.09  test +0.19
+KAN         interact.  (D-B): dev -0.09  test +0.68
+
+If B-A ~ 0, no KAN topology can create a gain and C/D are expected null.

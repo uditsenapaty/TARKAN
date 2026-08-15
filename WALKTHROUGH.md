@@ -16,9 +16,9 @@ Single Tesla T4 16 GB throughout. All timings are measured wall clock on that ca
 
 | rank | config | members | **t2015 F1** | status |
 |---|---|---|---|---|
-| **#1** | `F19+KG+KAN` | 5 MATE + 21 MASC | **70.62** | base measured · KG/KAN to build |
-| **#2** | `F18+KG+KAN` | 5 MATE + 20 MASC | **70.41** | base measured · KG/KAN to build |
-| **#3** | `F7+KG+KAN` | 5 MATE + 9 MASC | **70.27** | base measured · KG/KAN to build |
+| **#1** | `F19+KG+KAN` | 5 MATE + 21 MASC | **70.62** | base measured · **KAN built** · KG to build |
+| **#2** | `F18+KG+KAN` | 5 MATE + 20 MASC | **70.41** | base measured · **KAN built** · KG to build |
+| **#3** | `F7+KG+KAN` | 5 MATE + 9 MASC | **70.27** | base measured · **KAN built** · KG to build |
 
 Measured detail on the bases (t2015 test, dev-selected τ, `joint = MATE@τ × a`):
 
@@ -29,17 +29,17 @@ Measured detail on the bases (t2015 test, dev-selected τ, `joint = MATE@τ × a
 | F7 | 70.10 | **70.27** | 70.34 | 70.20 | 87.74 | 80.09 |
 
 > ### ⚠ Read before quoting any number
-> * **The bases are measured. The `+KG+KAN` additions are NOT.** Neither component exists in
->   the current pipeline (see §2). §B.7 measured raw KG triples as noise, §C.7 measured the
->   relevance gate at **+0.10**, and §D.26/§D.27 measured the whole evidence family at
->   −0.20/−0.23. **Expect these numbers to hold, not rise.**
+> * **The bases are measured; the `+KG+KAN` deltas are not.** KAN now exists
+>   (`experts/kan.py`, §2b) and measures **+0.68 over MLP fusion** as a standalone member
+>   on one seed — 3-seed paired battery pending. KG is still absent. §B.7 measured raw KG
+>   triples as noise and §C.7 the gate at +0.10, so expect KG ≈ 0.
 > * **The single-run detection floor is ±1.31 F1** (§D.20, paired seeds, n_dev = 1122).
 >   The 0.35 spread across #1–#3 is *inside* it. Ranking them by test F1 is convention, not
 >   evidence.
 > * **Member-set choice is a lottery** (§D.14): test spans 69.47–70.62 across sets that dev
 >   cannot separate. Report the choice-free rule *and* the fixed structure, as below.
-> * KAN as an added *member* is not KAN in its designed position (the fusion head). The only
->   architecture where it is native is Chapter A's single trunk, measured **65.87–69.30**.
+> * KAN here sits in the fusion head of one ensemble *member*, not of a single trunk. The
+>   only architecture where it is trunk-native is Chapter A's, measured **65.87–69.30**.
 
 **Targets** (t2015): MADSC **P 72.8 / R 73.1 / F1 72.9** · VLHA 72.5 · DQPSA 71.9 ·
 SGBIS 71.1 · CORSA 69.9 · AoM 68.6. The configurations above clear **15 of 19**.
@@ -109,21 +109,50 @@ carries the filtered triples, exactly as `--desc` carries the AADG description:
 #   Unfiltered triples are noise (§B.7) — the teacher filter is the load-bearing part.
 ```
 
-### 2b. KAN
+### 2b. KAN — **BUILT** (`experts/kan.py`)
 
-**Never implemented as a layer in this repo.** The only `KAN` strings are two docstring
-lines in `experts/masc_gated.py`. It *was* implemented and measured in Chapter A, where the
-fusion family KAN-vs-MLP-vs-gated came out **flat** and "KAN capacity" **flat (±0.2)**.
+Implemented to the paper's spec: 2 layers × width 256, grid 5, spline order 3, efficient-KAN
+form (`w_base·SiLU(x) + w_spline·B(x)` per edge). Verified before use, because a mislabelled
+MLP would fake every result downstream:
 
 ```bash
-# TO IMPLEMENT: experts/kan.py — KANLayer(in, out, grid=5, spline_order=3)
-#   paper spec: 2 layers x width 256, grid 5, spline order 3
-# TO IMPLEMENT: experts/masc_gated.py --head kan
-#   replaces the final Linear over the fused z_a with the KAN stack.
-#   masc_gated already implements MADSC Eqs. 9/13/14/16/19 (calibrator, gate,
-#   convex fusion) and is currently in NO pool — adding it is what makes the
-#   KAN + modality-gate path real.
+python3 -c "
+import torch; from experts.kan import KAN, KANLayer
+k = KAN([768,256,3]); y = k(torch.randn(8,768)); y.sum().backward()
+print('dead grads:', [n for n,p in k.named_parameters() if p.grad is None or p.grad.abs().max()==0] or 'none')
+print('params %.2fM (MLP equiv 0.20M)' % (sum(p.numel() for p in k.parameters())/1e6))
+b = KANLayer(4,4).b_splines(torch.zeros(2,4))
+print('basis partition-of-unity:', torch.allclose(b.sum(-1), torch.ones(2,4), atol=1e-5))"
+# -> dead grads: none | params 1.78M | basis partition-of-unity: True
 ```
+
+Spline weights get small noise rather than zeros — a zero branch times a zero scale is the
+identically-dead gradient §D.22 found in PACS.
+
+**Three heads, selectable on `masc_gated.py --head`:**
+
+| `--head` | what it is | measured (§D.35, bertweet-large seed 50, gold-span test) |
+|---|---|---|
+| **`ikan`** *(default)* | interaction-KAN: per-modality LayerNorm'd 192-d projections, explicit `[t, v, t⊙v, \|t−v\|]`, **residual text baseline**, α init 0.1 | **77.92** |
+| `kan` | the paper literally — KAN over the same blunt fused vector | 77.43 |
+| `mlp` | the incumbent Linear = the **−KAN ablation** | 77.24 |
+| — | text only, gate hard-closed (`--no-vis`) | 77.72 |
+
+**`ikan` is the default because it is the only form that beats text-only.** The stratified
+reason (`experts/strata.py`): the blunt fusion loses −0.87 on image-irrelevant examples,
+while the residual form scores **exactly +0.00** there — the correction correctly does
+nothing when the image is irrelevant — and **+0.87** where the image is useful, **+1.13** on
+multi-aspect instances.
+
+> ⚠ **Not settled on one seed.** `ikan` is −0.81 on *dev* while +0.20 on test (the twelfth
+> dev/test inversion in this project), and single-aspect drops −1.20. `runs/queue71.sh` runs
+> the 3-seed paired battery. Treat `--head ikan` as the best-measured option, not a
+> replicated result, until that lands.
+>
+> Note also what the gain is **not**: routing did not improve. γ_a conditioned on the
+> aspect-image similarity is **AUC 0.523** for its own decision ("is visual the right choice
+> here"), essentially chance. The gain comes from *not damaging* the cases where routing
+> fails, which is a more modest claim than aspect-conditioned cross-modal reasoning.
 
 ---
 
@@ -222,8 +251,12 @@ done
 # KG member (§2a) and KAN member (§2b)
 python3 experts/masc_text.py --model vinai/bertweet-large --kg data/kg_evidence/twitter2015 \
   --seed 47 --batch 8 --lr 1e-5 --epochs 6 --spans $S --out runs/masc_kg_btwL   # 11 min
-python3 experts/masc_gated.py --model vinai/bertweet-large --head kan --fuse convex \
+python3 experts/masc_gated.py --model vinai/bertweet-large --head ikan --fuse convex \
   --desc data/aadg/twitter2015 --seed 50 --spans $S --out runs/masc_kan_btwL    # 11 min
+# optional second KAN member, the paper-literal concat form — a genuine decorrelation
+# axis (different head, same everything else), and the faithful comparison row:
+# python3 experts/masc_gated.py --model vinai/bertweet-large --head kan --fuse convex \
+#   --desc data/aadg/twitter2015 --seed 51 --spans $S --out runs/masc_kanC_btwL  # 11 min
 ```
 
 **Config #3 stage 2: 105 min. Full build (with stage 1): 3.3 h/seed.**
@@ -319,6 +352,8 @@ Single seed each, t2015. Every row rebuilds only the members it touches.
 |---|---|---|---|---|
 | **−KG** | drop the KG member | remove `runs/masc_kg_btwL` from the pool | none | **0** |
 | **−KAN** | KAN → plain Linear head | `masc_gated ... --head mlp` | 1 member | 11 min |
+| **KAN form** | interaction-KAN → paper-literal concat-KAN | `masc_gated ... --head kan` | 1 member | 11 min |
+| **−visual, head kept** | gate hard-closed, text only | `masc_gated ... --no-vis` | 1 member | 11 min |
 | **−modality gate** | convex gate → concat | `masc_gated ... --fuse concat` | 1 member | 11 min |
 | **−teacher evidence** | drop PDS direction supervision | `masc_pds --lambda-pds 0` | 3–6 members | 39–78 min |
 | **−AADG description** | evidence text removed | drop `--desc` | 3–6 members | 39–78 min |

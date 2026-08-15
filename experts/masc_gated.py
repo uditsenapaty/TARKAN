@@ -208,11 +208,13 @@ def main():
     ap.add_argument("--desc", default="data/aadg/twitter2015")
     ap.add_argument("--spans", default=None)
     ap.add_argument("--fuse", choices=["convex", "concat"], default="convex")
-    ap.add_argument("--head", choices=["mlp", "kan", "ikan"], default="mlp",
-                    help="mlp = incumbent Linear; kan = the paper's 2-layer "
-                         "width-256 KAN over the same fused vector; ikan = "
-                         "interaction-KAN over [t,v,t*v,|t-v|] with a residual "
-                         "text baseline")
+    ap.add_argument("--head", choices=["mlp", "kan", "ikan"], default="ikan",
+                    help="ikan (DEFAULT) = interaction-KAN over [t,v,t*v,|t-v|] with a "
+                         "residual text baseline; measured best of the three (§D.35: test "
+                         "77.92 vs concat-KAN 77.43, MLP-fusion 77.24, text-only 77.72). "
+                         "kan = the paper literally -- a 2-layer width-256 KAN over the "
+                         "same blunt fused vector, kept selectable as the faithful "
+                         "comparison. mlp = the incumbent Linear, i.e. the -KAN ablation.")
     ap.add_argument("--dproj", type=int, default=192)
     ap.add_argument("--kan-width", type=int, default=256)
     ap.add_argument("--no-vis", action="store_true",

@@ -1,0 +1,23 @@
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]Loading weights: 100%|██████████| 389/389 [00:00<00:00, 21529.40it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: vinai/bertweet-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+head=mlp no_vis=True non-encoder params 0.53M
+ep1 loss 1.1583 | dev acc 67.65 | mean gate 0.000 | 102s
+ep2 loss 0.8301 | dev acc 74.51 | mean gate 0.000 | 207s
+ep3 loss 0.6172 | dev acc 74.69 | mean gate 0.000 | 313s
+ep4 loss 0.4652 | dev acc 74.78 | mean gate 0.000 | 422s
+ep5 loss 0.3290 | dev acc 77.27 | mean gate 0.000 | 534s
