@@ -164,13 +164,7 @@ def predict_joint(model, loader, device: str = None) -> Tuple[List, List]:
 
         # unified 7-tag decode: Viterbi when the CRF is on, else per-token argmax
         crf_paths = None
-        if getattr(model, "crf", None) is not None:
-            from losses import word_level_emissions
-            from neurosymbolic import constrained_crf
-            emis, _, mask = word_level_emissions(out["tag_logits"].float(),
-                                                 batch["word_ids"], batch["n_words"])
-            with constrained_crf(model.crf, getattr(model.cfg, "ns_bio_rules", False)):
-                crf_paths = model.crf.decode(emis, mask=mask)
+        crf_paths = None
 
         use_asc = (getattr(model.cfg, "polarity_source", "crf") == "asc"
                    and out.get("asc_logits") is not None and out["asc_logits"].numel() > 0)
@@ -194,11 +188,7 @@ def predict_joint(model, loader, device: str = None) -> Tuple[List, List]:
                          for (s_, e_, p_) in spans]
             elif ascpol is not None:
                 idx += len(batch_spans[b])
-            if getattr(model.cfg, "ns_aspect_consistency", False):
-                from neurosymbolic import enforce_aspect_consistency
-                inst = id2inst.get(batch["instance_id"][b])
-                if inst is not None:
-                    spans = enforce_aspect_consistency(spans, inst.tokens)
+            
             preds.append(spans)
     return preds, golds
 
@@ -210,7 +200,6 @@ def predict_masc(model, loader, device: str = None) -> Tuple[List[str], List[str
     model.eval()
     ds = getattr(loader, "dataset", None)
     id2inst = {inst.id: inst for inst in (getattr(ds, "instances", None) or [])}
-    ns_alpha = float(getattr(model.cfg, "ns_lexicon_alpha", 0.0) or 0.0)
     y_true, y_pred = [], []
     for batch in loader:
         batch = _to_device(batch, device)
@@ -219,18 +208,7 @@ def predict_masc(model, loader, device: str = None) -> Tuple[List[str], List[str
             and out["asc_logits"].numel() > 0
         if use_asc:
             logits = out["asc_logits"]
-            if ns_alpha > 0:  # A13 prior on gold aspects (word spans from inst.aspects)
-                from neurosymbolic import blend_asc_logits
-                infos = []
-                for b in range(len(batch["aspect_spans"])):
-                    inst = id2inst.get(batch["instance_id"][b])
-                    for k in range(len(batch["aspect_spans"][b])):
-                        if inst is not None and k < len(inst.aspects):
-                            s, e = inst.aspects[k][0], inst.aspects[k][1]
-                            infos.append((inst.tokens, (s, e)))
-                        else:
-                            infos.append(None)
-                logits = blend_asc_logits(logits, infos, ns_alpha, int(getattr(model.cfg, "ns_window", 5)))
+            
             asc = logits.argmax(-1).tolist(); idx = 0
             for b in range(len(batch["aspect_spans"])):
                 for k in range(len(batch["aspect_spans"][b])):

@@ -175,22 +175,16 @@ class TarkanConfig:
     # The paper-faithful baseline values are noted per field; the deterministic battery
     # still exercises the faithful loss/decode paths (they activate only via these flags).
     pool_mode: str = "mean"               # O5 (OBEYING): aspect-span pooling operator (mean|max|first)
-    tag_class_weight: bool = False        # A1 (DISOBEYING): inverse-freq weighted L_tag (targets MASC collapse)
-    tag_label_smoothing: float = 0.0      # A5 (DISOBEYING): label smoothing on L_tag
     # Fresh (randomly-initialised) modules -- CRF transitions, anchor head, iKAN, KG
     # filter, experts, ASC heads -- at their own LR; the pretrained encoders keep
     # learning_rate. Everything was previously training at 2e-5, which is an
     # encoder-appropriate rate and 5x below the 1e-4 that §C.6 measured as the good
     # setting for fresh heads (1e-3 there was measurably too high, costing ~1.2 MATE F1).
-    layerwise_lr: Optional[float] = None
-    # A7 (DISOBEYING): dedicated ASC polarity head on the pooled aspect rep of h̃, used as the
     # polarity source at inference (instead of the BIO-tag suffix). §3.6 folded polarity into the
     # BIO head; re-adding a focused 3-way classifier targets the MATE-vs-joint polarity gap.
-    # ON: a dedicated 3-way polarity head over a RICH pooled aspect rep of h̃ (mean+max+first
     # -> MLP), used as the polarity source at inference. §3.7 folds polarity into the BIO
     # head; this re-adds a focused classifier to close the MATE-vs-joint polarity gap. The
     # BIO head still defines the spans, so the unified tagging formulation is unchanged.
-    aux_asc_head: bool = False
     lambda_asc: float = 0.5               # paper Table 5
     # The paper's OWN auxiliary span-ASC head: a plain linear on the MEAN-pooled aspect rep.
     # Runs alongside the rich head — different representations, so not redundant. Supervision
@@ -198,34 +192,17 @@ class TarkanConfig:
     # otherwise (that comparison is an ablation row, not an assumption).
     aux_asc_head_paper: bool = True
     lambda_asc_paper: float = 0.5
-    # A4 (DISOBEYING): linear-chain CRF over word-level BIO emissions (first-subtoken logits).
     # Enforces valid tag transitions at train (NLL) and inference (Viterbi); paper uses softmax.
     # ON: a linear-chain CRF decodes the SAME unified 7-tag BIO sequence the paper defines
     # (Eq. 21) — it changes the decoder, not the formulation, and enforces valid B/I
     # transitions the softmax cannot. Measured +2.5 MATE. Borrowed from no competing paper.
-    use_crf: bool = False
-    # A8 (DISOBEYING): gradient accumulation — enables larger text encoders (e.g. bertweet-large)
     # on the 16GB T4 at reduced per-step batch while keeping the paper's effective batch of 16.
-    grad_accum: int = 1            # 8 x 2 = the paper's effective batch of 16
-    # A9 (DISOBEYING, opt-in): append per-token evidence-confidence features [r_k, mean(s), max(s)]
     # to the KAN fusion input (3d -> 3d+3). Lets the fusion condition on HOW MUCH to trust each
     # evidence stream — meaningful only once teacher scores are informative (post Table-8 recalibration).
-    fusion_conf_append: bool = False
-    # A10 (DISOBEYING, opt-in): learnable feature-wise evidence gates v'=(1+γ)⊙v, g'=(1+δ)⊙g
     # (γ, δ ∈ R^d, init 0 = identity) applied before fusion.
-    fusion_feat_gate: bool = False
-    # A11 EVIDENCE RELIABILITY LEARNING (NEW HYPOTHESIS, DISOBEYING, opt-in): a small MLP predicts a
-    # per-token reliability distribution w=softmax over [text, vision, KG]; each modality is scaled by
     # 3·w (uniform init ≈ identity) before KAN fusion. Hypothesis: multimodal evidence should be
     # weighted by *estimated per-modality reliability*, not only aspect-visual relevance. Stronger than
     # the relevance gate (which only decides IF the image matters) — here the modalities compete.
-    fusion_reliability: bool = False
-    # ---- neurosymbolic inference layer (A12-A14, DISOBEYING, inference-only, see neurosymbolic.py) ----
-    ns_bio_rules: bool = False        # A12: hard BIO-transition logic in CRF Viterbi
-    ns_lexicon_alpha: float = 0.0     # A13: product-of-experts weight for the SenticNet polarity prior (0=off)
-    ns_lexicon_tau: float = 0.5       # A13: prior temperature
-    ns_window: int = 5                # A13: context window (words) around the aspect
-    ns_aspect_consistency: bool = False  # A14: majority polarity for duplicate aspect strings
 
     # ---- runtime ----
     # fp16 autocast + GradScaler. The CRF and the sigmoid-BCE terms are cast back to fp32

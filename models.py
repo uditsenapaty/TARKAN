@@ -161,17 +161,7 @@ class TarkanStudent(nn.Module):
         else:
             self.experts = None
             self.expert_gate = None
-        # A7 (DISOBEYING, opt-in): dedicated 3-way polarity head on a RICH aspect rep of h̃
-        # (concat of mean+max+first-token pooling -> MLP). The richer pooling + nonlinearity
-        # is the representation trick strong MASC baselines rely on; a bare linear on mean-pool
-        # underperforms. Input dim = 3*d.
-        if getattr(config, "aux_asc_head", False):
-            from config import NUM_POLARITIES
-            self.asc_head = nn.Sequential(
-                nn.Linear(3 * d, d), nn.GELU(), nn.Dropout(dp), nn.Linear(d, NUM_POLARITIES)
-            )
-        else:
-            self.asc_head = None
+        self.asc_head = None
         # The PAPER's auxiliary span-ASC head: a plain linear on the MEAN-pooled aspect
         # representation. Kept alongside the rich head deliberately — they see different
         # representations, so they are not redundant. Both contribute a loss; the rich head
@@ -194,13 +184,7 @@ class TarkanStudent(nn.Module):
             )
         else:
             self.pds_head = None
-        # A4 (DISOBEYING, opt-in): linear-chain CRF over word-level BIO emissions.
-        if getattr(config, "use_crf", False):
-            from torchcrf import CRF
-            from config import NUM_BIO_TAGS
-            self.crf = CRF(NUM_BIO_TAGS, batch_first=True)
-        else:
-            self.crf = None
+        self.crf = None
 
     def set_kg(self, kg: KnowledgeGraph) -> None:
         self.kg = kg

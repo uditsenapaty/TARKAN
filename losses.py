@@ -31,40 +31,12 @@ def tag_loss(tag_logits: torch.Tensor, bio_labels: torch.Tensor, cfg=CONFIG) -> 
       A5 tag_label_smoothing -> label smoothing epsilon.
     """
     B, n, C = tag_logits.shape
-    weight = getattr(cfg, "_tag_weight_vec", None) if getattr(cfg, "tag_class_weight", False) else None
-    if weight is not None:
-        weight = weight.to(tag_logits.device, tag_logits.dtype)
-    ls = float(getattr(cfg, "tag_label_smoothing", 0.0) or 0.0)
+    weight = None
+    ls = 0.0
     return F.cross_entropy(
         tag_logits.reshape(B * n, C), bio_labels.reshape(B * n), ignore_index=-100,
         reduction="mean", weight=weight, label_smoothing=ls,
     )
-
-
-def word_level_emissions(tag_logits: torch.Tensor, word_ids, n_words, bio_labels: Optional[torch.Tensor] = None):
-    """Gather word-level BIO emissions/labels from subtoken logits (first subtoken per word).
-
-    Returns (emissions [B, W, C], labels [B, W] or None, mask [B, W]) where W = max(n_words).
-    Word 0..n_words[b]-1 all have a first subtoken, so each row's mask is contiguous from 0
-    (a torchcrf requirement). Rows are guaranteed >=1 word by construction (tweets non-empty).
-    """
-    B, _, C = tag_logits.shape
-    W = max(1, max((int(w) for w in n_words), default=1))
-    emis = tag_logits.new_zeros((B, W, C))
-    labs = torch.zeros((B, W), dtype=torch.long, device=tag_logits.device) if bio_labels is not None else None
-    mask = torch.zeros((B, W), dtype=torch.bool, device=tag_logits.device)
-    for b in range(B):
-        seen = set()
-        nb = int(n_words[b])
-        for i, wid in enumerate(word_ids[b]):
-            if isinstance(wid, int) and 0 <= wid < nb and wid not in seen:
-                seen.add(wid)
-                emis[b, wid] = tag_logits[b, i]
-                mask[b, wid] = True
-                if labs is not None:
-                    lab = int(bio_labels[b, i])
-                    labs[b, wid] = lab if lab >= 0 else 0
-    return emis, labs, mask
 
 
 def relevance_loss(r: torch.Tensor, teacher_r: torch.Tensor, mask: Optional[torch.Tensor] = None,
