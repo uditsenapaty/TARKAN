@@ -13,6 +13,7 @@ with a deterministic hash fallback for OOV / offline tests.
 from __future__ import annotations
 
 import hashlib
+import re
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Sequence
 
@@ -57,7 +58,33 @@ def _triple_key(t: Triple) -> str:
     return f"{t.head}|{t.relation}|{t.tail}"
 
 
+_RETRIEVAL_CACHE: Dict[tuple, List[Triple]] = {}
+
+
 def retrieve_triples(
+    query: AspectQuery,
+    kg: KnowledgeGraph,
+    top_m: int = None,
+    teacher_scores: Optional[Dict[str, float]] = None,
+) -> List[Triple]:
+    """Memoized wrapper. Retrieval is deterministic preprocessing keyed entirely by the
+    query terms, and every training aspect is retrieved again on every epoch — ~380
+    sqlite round-trips per step, all identical after epoch 1. Caching them is
+    result-neutral and removes about a third of the step time. Skipped when teacher
+    scores are supplied (those vary per call)."""
+    if teacher_scores is None:
+        key = (tuple(query.terms()), top_m or CONFIG.top_m_triples)
+        hit = _RETRIEVAL_CACHE.get(key)
+        if hit is not None:
+            return hit
+        out = _retrieve_triples_uncached(query, kg, top_m, None)
+        if len(_RETRIEVAL_CACHE) < 400_000:
+            _RETRIEVAL_CACHE[key] = out
+        return out
+    return _retrieve_triples_uncached(query, kg, top_m, teacher_scores)
+
+
+def _retrieve_triples_uncached(
     query: AspectQuery,
     kg: KnowledgeGraph,
     top_m: int = None,
@@ -72,25 +99,69 @@ def retrieve_triples(
     cand: Dict[str, Triple] = {}
     aspect_key = normalize(query.aspect_term)
     qkeys = {normalize(t) for t in query.terms()}
+    # Gather a quota PER SOURCE. kg.neighbors() truncates by raw weight, and SenticNet
+    # edges all carry weight 1.0 while ConceptNet assertions go up to 16 — so a single
+    # pooled fetch deletes SenticNet before the affective-relevance term in score()
+    # below ever sees it (measured: 6.9% SenticNet against the paper's 41.6%, Table 8).
+    # Retrieving each source separately lets the scorer, not the weight scale, decide.
+    sources = CONFIG.kg_sources or (None,)
     for term in query.terms():
-        for tr in kg.neighbors(term, top=top_m * 4, sources=CONFIG.kg_sources):
-            cand[_triple_key(tr)] = tr
+        for src in sources:
+            for tr in kg.neighbors(term, top=top_m * 4, sources=(src,) if src else None):
+                cand[_triple_key(tr)] = tr
 
-    def score(tr: Triple) -> float:
-        s = float(tr.weight)
-        if normalize(tr.tail) in qkeys or tr.head == aspect_key:
-            s += 1.0  # lexical match with query context
+    # ---- Eq. 15: s_ret = alpha*s_sem + beta*s_aff + gamma*s_rel, all on a common [0,1]
+    # scale, with (alpha, beta, gamma) = (0.5, 0.3, 0.2) from Table 5. ----
+    alpha, beta, gamma = getattr(CONFIG, "kg_rank_weights", (0.5, 0.3, 0.2))
+    items = list(cand.values())
+    if not items:
+        return []
+
+    # s_sem — semantic correspondence with the query context, min-max normalised to [0,1].
+    # (The differentiable cosine(t_k, g_kq) of the paper is unavailable at retrieval time,
+    # which is preprocessing; lexical overlap with Q_k is its non-parametric stand-in.)
+    raw_sem = []
+    for tr in items:
+        hit = 0.0
+        if tr.head == aspect_key:
+            hit += 1.0
+        if normalize(tr.tail) in qkeys:
+            hit += 1.0
+        raw_sem.append(hit + 0.1 * float(tr.weight))
+    lo, hi = min(raw_sem), max(raw_sem)
+    rng = (hi - lo) or 1.0
+
+    # s_aff — SenticNet polarity magnitude normalised to [0,1]; ConceptNet triples with no
+    # affective score get the neutral prior of 0.5, exactly as the paper specifies.
+    def s_aff(tr: Triple) -> float:
         pol = kg.polarity(tr.tail)
-        if pol is not None:
-            s += abs(float(pol))  # affective relevance (SenticNet polarity magnitude)
-        if tr.relation in ("HasPolarity", "RelatedTo", "Causes", "HasProperty", "SemanticallyRelated"):
-            s += 0.5  # sentiment-bearing relation prior
+        if pol is None:
+            pol = kg.polarity(tr.head)
+        return min(1.0, abs(float(pol))) if pol is not None else 0.5
+
+    # s_rel — fixed relation weights: sentiment-bearing and descriptive relations rank above
+    # weakly informative ones.
+    SENTIMENT_REL = {"HasPolarity", "HasProperty", "Causes", "CausesDesire", "Desires",
+                     "SemanticallyRelated", "HasMood"}
+    DESCRIPTIVE_REL = {"IsA", "RelatedTo", "PartOf", "HasA", "MadeOf", "AtLocation",
+                       "UsedFor", "CapableOf", "SimilarTo", "Synonym"}
+
+    def s_rel(tr: Triple) -> float:
+        if tr.relation in SENTIMENT_REL:
+            return 1.0
+        if tr.relation in DESCRIPTIVE_REL:
+            return 0.6
+        return 0.2
+
+    def score(i: int, tr: Triple) -> float:
+        s = (alpha * ((raw_sem[i] - lo) / rng) + beta * s_aff(tr) + gamma * s_rel(tr))
         if teacher_scores is not None:
             s += float(teacher_scores.get(_triple_key(tr), 0.0))
         return s
 
-    ranked = sorted(cand.values(), key=lambda t: (-score(t), t.relation, t.tail))
-    return ranked[:top_m]
+    order = sorted(range(len(items)),
+                   key=lambda i: (-score(i, items[i]), items[i].relation, items[i].tail))
+    return [items[i] for i in order[:top_m]]
 
 
 class EntityEmbedder:
@@ -136,8 +207,81 @@ class EntityEmbedder:
         return v / (np.linalg.norm(v) + 1e-8)
 
 
+def verbalize(t: Triple) -> str:
+    """Paper §3.6: each retrieved triple (h, r, t) is verbalized as "h r t"."""
+    rel = re.sub(r"(?<!^)(?=[A-Z])", " ", str(t.relation)).replace("_", " ").lower().strip()
+    return f"{str(t.head).replace('_', ' ')} {rel} {str(t.tail).replace('_', ' ')}"
+
+
+class VerbalizedTripleEncoder(nn.Module):
+    """Paper §3.6 — encode the verbalized triple with the STUDENT'S text encoder.
+
+    "Each retrieved triple (h, r, t) is verbalized as 'h r t' and encoded using the
+    encoder. The pooled representation is projected to the common d-dimensional space to
+    obtain g_kq."
+
+    Verbalizations are deduplicated per forward pass and encoded once: a batch of 8
+    instances asks for ~120 triples, of which many repeat, and each is only a handful of
+    tokens. An LRU cache of tokenized ids avoids re-tokenizing the same string every step.
+    """
+
+    def __init__(self, text_encoder, tokenizer, d: int, max_len: int = 24,
+                 dropout: float = None, freeze_backbone: bool = False):
+        super().__init__()
+        self.enc = text_encoder            # SHARED with the student, not a copy
+        self.tok = tokenizer
+        self.max_len = max_len
+        # freeze_backbone=False (default): L_kg backpropagates through the triple
+        # representations into the shared text encoder, so the encoder actually learns to
+        # represent KG evidence. With BERTweet-base this fits on a 16 GB card. Setting it
+        # True detaches the KG branch — an engineering compromise that changes the model
+        # (the encoder then receives no gradient from L_kg), kept only as an OOM escape.
+        self.freeze_backbone = freeze_backbone
+        dropout = CONFIG.dropout if dropout is None else dropout
+        self.proj = nn.Sequential(nn.Linear(text_encoder.out_dim, d), nn.GELU(),
+                                  nn.Dropout(dropout))
+        self._ids_cache = {}
+
+    def _encode_ids(self, text: str):
+        ids = self._ids_cache.get(text)
+        if ids is None:
+            ids = self.tok(text, truncation=True, max_length=self.max_len)["input_ids"]
+            if len(self._ids_cache) < 200_000:
+                self._ids_cache[text] = ids
+        return ids
+
+    def forward(self, triples: Sequence[Triple]) -> torch.Tensor:
+        device = self.proj[0].weight.device
+        d = self.proj[0].out_features
+        if not triples:
+            return torch.zeros((0, d), device=device)
+        texts = [verbalize(t) for t in triples]
+        uniq = list(dict.fromkeys(texts))
+        idx = {u: i for i, u in enumerate(uniq)}
+        seqs = [self._encode_ids(u) for u in uniq]
+        L = max(len(s) for s in seqs)
+        pad = self.tok.pad_token_id or 0
+        ids = torch.full((len(seqs), L), pad, dtype=torch.long, device=device)
+        att = torch.zeros((len(seqs), L), dtype=torch.long, device=device)
+        for i, s in enumerate(seqs):
+            ids[i, :len(s)] = torch.tensor(s, device=device)
+            att[i, :len(s)] = 1
+        if self.freeze_backbone:
+            with torch.no_grad():
+                h = self.enc.bert(input_ids=ids, attention_mask=att).last_hidden_state
+        else:
+            h = self.enc.bert(input_ids=ids, attention_mask=att).last_hidden_state
+        m = att.unsqueeze(-1).float()
+        pooled = (h * m).sum(1) / m.sum(1).clamp(min=1)          # mean-pool
+        g = self.proj(pooled)                                     # [U, d]
+        return g[torch.tensor([idx[t] for t in texts], device=device)]
+
+
 class TripleEncoder(nn.Module):
-    """phi([e_p ; r ; e_q]) -> g_kq in R^d  (Eq. 14)."""
+    """phi([e_p ; r ; e_q]) -> g_kq in R^d  (Eq. 14) — Numberbatch entity-embedding form.
+
+    Kept as the cheap fallback; the paper's own formulation is VerbalizedTripleEncoder.
+    """
 
     def __init__(self, d: int = None, entity_dim: int = None, embedder: Optional[EntityEmbedder] = None, dropout: float = None):
         super().__init__()

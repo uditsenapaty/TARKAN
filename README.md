@@ -11,7 +11,7 @@ Kolmogorov–Arnold Network fusion head. Exact formulas (Eqs. 1–25) and §4.3 
 
 ## Architecture
 
-![TARKAN architecture](assets/tarkan_architecture.png)
+![TARKAN architecture](TARKAN_new.png)
 
 *Overall TARKAN architecture (figure from the paper, `TARKAN_latex/TARKAN.pdf`). The offline LLM
 teacher (training-time only, removed at inference) supervises aspect–visual relevance and KG

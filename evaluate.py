@@ -39,6 +39,40 @@ def decode_word_tags(tag_logits_b: torch.Tensor, word_ids: List[int], n_words: i
     return word_tag
 
 
+def decode_anchor_spans(anchor_logits_b, word_ids, n_words):
+    """Paper §3.3/§3.10 — candidate anchors from the preliminary aspect-only head.
+
+    Contiguous tokens predicted as aspect-bearing are grouped into candidates. These
+    condition relevance / KG retrieval / fusion; they are NOT the final output, which the
+    unified BIO head produces after evidence fusion.
+    """
+    from config import ANCHOR_TAGS
+    sub = anchor_logits_b.argmax(-1).tolist()
+    wt = ["O"] * n_words
+    seen = set()
+    for i, wid in enumerate(word_ids):
+        if wid == -1 or wid >= n_words or wid in seen:
+            continue
+        seen.add(wid)
+        wt[wid] = ANCHOR_TAGS[sub[i]]
+    spans, start = [], None
+    for i, t in enumerate(wt):
+        if t == "B-ASP":
+            if start is not None:
+                spans.append((start, i))
+            start = i
+        elif t == "I-ASP":
+            if start is None:
+                start = i
+        else:
+            if start is not None:
+                spans.append((start, i))
+                start = None
+    if start is not None:
+        spans.append((start, len(wt)))
+    return spans
+
+
 def _majority_pol(word_tags: List[str], s: int, e: int) -> str:
     """Majority sentiment suffix over word tags in [s, e) (NEU if none)."""
     pols = [word_tags[i].split("-", 1)[1] for i in range(s, e) if 0 <= i < len(word_tags) and word_tags[i] != "O"]
@@ -84,39 +118,28 @@ def predict_joint(model, loader, device: str = None) -> Tuple[List, List]:
     preds, golds = [], []
     for batch in loader:
         batch = _to_device(batch, device)
-        text_feats = model.text_encoder(batch["input_ids"], batch["attention_mask"])
-        visual_feats = None
-        if model.cfg.use_visual_stream and model.visual_encoder is not None and "pixel_values" in batch:
-            visual_feats = model.visual_encoder(batch["pixel_values"])
+        _amp = (str(device).startswith("cuda") and bool(getattr(model.cfg, "use_amp", True)))
+        with torch.autocast("cuda", dtype=torch.float16, enabled=_amp):
+            text_feats = model.text_encoder(batch["input_ids"], batch["attention_mask"])
+            visual_feats = None
+            if model.cfg.use_visual_stream and model.visual_encoder is not None and "pixel_values" in batch:
+                visual_feats = model.visual_encoder(batch["pixel_values"])
+        text_feats = text_feats.float()
+        if visual_feats is not None:
+            visual_feats = visual_feats.float()
         B = text_feats.size(0)
 
-        # --- Stage 1: extract spans (no aspect evidence -> zero visual/KG) ---
-        s1 = dict(batch)
-        s1["aspect_spans"] = [[] for _ in range(B)]
-        s1.pop("aspect_queries", None)
-        s1.pop("aspect_triples", None)
-        tag1 = model(s1, text_feats=text_feats, visual_feats=visual_feats)["tag_logits"]
-
-        # A4: Viterbi decode over word-level emissions when the CRF is on.
-        # A12 (opt-in): hard BIO-transition logic clamped into the Viterbi.
-        crf_paths1 = None
-        if getattr(model, "crf", None) is not None:
-            from losses import word_level_emissions
-            from neurosymbolic import constrained_crf
-            emis, _, mask = word_level_emissions(tag1, batch["word_ids"], batch["n_words"])
-            with constrained_crf(model.crf, getattr(model.cfg, "ns_bio_rules", False)):
-                crf_paths1 = model.crf.decode(emis, mask=mask)
-
+        # ---- ONE forward pass, ONE unified prediction (paper §3.3 + §3.8, §3.10) ----
+        # anchors condition the evidence; the unified 7-tag CRF is the FINAL head and
+        # emits span AND polarity together. Both ASC heads are auxiliary training signals
+        # only -- there is no second inference stage and no separate polarity model.
+        anc = model.anchor_head(text_feats)            # [B, n, 3] over O / B-ASP / I-ASP
         batch_spans = []
         for b in range(B):
-            if crf_paths1 is not None:
-                wt = [ID2TAG[t] for t in crf_paths1[b]]
-            else:
-                wt = decode_word_tags(tag1[b], batch["word_ids"][b], batch["n_words"][b])
-            batch_spans.append(decode_spans(wt))
+            batch_spans.append(decode_anchor_spans(
+                anc[b], batch["word_ids"][b], batch["n_words"][b]))
             golds.append([(s, e, pol) for (s, e, pol) in batch["gold_aspects"][b]])
 
-        # --- Stage 2: KAN-enhanced BIO over predicted spans -> final polarity ---
         sub_spans, queries = [], []
         for b in range(B):
             inst = id2inst.get(batch["instance_id"][b])
@@ -125,64 +148,58 @@ def predict_joint(model, loader, device: str = None) -> Tuple[List, List]:
             subs, qs = [], []
             for sp in batch_spans[b]:
                 subs.append(_pred_subspans_for(batch["word_ids"][b], sp))
-                s, e = sp[0], sp[1]
-                if tokens is not None:
-                    qs.append(AspectQuery(aspect_term=" ".join(tokens[s:e]),
-                                          opinion_words=opinion_words(tokens, (s, e)), visual_concepts=vc))
-                else:
-                    qs.append(AspectQuery(aspect_term=""))
+                s_, e_ = sp[0], sp[1]
+                qs.append(AspectQuery(aspect_term=" ".join(tokens[s_:e_]),
+                                      opinion_words=opinion_words(tokens, (s_, e_)),
+                                      visual_concepts=vc)
+                          if tokens is not None else AspectQuery(aspect_term=""))
             sub_spans.append(subs)
             queries.append(qs)
 
-        s2 = dict(batch)
-        s2["aspect_spans"] = sub_spans
-        s2["aspect_queries"] = queries
-        s2.pop("aspect_triples", None)
-        s2out = model(s2, text_feats=text_feats, visual_feats=visual_feats)
-        tag2 = s2out["tag_logits"]
+        fwd = dict(batch)
+        fwd["aspect_spans"] = sub_spans
+        fwd["aspect_queries"] = queries
+        fwd.pop("aspect_triples", None)
+        out = model(fwd, text_feats=text_feats, visual_feats=visual_feats)
 
-        use_asc = getattr(model.cfg, "aux_asc_head", False) and s2out.get("asc_logits") is not None \
-            and s2out["asc_logits"].numel() > 0
-        ns_alpha = float(getattr(model.cfg, "ns_lexicon_alpha", 0.0) or 0.0)
-        ns_consist = getattr(model.cfg, "ns_aspect_consistency", False)
-        if use_asc:
-            # A7: polarity per predicted span from the dedicated ASC head (order = (b, span)).
-            asc = s2out["asc_logits"]
-            if ns_alpha > 0:  # A13: product-of-experts with the SenticNet polarity prior
-                from neurosymbolic import blend_asc_logits
-                infos = []
-                for b in range(B):
-                    inst = id2inst.get(batch["instance_id"][b])
-                    toks = inst.tokens if inst is not None else None
-                    for (s, e, _) in batch_spans[b]:
-                        infos.append((toks, (s, e)) if toks is not None else None)
-                asc = blend_asc_logits(asc, infos, ns_alpha, int(getattr(model.cfg, "ns_window", 5)))
-            ascpol = asc.argmax(-1).tolist()
-            idx = 0
-            for b in range(B):
-                spb = []
-                for (s, e, _) in batch_spans[b]:
-                    spb.append((s, e, ID2POL[ascpol[idx]])); idx += 1
-                if ns_consist:
-                    from neurosymbolic import enforce_aspect_consistency
-                    inst = id2inst.get(batch["instance_id"][b])
-                    if inst is not None:
-                        spb = enforce_aspect_consistency(spb, inst.tokens)
-                preds.append(spb)
-        else:
-            crf_paths2 = None
-            if getattr(model, "crf", None) is not None:
-                from losses import word_level_emissions
-                from neurosymbolic import constrained_crf
-                emis2, _, mask2 = word_level_emissions(tag2, batch["word_ids"], batch["n_words"])
-                with constrained_crf(model.crf, getattr(model.cfg, "ns_bio_rules", False)):
-                    crf_paths2 = model.crf.decode(emis2, mask=mask2)
-            for b in range(B):
-                if crf_paths2 is not None:
-                    wt2 = [ID2TAG[t] for t in crf_paths2[b]]
-                else:
-                    wt2 = decode_word_tags(tag2[b], batch["word_ids"][b], batch["n_words"][b])
-                preds.append([(s, e, _majority_pol(wt2, s, e)) for (s, e, _) in batch_spans[b]])
+        # unified 7-tag decode: Viterbi when the CRF is on, else per-token argmax
+        crf_paths = None
+        if getattr(model, "crf", None) is not None:
+            from losses import word_level_emissions
+            from neurosymbolic import constrained_crf
+            emis, _, mask = word_level_emissions(out["tag_logits"].float(),
+                                                 batch["word_ids"], batch["n_words"])
+            with constrained_crf(model.crf, getattr(model.cfg, "ns_bio_rules", False)):
+                crf_paths = model.crf.decode(emis, mask=mask)
+
+        use_asc = (getattr(model.cfg, "polarity_source", "crf") == "asc"
+                   and out.get("asc_logits") is not None and out["asc_logits"].numel() > 0)
+        ascpol = out["asc_logits"].argmax(-1).tolist() if use_asc else None
+        idx = 0
+        for b in range(B):
+            if crf_paths is not None:
+                wt = [ID2TAG[t] for t in crf_paths[b]]
+            else:
+                wt = decode_word_tags(out["tag_logits"][b], batch["word_ids"][b],
+                                      batch["n_words"][b])
+            spans = decode_spans(wt)          # span + polarity from the ONE unified head
+            if use_asc:
+                # optional: take polarity from the auxiliary rich head instead. Only valid
+                # where a final span coincides with an anchor, since the ASC rows are in
+                # anchor order; elsewhere the unified tag stands.
+                amap = {(a_, b_): ascpol[idx + j]
+                        for j, (a_, b_) in enumerate(batch_spans[b])}
+                idx += len(batch_spans[b])
+                spans = [(s_, e_, ID2POL[amap[(s_, e_)]] if (s_, e_) in amap else p_)
+                         for (s_, e_, p_) in spans]
+            elif ascpol is not None:
+                idx += len(batch_spans[b])
+            if getattr(model.cfg, "ns_aspect_consistency", False):
+                from neurosymbolic import enforce_aspect_consistency
+                inst = id2inst.get(batch["instance_id"][b])
+                if inst is not None:
+                    spans = enforce_aspect_consistency(spans, inst.tokens)
+            preds.append(spans)
     return preds, golds
 
 
@@ -251,7 +268,9 @@ def _build_kg_and_entities(cfg):
         kg = KnowledgeGraph(sqlite_path=str(sqlite))
     ent = None
     nb = cfg.paths.conceptnet / "numberbatch-en.txt"
-    if nb.exists():
+    # only the fallback TripleEncoder needs Numberbatch; the paper's verbalized encoder
+    # (§3.6) does not, and loading 1.1 GB costs minutes per run
+    if nb.exists() and getattr(cfg, "kg_encoder", "verbalized") != "verbalized":
         from kg_retrieval import EntityEmbedder
 
         ent = EntityEmbedder.from_txt(str(nb))

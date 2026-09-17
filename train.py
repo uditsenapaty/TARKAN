@@ -36,10 +36,22 @@ def build_kg():
     return None
 
 
+def load_visual_concepts(dataset: str, cfg=CONFIG):
+    """C_k for Eq. 12 — CLIP-predicted concepts, keyed by image_id (BLIP-free path)."""
+    import json
+    p = cfg.paths.data / "visual_concepts" / f"{dataset}.json"
+    if p.exists():
+        return json.load(open(p))
+    log.warning(f"missing {p} — C_k will be empty (run scripts/clip_visual_concepts.py)")
+    return {}
+
+
 def make_loader(dataset: str, split: str, cfg, shuffle: bool, captions=None) -> DataLoader:
     data_dir = cfg.paths.data / dataset
     images = cfg.paths.data / "images" / dataset
     insts = load_split(data_dir, split)
+    if captions is None:
+        captions = load_visual_concepts(dataset, cfg)
     ds = TarkanDataset(insts, cfg, captions=captions, images_dir=images)
     # P2 (OBEYING, result-neutral): overlap data prep with the GPU step via worker
     # processes (seeded by worker_init_fn, so deterministic). num_workers=0 on CPU.
@@ -50,6 +62,25 @@ def make_loader(dataset: str, split: str, cfg, shuffle: bool, captions=None) -> 
     return DataLoader(ds, **kwargs)
 
 
+def _fp32_outputs(outputs: dict) -> dict:
+    """Cast the numerically sensitive head outputs back to fp32 after autocast.
+
+    Two things break in fp16: the CRF's log-partition (logsumexp over a long sequence)
+    and the sigmoid-BCE terms, which clamp probabilities to 1e-7 — below fp16's smallest
+    normal value (~6e-5), so the clamp would silently do nothing. Everything expensive
+    (the encoders, the KAN, the triple encoder) still runs in fp16.
+    """
+    for k in ("tag_logits", "anchor_logits", "asc_logits", "asc_paper_logits",
+              "pds_logits", "relevance"):
+        v = outputs.get(k)
+        if torch.is_tensor(v):
+            outputs[k] = v.float()
+    if isinstance(outputs.get("kg_scores"), list):
+        outputs["kg_scores"] = [s.float() if torch.is_tensor(s) else s
+                                for s in outputs["kg_scores"]]
+    return outputs
+
+
 def train(cfg=CONFIG, dataset: str = "twitter2015", max_epochs: Optional[int] = None) -> dict:
     seed_everything(cfg.seed)
     device = cfg.device
@@ -58,10 +89,14 @@ def train(cfg=CONFIG, dataset: str = "twitter2015", max_epochs: Optional[int] = 
     kg = build_kg()
     entity_embedder = None
     nb = cfg.paths.conceptnet / "numberbatch-en.txt"
-    if nb.exists():
+    # Numberbatch is only used by the FALLBACK TripleEncoder. With the paper's verbalized
+    # encoder (§3.6) it is never touched, and loading it costs minutes of CPU and ~600 MB
+    # of RAM on every run — including all 30+ ablation runs.
+    if nb.exists() and getattr(cfg, "kg_encoder", "verbalized") != "verbalized":
         from kg_retrieval import EntityEmbedder
 
         entity_embedder = EntityEmbedder.from_txt(str(nb))
+        log.info("loaded Numberbatch for the fallback triple encoder")
 
     model = TarkanStudent(cfg, kg=kg, entity_embedder=entity_embedder,
                           pool_mode=getattr(cfg, "pool_mode", "mean")).to(device)
@@ -119,6 +154,11 @@ def train(cfg=CONFIG, dataset: str = "twitter2015", max_epochs: Optional[int] = 
         optim, lambda s: min(1.0, s / max(1, warmup)) if s < warmup else max(0.0, (total_steps - s) / max(1, total_steps - warmup))
     )
 
+    amp = (device == "cuda") and bool(getattr(cfg, "use_amp", True))
+    scaler = torch.amp.GradScaler("cuda", enabled=amp)
+    if amp:
+        log.info("mixed precision (fp16 autocast + GradScaler) ON")
+
     best_f1, best_state, patience = -1.0, None, 0
     cfg.paths.checkpoints.mkdir(parents=True, exist_ok=True)
 
@@ -129,21 +169,27 @@ def train(cfg=CONFIG, dataset: str = "twitter2015", max_epochs: Optional[int] = 
         pending = False
         for i, batch in enumerate(train_loader):
             batch_dev = {k: (v.to(device) if torch.is_tensor(v) else v) for k, v in batch.items()}
-            outputs = model(batch_dev)
+            with torch.autocast("cuda", dtype=torch.float16, enabled=amp):
+                outputs = model(batch_dev)
+            outputs = _fp32_outputs(outputs)   # CRF / sigmoid-BCE need fp32 (see helper)
             targets = build_targets(batch_dev, outputs, cache, cfg)
             losses = compute_losses(outputs, targets, cfg, model=model)
-            (losses["total"] / accum).backward()
+            scaler.scale(losses["total"] / accum).backward()
             pending = True
             if (i + 1) % accum == 0:
+                scaler.unscale_(optim)
                 torch.nn.utils.clip_grad_norm_(model.parameters(), cfg.grad_clip)
-                optim.step()
+                scaler.step(optim)
+                scaler.update()
                 sched.step()
                 optim.zero_grad()
                 pending = False
             running += float(losses["total"].item())
         if pending:  # flush trailing partial accumulation
+            scaler.unscale_(optim)
             torch.nn.utils.clip_grad_norm_(model.parameters(), cfg.grad_clip)
-            optim.step()
+            scaler.step(optim)
+            scaler.update()
             sched.step()
             optim.zero_grad()
 

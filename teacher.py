@@ -28,10 +28,12 @@ KG_PROMPT = (
     "Given a tweet, an aspect term, and a candidate KG triple, decide whether the triple "
     "is useful for aspect-level sentiment reasoning. Return 1 if useful and 0 otherwise."
 )
-# Calibration variant (paper Table 8 operating point): the binary prompt makes strict teachers
-# (Llama-3.1) retain ~0.1 triples/aspect vs the paper's published ~3.1/2.9. Eliciting a GRADED
-# usefulness score and keeping the teacher's top-k reproduces the paper's mechanism
-# (teacher-ranked usefulness, §3.4 top-M criterion) at the paper's own retention statistics.
+# MEASURED, and the opposite of what was feared: the binary Table-6 prompt gives Llama-3.1-8B
+# a 53.9% positive rate on t2015 (5.39 retained triples/aspect against the paper's 3.1) — a
+# perfectly usable signal. The graded 0-10 variant below was tried and ABANDONED: the teacher
+# answers 0 or 1 whatever scale it is asked for (measured histogram over 160 triples:
+# {0: 63, 1: 95, 3: 1, 4: 1}), so the graded prompt buys nothing and only risks a /10
+# mis-scaling. The binary prompt is what this teacher actually implements.
 KG_SCORE_PROMPT = (
     "Given a tweet, an aspect term, and a candidate KG triple, rate how useful the triple is "
     "for reasoning about sentiment toward the aspect, on a scale from 0 (useless) to 10 "
@@ -57,9 +59,13 @@ def _parse_int10(text: str) -> int:
 class TeacherCache:
     """In-memory lookup over the cached teacher labels for one dataset."""
 
-    def __init__(self, rel: Dict[Tuple[str, int], float] = None, kg: Dict[Tuple[str, int, str], float] = None):
+    def __init__(self, rel: Dict[Tuple[str, int], float] = None,
+                 kg: Dict[Tuple[str, int, str], float] = None,
+                 pds: Dict[Tuple[str, int], List[float]] = None):
         self.rel = rel or {}
         self.kg = kg or {}
+        # NOVEL — evidence-effect direction, a 3-vector over {NEG-shift, no-shift, POS-shift}
+        self.pds = pds or {}
 
     @classmethod
     def load(cls, dataset: str) -> "TeacherCache":
@@ -77,10 +83,18 @@ class TeacherCache:
             df = pd.read_parquet(kp)
             for _, r in df.iterrows():
                 kg[(str(r["instance_id"]), int(r["aspect_idx"]), str(r["triple_key"]))] = float(r["label"])
-        return cls(rel, kg)
+        pds = {}
+        pp = base / f"{dataset}_pds.parquet"
+        if pp.exists():
+            df = pd.read_parquet(pp)
+            for _, r in df.iterrows():
+                pds[(str(r["instance_id"]), int(r["aspect_idx"]))] = [
+                    float(r["p_neg"]), float(r["p_none"]), float(r["p_pos"])]
+        return cls(rel, kg, pds)
 
     @staticmethod
-    def save(dataset: str, rel_rows: List[dict], kg_rows: List[dict]) -> None:
+    def save(dataset: str, rel_rows: List[dict], kg_rows: List[dict],
+             pds_rows: List[dict] = None) -> None:
         import pandas as pd
 
         base = CONFIG.paths.teacher_labels
@@ -89,6 +103,8 @@ class TeacherCache:
             pd.DataFrame(rel_rows).to_parquet(base / f"{dataset}_relevance.parquet", index=False)
         if kg_rows:
             pd.DataFrame(kg_rows).to_parquet(base / f"{dataset}_kg.parquet", index=False)
+        if pds_rows:
+            pd.DataFrame(pds_rows).to_parquet(base / f"{dataset}_pds.parquet", index=False)
 
 
 # --------------------------------------------------------------------------- #
@@ -201,6 +217,17 @@ class LLMTeacher:
         tr = f"({triple.head}, {triple.relation}, {triple.tail})"
         return f"Tweet: {tweet}\nAspect: {aspect}\nKG triple: {tr}\nAnswer (0 or 1):"
 
+    @staticmethod
+    def _kg_user_graded(tweet: str, aspect: str, triple: Triple) -> str:
+        """Graded variant. The binary user prompt above ends with "Answer (0 or 1):",
+        which CONTRADICTS the 0-10 system prompt — the teacher obeys the nearer
+        instruction and answers 0/1, so every score collapses to 0.0 or 0.1 and nothing
+        is ever retained. Measured: 0 of 31,790 triples scored >= 0.5.
+        """
+        tr = f"({triple.head}, {triple.relation}, {triple.tail})"
+        return (f"Tweet: {tweet}\nAspect: {aspect}\nKG triple: {tr}\n"
+                f"Usefulness (an integer from 0 to 10):")
+
     def relevance_label_batch(self, items: List[Tuple[str, str, str]], batch_size: int = 16) -> List[int]:
         users = [self._rel_user(tw, asp, desc) for (tw, asp, desc) in items]
         return self._run_batched(RELEVANCE_PROMPT, users, batch_size)
@@ -210,8 +237,8 @@ class LLMTeacher:
         return self._run_batched(KG_PROMPT, users, batch_size)
 
     def kg_score_batch(self, items: List[Tuple[str, str, Triple]], batch_size: int = 16) -> List[int]:
-        """Graded (0-10) usefulness scores for KG triples (Table-8 calibration; see KG_SCORE_PROMPT)."""
-        users = [self._kg_user(tw, asp, tr) for (tw, asp, tr) in items]
+        """Graded (0-10) usefulness scores for KG triples (see KG_SCORE_PROMPT)."""
+        users = [self._kg_user_graded(tw, asp, tr) for (tw, asp, tr) in items]
         return self._run_batched(KG_SCORE_PROMPT, users, batch_size, parser=_parse_int10)
 
     def _run_batched(self, system: str, users: List[str], batch_size: int, parser=None) -> List[int]:
@@ -231,7 +258,8 @@ def build_targets(batch: Dict, outputs: Dict, cache: Optional[TeacherCache] = No
     order = [(b, k) for b in range(B) for k in range(len(batch["aspect_spans"][b]))]
     device = outputs["tag_logits"].device
 
-    targets: Dict = {"bio_labels": batch["bio_labels"]}
+    targets: Dict = {"bio_labels": batch["bio_labels"],
+                     "anchor_labels": batch.get("anchor_labels")}
     # word-level info (consumed by the A4 CRF loss path; harmless otherwise)
     targets["word_ids"] = batch.get("word_ids")
     targets["n_words"] = batch.get("n_words")
@@ -264,5 +292,14 @@ def build_targets(batch: Dict, outputs: Dict, cache: Optional[TeacherCache] = No
             kg_m.append(torch.tensor(tm, dtype=torch.bool, device=device))
         targets["teacher_kg"] = kg_t
         targets["teacher_kg_mask"] = kg_m
+
+        # NOVEL — evidence-effect direction, same (b, k) order as everything above
+        pvals, pmask = [], []
+        for (b, k) in order:
+            v = cache.pds.get((batch["instance_id"][b], k))
+            pvals.append(v if v is not None else [0.0, 1.0, 0.0])
+            pmask.append(v is not None)
+        targets["teacher_pds"] = torch.tensor(pvals, dtype=torch.float, device=device)
+        targets["teacher_pds_mask"] = torch.tensor(pmask, dtype=torch.bool, device=device)
 
     return targets

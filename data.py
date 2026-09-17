@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-from config import CONFIG, TAG2ID, TSV_LABEL2POL, TXT_LABEL2POL, POL2ID
+from config import CONFIG, TAG2ID, TSV_LABEL2POL, TXT_LABEL2POL, POL2ID, ANCHOR2ID
 from kg_retrieval import AspectQuery
 from utils import spans_to_bio
 
@@ -153,8 +153,8 @@ def _get_spacy():
     return _NLP
 
 
-def opinion_words(tokens: List[str], span: Tuple[int, int], window: int = 4) -> List[str]:
-    """O_k: adjectives/adverbs/verbs near the aspect span (spaCy POS)."""
+def opinion_words(tokens: List[str], span: Tuple[int, int], window: int = 3) -> List[str]:
+    """O_k (paper Eq. 14): adjectives/adverbs/verbs in a THREE-token window of the span."""
     try:
         doc = _get_spacy()(" ".join(tokens))
     except Exception:
@@ -167,8 +167,16 @@ def opinion_words(tokens: List[str], span: Tuple[int, int], window: int = 4) -> 
     return list(dict.fromkeys(out))
 
 
-def visual_concepts(caption: Optional[str]) -> List[str]:
-    """C_k: noun keywords from the image caption."""
+def visual_concepts(caption) -> List[str]:
+    """C_k (Eq. 12): visual concepts for the image.
+
+    The paper allows these to come from "CLIP-predicted concepts, object tags, or image
+    caption keywords". A list is taken as CLIP-predicted concepts and used as-is (this is
+    the BLIP-free path, see scripts/clip_visual_concepts.py); a string is treated as a
+    caption and reduced to its noun lemmas.
+    """
+    if isinstance(caption, (list, tuple)):
+        return [str(c) for c in caption]
     if not caption:
         return []
     try:
@@ -281,11 +289,29 @@ class TarkanDataset:
         bio_labels = self._bio_subtoken_labels(word_ids, inst.bio)
         sub_spans = self._subtoken_spans(word_ids, inst.aspects)
         polarities = [POL2ID[p] for (_, _, p) in inst.aspects]
+        # paper §3.3, Eq. 8: aspect-ONLY tags for the preliminary anchor generator
+        anchor_words = ["O"] * len(inst.tokens)
+        for (ws, we, _p) in inst.aspects:
+            if we > ws and ws < len(anchor_words):
+                anchor_words[ws] = "B-ASP"
+                for j in range(ws + 1, min(we, len(anchor_words))):
+                    anchor_words[j] = "I-ASP"
+        anchor_labels = []
+        prev = None
+        for wid in word_ids:
+            if wid == -1:
+                anchor_labels.append(-100)
+            elif wid != prev:
+                anchor_labels.append(ANCHOR2ID[anchor_words[wid]] if wid < len(anchor_words) else -100)
+            else:
+                anchor_labels.append(-100)
+            prev = wid
         item = {
             "instance_id": inst.id,
             "input_ids": torch.tensor(input_ids, dtype=torch.long),
             "attention_mask": torch.tensor(attn, dtype=torch.long),
             "bio_labels": torch.tensor(bio_labels, dtype=torch.long),
+            "anchor_labels": torch.tensor(anchor_labels, dtype=torch.long),
             "word_ids": word_ids,             # subtoken -> word index (or -1); for word-level eval
             "n_words": len(inst.tokens),
             "gold_aspects": inst.aspects,     # word-level (s,e,pol) for evaluation
@@ -318,16 +344,19 @@ def collate_fn(batch, pad_id: int = 1):
     input_ids = torch.full((B, n), pad_id, dtype=torch.long)
     attn = torch.zeros((B, n), dtype=torch.long)
     bio = torch.full((B, n), -100, dtype=torch.long)
+    anc = torch.full((B, n), -100, dtype=torch.long)
     for i, x in enumerate(batch):
         L = x["input_ids"].size(0)
         input_ids[i, :L] = x["input_ids"]
         attn[i, :L] = x["attention_mask"]
         bio[i, :L] = x["bio_labels"]
+        anc[i, :L] = x["anchor_labels"]
     out = {
         "instance_id": [x["instance_id"] for x in batch],
         "input_ids": input_ids,
         "attention_mask": attn,
         "bio_labels": bio,
+        "anchor_labels": anc,
         "word_ids": [x["word_ids"] for x in batch],
         "n_words": [x["n_words"] for x in batch],
         "gold_aspects": [x["gold_aspects"] for x in batch],

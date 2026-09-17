@@ -1,2 +1,0 @@
-# Atlantis
-Code for Atlantis

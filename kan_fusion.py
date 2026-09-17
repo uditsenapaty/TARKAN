@@ -176,14 +176,28 @@ class CrossModalAttentionFusion(nn.Module):
 
 
 class BilinearFusion(nn.Module):
-    def __init__(self, d: int = None, dropout: float = None):
+    """Low-rank bilinear pooling (MLB): W_o (W_t t (*) W_v v).
+
+    A full `nn.Bilinear(d, d, d)` is a d^3 tensor — 453 M parameters at d=768, two orders
+    of magnitude past every other row of Table 14 and not what "bilinear fusion" means in
+    the MABSA literature. The standard low-rank factorisation is used instead, so the
+    comparison is between fusion *mechanisms* and not between parameter budgets.
+    """
+
+    def __init__(self, d: int = None, dropout: float = None, rank: int = None):
         super().__init__()
         d = d or CONFIG.hidden_dim
-        self.bil = nn.Bilinear(d, d, d)
-        self.lin_g = nn.Linear(d, d)
+        rank = rank or d
+        dropout = CONFIG.dropout if dropout is None else dropout
+        self.pt = nn.Linear(d, rank)
+        self.pv = nn.Linear(d, rank)
+        self.pg = nn.Linear(d, rank)
+        self.out = nn.Linear(rank, d)
+        self.drop = nn.Dropout(dropout)
 
     def forward(self, t, v, g):
-        return self.bil(t, v) + self.lin_g(g)
+        z = self.pt(t) * self.pv(v) + self.pt(t) * self.pg(g)
+        return self.out(self.drop(z))
 
 
 class TensorFusion(nn.Module):
@@ -207,8 +221,94 @@ class TensorFusion(nn.Module):
         return fused.sum(dim=1)                              # [K, d]
 
 
+class InteractionKANFusion(nn.Module):
+    """NOVEL (not in the paper) — interaction-KAN.
+
+    Eq. 18 hands the KAN one blunt concatenation `[t; v~; g~]` and asks it to discover
+    cross-modal structure inside it. Here each stream is projected to `dproj` with its own
+    LayerNorm (so the KAN does not spend capacity learning that text is an order of
+    magnitude larger than the evidence streams) and the interaction variables are handed
+    over EXPLICITLY:
+
+        x = [t', v', g', t'(*)v', t'(*)g', |t' - v'|]   ->  KAN  ->  d
+
+    scaled by a learnable alpha initialised **0.1 and not zero**: a zero branch times a
+    zero scale is an identically-dead gradient. models.py already adds the result
+    residually to h^t, so the text path is the residual baseline.
+
+    Zero-preservation matters here. Tokens outside any aspect carry v = g = 0, and
+    `evidence_dropout` zeroes evidence for whole instances to teach text-only extraction.
+    LayerNorm(0) is the bias, not 0, so the streams are re-masked after normalisation —
+    without that, "no evidence" would silently become "a constant evidence vector".
+    """
+
+    def __init__(self, d: int = None, dropout: float = None, dproj: int = None,
+                 hidden=None, backend: str = None, grid_size: int = None,
+                 spline_order: int = None):
+        super().__init__()
+        d = d or CONFIG.hidden_dim
+        dproj = dproj or getattr(CONFIG, "ikan_dproj", 192)
+        hidden = list(hidden if hidden is not None else CONFIG.kan_hidden)
+        self.pt, self.pv, self.pg = (nn.Linear(d, dproj) for _ in range(3))
+        self.nt, self.nv, self.ng = (nn.LayerNorm(dproj) for _ in range(3))
+        self.net = _build_kan(
+            backend or CONFIG.kan_backend, [6 * dproj, *hidden, d],
+            grid_size or CONFIG.kan_grid_size, spline_order or CONFIG.kan_spline_order,
+        )
+        self.alpha = nn.Parameter(torch.tensor(0.1))
+        # RESIDUAL form: z = z_text + alpha * KAN(interactions). Without this the fused
+        # aspect representation is ONLY the correction — the paper's ASC head (Eq. 25)
+        # then reads a small delta with no text baseline under it, which is why a strong
+        # text signal could not survive into the polarity path.
+        self.residual = bool(getattr(CONFIG, "ikan_residual", True))
+        self.z_text = nn.Linear(d, d) if self.residual else None
+
+    def forward(self, t, v, g):
+        mv = (v.abs().sum(-1, keepdim=True) > 0).to(v.dtype)
+        mg = (g.abs().sum(-1, keepdim=True) > 0).to(g.dtype)
+        t_ = self.nt(self.pt(t))
+        v_ = self.nv(self.pv(v)) * mv
+        g_ = self.ng(self.pg(g)) * mg
+        x = torch.cat([t_, v_, g_, t_ * v_, t_ * g_, (t_ - v_).abs() * mv], dim=-1)
+        dz = self.alpha * self.net(x)
+        return (self.z_text(t) + dz) if self.residual else dz
+
+
+class HierarchicalAttentionFusion(nn.Module):
+    """Paper Table 14 row "Hierarchical Attention" — the strongest non-KAN alternative.
+
+    Two levels, as the name implies:
+      level 1  text attends to each evidence stream separately -> c_v, c_g
+      level 2  a second attention pools {t, c_v, c_g} into the fused vector
+    """
+
+    def __init__(self, d: int = None, dropout: float = None):
+        super().__init__()
+        d = d or CONFIG.hidden_dim
+        dropout = CONFIG.dropout if dropout is None else dropout
+        self.q1 = nn.Linear(d, d)
+        self.k1 = nn.Linear(d, d)
+        self.q2 = nn.Linear(d, d)
+        self.k2 = nn.Linear(d, d)
+        self.out = nn.Linear(d, d)
+        self.drop = nn.Dropout(dropout)
+        self.scale = d ** -0.5
+
+    def forward(self, t, v, g):
+        q = self.q1(t)
+        # level 1: one scalar gate per evidence stream, conditioned on the text
+        c_v = v * torch.sigmoid((q * self.k1(v)).sum(-1, keepdim=True) * self.scale)
+        c_g = g * torch.sigmoid((q * self.k1(g)).sum(-1, keepdim=True) * self.scale)
+        # level 2: attention over the three streams
+        S = torch.stack([t, c_v, c_g], dim=1)                    # [N, 3, d]
+        a = torch.softmax((self.q2(t).unsqueeze(1) * self.k2(S)).sum(-1) * self.scale, -1)
+        return self.out(self.drop((a.unsqueeze(-1) * S).sum(1)))
+
+
 FUSION_REGISTRY = {
     "kan": KANFusion,
+    "ikan": InteractionKANFusion,   # NOVEL — see class docstring
+    "hierarchical_attention": HierarchicalAttentionFusion,
     "concat_linear": ConcatLinear,
     "concat_mlp": ConcatMLP,        # also the "w/o KAN, MLP fusion" ablation (Table 6)
     "gated": GatedFusion,
