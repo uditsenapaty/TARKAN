@@ -93,7 +93,7 @@ class TarkanConfig:
     # the task. (Freezing was measured at -343 ms/step and -1.79 GB, and is available via
     # this flag as an ablation row, but it is not the shipped configuration.)
     freeze_visual: bool = False
-    teacher_llm_id: str = "meta-llama/Llama-3.2-3B-Instruct"  # offline teacher (user-mandated; was Qwen2.5-7B)
+    teacher_llm_id: str = "meta-llama/Llama-3.1-8B-Instruct"  # offline teacher (user-mandated; was Llama-3.1-8B-Instruct)
     captioner_id: str = "Salesforce/blip-image-captioning-base"  # Open-Q #3
 
     # ---- dimensions ----
