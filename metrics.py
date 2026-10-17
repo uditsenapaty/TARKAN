@@ -1,12 +1,7 @@
-"""Evaluation metrics (paper §5.1 / Tables 1, 3) + paired bootstrap significance (§4.3).
+"""Exact-match joint and aspect span metrics, plus gold-anchor polarity metrics.
 
-Conventions
------------
-A prediction/gold for one instance is a set/list of (start, end, polarity) triples.
-  - Joint MABSA (Table 1): micro P/R/F1 over exact (span, polarity) matches.
-  - MATE (Table 3): micro P/R/F1 over spans only (polarity ignored).
-  - MASC (Table 3): polarity Acc + macro-F1 on gold aspects.
-Significance: paired bootstrap, 1000 resamples, two-sided p<0.05 (marked † in tables).
+Joint and MATE use micro precision/recall/F1; MASC uses accuracy and macro-F1.
+Paired bootstrap utilities are for subsequent significance analysis.
 """
 from __future__ import annotations
 
@@ -99,3 +94,4 @@ def paired_bootstrap(
     centered = deltas - deltas.mean()  # shift resample distribution to the H0 null (delta=0)
     p = (1.0 + float(np.sum(np.abs(centered) >= abs(obs_delta)))) / (n_samples + 1.0)
     return {f"{key}_A": obs_a, f"{key}_B": obs_b, "delta": obs_delta, "p_value": p, "significant": bool(p < 0.05)}
+

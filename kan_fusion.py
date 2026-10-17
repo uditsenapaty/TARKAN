@@ -1,18 +1,8 @@
-"""KAN-based multimodal fusion (paper Eqs. 18-20) + all Table-10 fusion strategies.
+"""KAN multimodal fusion (paper Eqs. 16-18; fusion comparisons in Table 15).
 
-    u_k = [t_k ; v_tilde_k ; g_tilde_k]                                  (Eq. 18)
-    z_{l+1,j} = sum_i psi^(l)_ij(z_{l,i})   (learnable univariate edges)  (Eq. 19)
-    z_k = KAN(u_k)                                                        (Eq. 20)
-
-KAN backend is selectable (config.kan_backend):
-  - 'efficient_kan' (default): B-spline edges (closest to Eq. 19), pip git install.
-  - 'fastkan'      : Gaussian-RBF KAN (pip fastkan), faster.
-  - 'rkan'         : rational-KAN activations (paper ref [41]).
-A self-contained RBF-KAN (RBFKAN) is vendored as a zero-dependency fallback so the
-fusion ALWAYS runs (it is a genuine KAN: learnable univariate edge functions).
-
-Every fusion in FUSION_REGISTRY implements forward(t, v, g) -> z, mapping three
-[K, d] modality tensors to a fused [K, d] (Table 10).
+The manuscript profile requires efficient-kan B-splines. Alternative RBF, rational,
+interaction-KAN, and other fusion operators are explicit experiments, never silent
+substitutions for the manuscript backend.
 """
 from __future__ import annotations
 
@@ -64,8 +54,8 @@ def _build_kan(backend: str, widths: List[int], grid_size: int, spline_order: in
             from efficient_kan import KAN  # B-spline KAN
 
             return KAN(layers_hidden=widths, grid_size=grid_size, spline_order=spline_order)
-        except Exception:
-            pass  # fall through to RBF fallback
+        except ImportError as exc:
+            raise ImportError("The manuscript profile requires efficient-kan. Install requirements.txt; use kan_backend='rbf' only for explicit smoke tests.") from exc
     if backend == "fastkan":
         try:
             from fastkan import FastKAN
@@ -78,8 +68,9 @@ def _build_kan(backend: str, widths: List[int], grid_size: int, spline_order: in
             return _RationalKAN(widths)
         except Exception:
             pass
-    # universal fallback (genuine RBF-KAN)
-    return RBFKAN(widths, num_grids=max(grid_size + 3, 8))
+    if backend == "rbf":
+        return RBFKAN(widths, num_grids=max(grid_size + 3, 8))
+    raise ValueError(f"KAN backend unavailable or unknown: {backend}")
 
 
 class _RationalKAN(nn.Module):
@@ -101,7 +92,7 @@ class _RationalKAN(nn.Module):
 
 
 # --------------------------------------------------------------------------- #
-# Fusion strategies (Table 10). All: forward(t, v, g) -> z  ([K, d] each).
+# Fusion strategies (Table 15). All: forward(t, v, g) -> z  ([K, d] each).
 # --------------------------------------------------------------------------- #
 class KANFusion(nn.Module):
     def __init__(self, d: int = None, hidden=None, backend: str = None, grid_size: int = None,
@@ -123,7 +114,7 @@ class KANFusion(nn.Module):
             if conf is None:
                 conf = t.new_zeros((*t.shape[:-1], self.in_extra))
             parts.append(conf)
-        return self.net(torch.cat(parts, dim=-1))  # Eq. 18 -> Eq. 20 (+A9 confidence features)
+        return self.net(torch.cat(parts, dim=-1))  # Eq. 16 -> Eq. 18 (+A9 confidence features)
 
 
 class ConcatLinear(nn.Module):
@@ -179,7 +170,7 @@ class BilinearFusion(nn.Module):
     """Low-rank bilinear pooling (MLB): W_o (W_t t (*) W_v v).
 
     A full `nn.Bilinear(d, d, d)` is a d^3 tensor — 453 M parameters at d=768, two orders
-    of magnitude past every other row of Table 14 and not what "bilinear fusion" means in
+    of magnitude past every other row of Table 15 and not what "bilinear fusion" means in
     the MABSA literature. The standard low-rank factorisation is used instead, so the
     comparison is between fusion *mechanisms* and not between parameter budgets.
     """
@@ -224,7 +215,7 @@ class TensorFusion(nn.Module):
 class InteractionKANFusion(nn.Module):
     """NOVEL (not in the paper) — interaction-KAN.
 
-    Eq. 18 hands the KAN one blunt concatenation `[t; v~; g~]` and asks it to discover
+    Eq. 16 hands the KAN one blunt concatenation `[t; v~; g~]` and asks it to discover
     cross-modal structure inside it. Here each stream is projected to `dproj` with its own
     LayerNorm (so the KAN does not spend capacity learning that text is an order of
     magnitude larger than the evidence streams) and the interaction variables are handed
@@ -257,7 +248,7 @@ class InteractionKANFusion(nn.Module):
         )
         self.alpha = nn.Parameter(torch.tensor(0.1))
         # RESIDUAL form: z = z_text + alpha * KAN(interactions). Without this the fused
-        # aspect representation is ONLY the correction — the paper's ASC head (Eq. 25)
+        # aspect representation is ONLY the correction — the paper's ASC head (Eq. 22)
         # then reads a small delta with no text baseline under it, which is why a strong
         # text signal could not survive into the polarity path.
         self.residual = bool(getattr(CONFIG, "ikan_residual", True))
@@ -275,7 +266,7 @@ class InteractionKANFusion(nn.Module):
 
 
 class HierarchicalAttentionFusion(nn.Module):
-    """Paper Table 14 row "Hierarchical Attention" — the strongest non-KAN alternative.
+    """Paper Table 15 row "Hierarchical Attention" — the strongest non-KAN alternative.
 
     Two levels, as the name implies:
       level 1  text attends to each evidence stream separately -> c_v, c_g
@@ -310,7 +301,7 @@ FUSION_REGISTRY = {
     "ikan": InteractionKANFusion,   # NOVEL — see class docstring
     "hierarchical_attention": HierarchicalAttentionFusion,
     "concat_linear": ConcatLinear,
-    "concat_mlp": ConcatMLP,        # also the "w/o KAN, MLP fusion" ablation (Table 6)
+    "concat_mlp": ConcatMLP,        # also the "w/o KAN, MLP fusion" ablation (Table 5)
     "gated": GatedFusion,
     "cross_modal_attention": CrossModalAttentionFusion,
     "bilinear": BilinearFusion,
@@ -318,10 +309,13 @@ FUSION_REGISTRY = {
 }
 
 
-def build_fusion(name: str = None, d: int = None, dropout: float = None, in_extra: int = 0) -> nn.Module:
+def build_fusion(name: str = None, d: int = None, dropout: float = None, in_extra: int = 0, cfg=CONFIG) -> nn.Module:
     name = name or CONFIG.fusion
     if name not in FUSION_REGISTRY:
         raise ValueError(f"unknown fusion '{name}'. options: {list(FUSION_REGISTRY)}")
     if name == "kan":
-        return KANFusion(d=d, dropout=dropout, in_extra=in_extra)
+        return KANFusion(d=d, dropout=dropout, in_extra=in_extra, hidden=cfg.kan_hidden,
+                         backend=cfg.kan_backend, grid_size=cfg.kan_grid_size,
+                         spline_order=cfg.kan_spline_order)
     return FUSION_REGISTRY[name](d=d, dropout=dropout)  # A9 conf-append is KAN-only
+

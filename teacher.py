@@ -1,14 +1,4 @@
-"""Offline LLM teacher (paper §3.3, §3.5, Table 4) — TRAINING-TIME ONLY.
-
-Produces two binary evidence-supervision signals, cached to parquet so the LLM is
-loaded ONCE (offline pass), never during training or inference:
-  - r^T_k  aspect-visual relevance   (supervises L_rel, Eq. 11)
-  - s^T_kq KG-triple usefulness      (supervises L_kg,  Eq. 16)
-
-Default teacher = meta-llama/Llama-3.1-8B-Instruct (4-bit on T4; user-mandated).
-Greedy decoding, strict {0,1} parsing. `build_targets` aligns cached labels to a live
-batch for losses.py.
-"""
+"""Offline Llama-3-8B-Instruct teacher, 8-bit on A100; training labels only."""
 from __future__ import annotations
 
 import re
@@ -28,12 +18,7 @@ KG_PROMPT = (
     "Given a tweet, an aspect term, and a candidate KG triple, decide whether the triple "
     "is useful for aspect-level sentiment reasoning. Return 1 if useful and 0 otherwise."
 )
-# MEASURED, and the opposite of what was feared: the binary Table-6 prompt gives Llama-3.1-8B
-# a 53.9% positive rate on t2015 (5.39 retained triples/aspect against the paper's 3.1) — a
-# perfectly usable signal. The graded 0-10 variant below was tried and ABANDONED: the teacher
-# answers 0 or 1 whatever scale it is asked for (measured histogram over 160 triples:
-# {0: 63, 1: 95, 3: 1, 4: 1}), so the graded prompt buys nothing and only risks a /10
-# mis-scaling. The binary prompt is what this teacher actually implements.
+# Graded scoring below is experimental; the paper uses the binary prompts.
 KG_SCORE_PROMPT = (
     "Given a tweet, an aspect term, and a candidate KG triple, rate how useful the triple is "
     "for reasoning about sentiment toward the aspect, on a scale from 0 (useless) to 10 "
@@ -45,7 +30,9 @@ _INT_RE = re.compile(r"\d+")
 
 def _parse_binary(text: str) -> int:
     m = _BIN_RE.search(text or "")
-    return int(m.group(0)) if m else 0
+    if not re.fullmatch(r"[01][.!]?", text.strip()):
+        raise ValueError(f"Teacher did not return a binary label: {text!r}")
+    return int(text.strip()[0])
 
 
 def _parse_int10(text: str) -> int:
@@ -56,6 +43,28 @@ def _parse_int10(text: str) -> int:
 # --------------------------------------------------------------------------- #
 # cache
 # --------------------------------------------------------------------------- #
+def cache_identity(dataset, cfg=CONFIG):
+    """Invalidate old checkpoint/precision labels and changed training/KG inputs."""
+    import hashlib
+    def digest(path):
+        result = hashlib.sha256()
+        with path.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024*1024), b""):
+                result.update(chunk)
+        return result.hexdigest()
+    train_file = cfg.paths.data / dataset / "train.tsv"
+    if not train_file.exists():
+        train_file = train_file.with_suffix(".txt")
+    return dict(
+        schema=1, teacher=cfg.teacher_llm_id, precision=cfg.teacher_precision,
+        captioner=cfg.captioner_id, prompts=[RELEVANCE_PROMPT, KG_PROMPT],
+        top_m=cfg.top_m_triples, top_l=cfg.top_l_concepts, opinion_window=cfg.opinion_window,
+        rank_weights=list(cfg.kg_rank_weights), sources=list(cfg.kg_sources),
+        training_sha256=digest(train_file),
+        kg_sha256=digest(cfg.paths.kg_index / "kg.sqlite"),
+        concepts_sha256=digest(cfg.paths.data / "visual_concepts" / f"{dataset}.json"))
+
+
 class TeacherCache:
     """In-memory lookup over the cached teacher labels for one dataset."""
 
@@ -68,10 +77,16 @@ class TeacherCache:
         self.pds = pds or {}
 
     @classmethod
-    def load(cls, dataset: str) -> "TeacherCache":
+    def load(cls, dataset: str, cfg=CONFIG) -> "TeacherCache":
         import pandas as pd
+        import json
 
-        base = CONFIG.paths.teacher_labels
+        base = cfg.paths.teacher_labels
+        metadata = base / f"{dataset}_metadata.json"
+        if not metadata.exists():
+            raise FileNotFoundError(f"Missing teacher provenance: {metadata}; regenerate with prepare.py teacher.")
+        if json.loads(metadata.read_text(encoding="utf-8")) != cache_identity(dataset, cfg):
+            raise ValueError("Teacher cache provenance differs from this configuration/data. Regenerate it.")
         rel, kg = {}, {}
         rp = base / f"{dataset}_relevance.parquet"
         kp = base / f"{dataset}_kg.parquet"
@@ -94,10 +109,10 @@ class TeacherCache:
 
     @staticmethod
     def save(dataset: str, rel_rows: List[dict], kg_rows: List[dict],
-             pds_rows: List[dict] = None) -> None:
+             pds_rows: List[dict] = None, cfg=CONFIG) -> None:
         import pandas as pd
 
-        base = CONFIG.paths.teacher_labels
+        base = cfg.paths.teacher_labels
         base.mkdir(parents=True, exist_ok=True)
         if rel_rows:
             pd.DataFrame(rel_rows).to_parquet(base / f"{dataset}_relevance.parquet", index=False)
@@ -105,15 +120,18 @@ class TeacherCache:
             pd.DataFrame(kg_rows).to_parquet(base / f"{dataset}_kg.parquet", index=False)
         if pds_rows:
             pd.DataFrame(pds_rows).to_parquet(base / f"{dataset}_pds.parquet", index=False)
+        from utils import save_json
+        save_json(cache_identity(dataset, cfg), base / f"{dataset}_metadata.json")
 
 
 # --------------------------------------------------------------------------- #
 # LLM teacher
 # --------------------------------------------------------------------------- #
 class LLMTeacher:
-    def __init__(self, model_id: str = None, device: str = None):
-        self.model_id = model_id or CONFIG.teacher_llm_id
-        self.device = device or CONFIG.device
+    def __init__(self, model_id: str = None, device: str = None, cfg=CONFIG):
+        self.cfg = cfg
+        self.model_id = model_id or cfg.teacher_llm_id
+        self.device = device or cfg.device
         self._tok = None
         self._model = None
 
@@ -123,21 +141,14 @@ class LLMTeacher:
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
-        kwargs = {"token": CONFIG.hf_token}
-        if self.device == "cuda":
-            try:
-                from transformers import BitsAndBytesConfig
-
-                kwargs["quantization_config"] = BitsAndBytesConfig(
-                    load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.float16
-                )
-                kwargs["device_map"] = "auto"
-            except Exception:
-                kwargs["torch_dtype"] = torch.float16
-        self._tok = AutoTokenizer.from_pretrained(self.model_id, token=CONFIG.hf_token)
+        if not str(self.device).startswith("cuda"):
+            raise ValueError("Offline teacher requires CUDA for the 8-bit protocol.")
+        from transformers import BitsAndBytesConfig
+        kwargs = dict(token=self.cfg.hf_token,
+                      quantization_config=BitsAndBytesConfig(load_in_8bit=True),
+                      device_map={"": self.device})
+        self._tok = AutoTokenizer.from_pretrained(self.model_id, token=self.cfg.hf_token)
         self._model = AutoModelForCausalLM.from_pretrained(self.model_id, **kwargs)
-        if self.device != "cuda":
-            self._model = self._model.to(self.device)
         self._model.eval()
         # We decode greedily (do_sample=False). Clear the model's default sampling params
         # so transformers doesn't warn about temperature/top_p/top_k on every call.
@@ -253,53 +264,34 @@ class LLMTeacher:
 # --------------------------------------------------------------------------- #
 def build_targets(batch: Dict, outputs: Dict, cache: Optional[TeacherCache] = None, cfg=CONFIG) -> Dict:
     import torch
-
-    B = len(batch["aspect_spans"])
-    order = [(b, k) for b in range(B) for k in range(len(batch["aspect_spans"][b]))]
+    from anchors import match_anchors
+    from config import POL2ID
     device = outputs["tag_logits"].device
-
-    targets: Dict = {"bio_labels": batch["bio_labels"],
-                     "anchor_labels": batch.get("anchor_labels")}
-    # word-level info (consumed by the A4 CRF loss path; harmless otherwise)
-    targets["word_ids"] = batch.get("word_ids")
-    targets["n_words"] = batch.get("n_words")
-
-    pol = [batch["aspect_polarity"][b][k] for (b, k) in order]
-    targets["aspect_polarity"] = torch.tensor(pol, dtype=torch.long, device=device)
-
-    if cache is not None:
-        # relevance
-        rvals, rmask = [], []
-        for (b, k) in order:
-            iid = batch["instance_id"][b]
-            v = cache.rel.get((iid, k))
-            rvals.append(float(v) if v is not None else 0.0)
-            rmask.append(v is not None)
-        targets["teacher_relevance"] = torch.tensor(rvals, dtype=torch.float, device=device)
-        targets["teacher_relevance_mask"] = torch.tensor(rmask, dtype=torch.bool, device=device)
-
-        # kg (aligned to outputs['kg_triples'] order)
-        kg_t, kg_m = [], []
-        for a, (b, k) in enumerate(order):
-            iid = batch["instance_id"][b]
-            triples = outputs["kg_triples"][a] if a < len(outputs["kg_triples"]) else []
-            tv, tm = [], []
-            for tr in triples:
-                v = cache.kg.get((iid, k, triple_key(tr)))
-                tv.append(float(v) if v is not None else 0.0)
-                tm.append(v is not None)
-            kg_t.append(torch.tensor(tv, dtype=torch.float, device=device))
-            kg_m.append(torch.tensor(tm, dtype=torch.bool, device=device))
-        targets["teacher_kg"] = kg_t
-        targets["teacher_kg_mask"] = kg_m
-
-        # NOVEL — evidence-effect direction, same (b, k) order as everything above
-        pvals, pmask = [], []
-        for (b, k) in order:
-            v = cache.pds.get((batch["instance_id"][b], k))
-            pvals.append(v if v is not None else [0.0, 1.0, 0.0])
-            pmask.append(v is not None)
-        targets["teacher_pds"] = torch.tensor(pvals, dtype=torch.float, device=device)
-        targets["teacher_pds_mask"] = torch.tensor(pmask, dtype=torch.bool, device=device)
-
+    matches = [match_anchors(pred, gold, cfg.anchor_iou_threshold)
+               for pred, gold in zip(outputs["aspect_word_spans"], batch["gold_aspects"])]
+    order = [(b, k, g) for b, row in enumerate(matches) for k, g in enumerate(row)]
+    targets = dict(bio_labels=batch["bio_labels"], anchor_labels=batch["anchor_labels"])
+    targets["aspect_polarity"] = torch.tensor([
+        POL2ID[batch["gold_aspects"][b][g][2]] if g >= 0 else -100 for b, k, g in order
+    ], dtype=torch.long, device=device)
+    if cache is None:
+        return targets
+    rvals, rmask, kg_t, kg_m = [], [], [], []
+    for a, (b, k, g) in enumerate(order):
+        iid = str(batch["instance_id"][b])
+        v = cache.rel.get((iid, g)) if g >= 0 else None
+        rvals.append(v if v is not None else 0.0)
+        rmask.append(v is not None)
+        tv, tm = [], []
+        for tr in outputs["kg_triples"][a]:
+            v = cache.kg.get((iid, g, triple_key(tr))) if g >= 0 else None
+            tv.append(v if v is not None else 0.0)
+            tm.append(v is not None)
+        kg_t.append(torch.tensor(tv, dtype=torch.float, device=device))
+        kg_m.append(torch.tensor(tm, dtype=torch.bool, device=device))
+    targets.update(
+        teacher_relevance=torch.tensor(rvals, dtype=torch.float, device=device),
+        teacher_relevance_mask=torch.tensor(rmask, dtype=torch.bool, device=device),
+        teacher_kg=kg_t, teacher_kg_mask=kg_m)
     return targets
+

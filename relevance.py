@@ -1,12 +1,12 @@
-"""Aspect representation + teacher-guided aspect-visual relevance (paper Eqs. 6-10).
+"""Aspect representation + teacher-guided aspect-visual relevance (paper Eqs. 4, 6-7).
 
-    t_k  = Pool({h_i | w_i in a_k})                                       (Eq. 6)
-    a_kj = softmax_j( t_k^T W_v v_j )                                     (Eq. 7)
-    v_bar_k = sum_j a_kj v_j                                              (Eq. 8)
-    r_k  = sigma( w_r^T [t_k ; v_bar_k ; t_k ⊙ v_bar_k] + b_r )          (Eq. 9)
-    v_tilde_k = r_k * v_bar_k                                             (Eq. 10)
+    t_k  = Pool({h_i | w_i in a_k})                                       (Eq. 4)
+    a_kj = softmax_j( t_k^T W_v v_j )                                     (Eq. 6)
+    v_bar_k = sum_j a_kj v_j                                              (Eq. 6)
+    r_k  = sigma( w_r^T [t_k ; v_bar_k ; t_k ⊙ v_bar_k] + b_r )          (Eq. 6)
+    v_tilde_k = r_k * v_bar_k                                             (Eq. 7)
 
-Lrel (Eq. 11) lives in losses.py.
+Lrel (Eq. 8) lives in losses.py.
 """
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from config import CONFIG
 
 
 def pool_aspect(text_feats: torch.Tensor, spans: List[Tuple[int, int]], mode: str = "mean") -> torch.Tensor:
-    """Pool token reps over each aspect span (Eq. 6).
+    """Pool token reps over each aspect span (Eq. 4).
 
     Args:
         text_feats: [n, d] token features for ONE instance.
@@ -49,14 +49,14 @@ def pool_aspect(text_feats: torch.Tensor, spans: List[Tuple[int, int]], mode: st
 
 
 class AspectVisualRelevance(nn.Module):
-    """Aspect-conditioned visual attention + relevance estimator (Eqs. 7-10)."""
+    """Aspect-conditioned visual attention + relevance estimator (Eqs. 6-7)."""
 
     def __init__(self, d: int = None, dropout: float = None):
         super().__init__()
         d = d or CONFIG.hidden_dim
         dropout = CONFIG.dropout if dropout is None else dropout
-        self.Wv = nn.Linear(d, d, bias=False)   # Eq. 7 bilinear projection
-        self.wr = nn.Linear(3 * d, 1)           # Eq. 9 (w_r, b_r)
+        self.Wv = nn.Linear(d, d, bias=False)   # Eq. 6 bilinear projection
+        self.wr = nn.Linear(3 * d, 1)           # Eq. 6 (w_r, b_r)
         self.drop = nn.Dropout(dropout)
 
     def forward(self, t_k: torch.Tensor, V: torch.Tensor):
@@ -69,9 +69,10 @@ class AspectVisualRelevance(nn.Module):
             empty = V.new_zeros((0, d))
             return t_k, empty, V.new_zeros((0,)), empty, V.new_zeros((0, V.size(0)))
         scores = t_k @ self.Wv(V).transpose(-1, -2)        # [K, m]  t_k^T W_v v_j
-        alpha = torch.softmax(scores, dim=-1)              # Eq. 7
-        v_bar = alpha @ V                                  # [K, d]  Eq. 8
-        feat = torch.cat([t_k, v_bar, t_k * v_bar], dim=-1)  # Eq. 9 input
+        alpha = torch.softmax(scores, dim=-1)              # Eq. 6
+        v_bar = alpha @ V                                  # [K, d]  Eq. 6
+        feat = torch.cat([t_k, v_bar, t_k * v_bar], dim=-1)  # Eq. 6 input
         r_k = torch.sigmoid(self.wr(self.drop(feat))).squeeze(-1)  # [K]
-        v_tilde = r_k.unsqueeze(-1) * v_bar                # Eq. 10
+        v_tilde = r_k.unsqueeze(-1) * v_bar                # Eq. 7
         return t_k, v_bar, r_k, v_tilde, alpha
+

@@ -1,9 +1,9 @@
-"""Teacher-guided KG evidence filtering (paper Eqs. 15-17).
+"""Teacher-guided KG evidence filtering (paper Eqs. 10-12).
 
-    s_kq    = sigma( w_g^T [t_k ; g_kq ; t_k ⊙ g_kq] + b_g )            (Eq. 15)
-    g_tilde = ( sum_q s_kq g_kq ) / ( sum_q s_kq + eps )                (Eq. 17)
+    s_kq    = sigma( w_g^T [t_k ; g_kq ; t_k ⊙ g_kq] + b_g )            (Eq. 10)
+    g_tilde = ( sum_q s_kq g_kq ) / ( sum_q s_kq + eps )                (Eq. 12)
 
-Lkg (Eq. 16) lives in losses.py. Operates per-aspect (M varies across aspects).
+Lkg (Eq. 11) lives in losses.py. Operates per-aspect (M varies across aspects).
 """
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ class KGFilter(nn.Module):
         d = d or CONFIG.hidden_dim
         dropout = CONFIG.dropout if dropout is None else dropout
         self.eps = CONFIG.kg_eps if eps is None else eps
-        self.wg = nn.Linear(3 * d, 1)   # Eq. 15 (w_g, b_g)
+        self.wg = nn.Linear(3 * d, 1)   # Eq. 10 (w_g, b_g)
         self.drop = nn.Dropout(dropout)
         self.d = d
 
@@ -34,8 +34,9 @@ class KGFilter(nn.Module):
         if M == 0:
             return g.new_zeros((0,)), g.new_zeros((self.d,))
         t_exp = t_k.unsqueeze(0).expand(M, -1)                 # [M, d]
-        feat = torch.cat([t_exp, g, t_exp * g], dim=-1)        # Eq. 15 input
+        feat = torch.cat([t_exp, g, t_exp * g], dim=-1)        # Eq. 10 input
         s = torch.sigmoid(self.wg(self.drop(feat))).squeeze(-1)  # [M]
         weighted = (s.unsqueeze(-1) * g).sum(dim=0)            # [d]
-        g_tilde = weighted / (s.sum() + self.eps)             # Eq. 17
+        g_tilde = weighted / (s.sum() + self.eps)             # Eq. 12
         return s, g_tilde
+

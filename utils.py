@@ -1,9 +1,4 @@
-"""Shared utilities: BIO<->span conversion, logging, checkpoint IO.
-
-`bio_to_spans` / `spans_to_bio` are the single shared implementation used by both
-training (gold spans) and inference (decoded spans) so the two stay consistent
-(paper §3.2, Algorithm 2 step 3).
-"""
+"""Shared unified BIO/span conversion, logging, and checkpoint I/O."""
 from __future__ import annotations
 
 import json
@@ -121,3 +116,4 @@ def load_checkpoint(model, path: Union[str, Path], map_location="cpu"):
     payload = torch.load(path, map_location=map_location)
     model.load_state_dict(payload["model_state"])
     return payload
+

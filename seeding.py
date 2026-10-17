@@ -1,8 +1,4 @@
-"""Global determinism helpers. Call seed_everything() at the top of every entrypoint.
-
-A green deterministic run on CPU is a hard gate before any GPU/LLM spend
-(CLAUDE.md budget rule).
-"""
+"""Seed Python, NumPy, PyTorch and data-loader workers consistently."""
 from __future__ import annotations
 
 import os
@@ -48,3 +44,4 @@ def worker_init_fn(worker_id: int) -> None:
         np.random.seed((base + worker_id) % (2**32 - 1))
     except Exception:
         pass
+

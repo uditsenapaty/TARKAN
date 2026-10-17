@@ -1,14 +1,7 @@
-"""Knowledge-graph backend over English ConceptNet 5.7 + SenticNet 7 (paper §3.4).
+"""ConceptNet 5.7 + SenticNet 7 KG backend (paper Section 3.5).
 
-Two backends behind one API:
-  - in-memory (dict): fast, used by unit tests and small KGs.
-  - sqlite: built by scripts/build_kg.py from the filtered parquet dumps; scales to
-    the full English ConceptNet without loading 10 GB into RAM.
-
-Public API used by kg_retrieval.py:
-    kg.normalize(term) -> str
-    kg.neighbors(term, top, sources) -> list[Triple]
-    kg.polarity(term) -> float | None
+In-memory and SQLite backends expose neighbors and polarity. Build a SQLite
+index from normalized local resources with prepare.py kg.
 """
 from __future__ import annotations
 
@@ -128,3 +121,4 @@ class KnowledgeGraph:
         if self._conn is not None:
             self._conn.close()
             self._conn = None
+

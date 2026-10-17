@@ -1,9 +1,6 @@
-"""Image captioner — produces the "image description" the teacher relevance prompt
-needs (paper Table 4) and the noun keywords for C_k (Eq. 12).
+"""BLIP-base image descriptions for offline teacher supervision only.
 
-Default model: Salesforce/blip-image-captioning-large (Open-Q #3). Captions are cached
-to data/captions/<dataset>/<image_id>.txt so the (heavy) captioning pass runs once.
-Models load lazily — importing this module downloads nothing.
+Captions are cached by checkpoint; student visual concepts come from CLIP.
 """
 from __future__ import annotations
 
@@ -14,9 +11,10 @@ from config import CONFIG
 
 
 class Captioner:
-    def __init__(self, model_id: str = None, device: str = None):
-        self.model_id = model_id or CONFIG.captioner_id
-        self.device = device or CONFIG.device
+    def __init__(self, model_id: str = None, device: str = None, cfg=CONFIG):
+        self.cfg = cfg
+        self.model_id = model_id or cfg.captioner_id
+        self.device = device or cfg.device
         self._proc = None
         self._model = None
 
@@ -28,12 +26,11 @@ class Captioner:
             self._proc = BlipProcessor.from_pretrained(self.model_id, token=CONFIG.hf_token)
             self._model = BlipForConditionalGeneration.from_pretrained(
                 self.model_id, token=CONFIG.hf_token,
-                torch_dtype=torch.float16 if self.device == "cuda" else torch.float32,
+                torch_dtype=torch.float16 if str(self.device).startswith("cuda") else torch.float32,
             ).to(self.device).eval()
 
-    @staticmethod
-    def _cache_path(dataset: str, image_id: str) -> Path:
-        return CONFIG.paths.captions / dataset / (image_id + ".txt")
+    def _cache_path(self, dataset: str, image_id: str) -> Path:
+        return self.cfg.paths.captions / self.model_id.replace("/", "--") / dataset / (image_id + ".txt")
 
     def caption_image(self, image_path, max_new_tokens: int = 30) -> str:
         import torch
@@ -41,7 +38,7 @@ class Captioner:
 
         self._load()
         img = Image.open(image_path).convert("RGB")
-        inputs = self._proc(images=img, return_tensors="pt").to(self.device)
+        inputs = self._proc(images=img, return_tensors="pt").to(self.device, self._model.dtype)
         with torch.no_grad():
             out = self._model.generate(**inputs, max_new_tokens=max_new_tokens, num_beams=3)
         return self._proc.decode(out[0], skip_special_tokens=True).strip()
@@ -55,21 +52,19 @@ class Captioner:
             if cp.exists():
                 out[image_id] = cp.read_text(encoding="utf-8").strip()
                 continue
-            try:
-                cap = self.caption_image(images_dir / image_id)
-            except Exception:
-                cap = ""
+            cap = self.caption_image(images_dir / image_id)
             cp.parent.mkdir(parents=True, exist_ok=True)
             cp.write_text(cap, encoding="utf-8")
             out[image_id] = cap
         return out
 
 
-def load_captions(dataset: str) -> Dict[str, str]:
+def load_captions(dataset: str, cfg=CONFIG) -> Dict[str, str]:
     """Load any cached captions for a dataset split-set into {image_id: caption}."""
     out: Dict[str, str] = {}
-    d = CONFIG.paths.captions / dataset
+    d = cfg.paths.captions / cfg.captioner_id.replace("/", "--") / dataset
     if d.exists():
         for f in d.glob("*.txt"):
             out[f.stem] = f.read_text(encoding="utf-8").strip()
     return out
+

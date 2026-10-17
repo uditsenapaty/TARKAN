@@ -1,14 +1,9 @@
-"""Aspect-centered KG retrieval + triple encoding (paper Eqs. 12-14).
+"""Aspect-centered KG retrieval and triple encoding (paper Section 3.5).
 
-    Q_k = {a_k} ∪ O_k ∪ C_k                                              (Eq. 12)
-        O_k = sentiment/opinion words near the aspect (spaCy)
-        C_k = visual concepts (caption nouns / CLIP zero-shot)
-    G_k = top-M retrieved triples (e_p, r, e_q)                          (Eq. 13)
-    g_kq = phi([e_p ; r ; e_q])                                          (Eq. 14)
-
-Retrieval/scoring is non-differentiable preprocessing; only TripleEncoder has
-parameters. Entity embeddings come from ConceptNet Numberbatch (English, 300-d)
-with a deterministic hash fallback for OOV / offline tests.
+The shared frozen BERTweet encoder and linear projection implement Eq. 9.
+Retrieval uses a deterministic lexical/weight proxy for semantic ranking; this
+choice is documented, not claimed to reproduce an archived experimental index.
+Numberbatch/hash embeddings are available only for explicit tests/experiments.
 """
 from __future__ import annotations
 
@@ -66,6 +61,7 @@ def retrieve_triples(
     kg: KnowledgeGraph,
     top_m: int = None,
     teacher_scores: Optional[Dict[str, float]] = None,
+    cfg=CONFIG,
 ) -> List[Triple]:
     """Memoized wrapper. Retrieval is deterministic preprocessing keyed entirely by the
     query terms, and every training aspect is retrieved again on every epoch — ~380
@@ -73,15 +69,16 @@ def retrieve_triples(
     result-neutral and removes about a third of the step time. Skipped when teacher
     scores are supplied (those vary per call)."""
     if teacher_scores is None:
-        key = (tuple(query.terms()), top_m or CONFIG.top_m_triples)
+        key = (kg, tuple(query.terms()), top_m or cfg.top_m_triples,
+               tuple(cfg.kg_sources), tuple(cfg.kg_rank_weights))
         hit = _RETRIEVAL_CACHE.get(key)
         if hit is not None:
             return hit
-        out = _retrieve_triples_uncached(query, kg, top_m, None)
+        out = _retrieve_triples_uncached(query, kg, top_m, None, cfg)
         if len(_RETRIEVAL_CACHE) < 400_000:
             _RETRIEVAL_CACHE[key] = out
         return out
-    return _retrieve_triples_uncached(query, kg, top_m, teacher_scores)
+    return _retrieve_triples_uncached(query, kg, top_m, teacher_scores, cfg)
 
 
 def _retrieve_triples_uncached(
@@ -89,30 +86,31 @@ def _retrieve_triples_uncached(
     kg: KnowledgeGraph,
     top_m: int = None,
     teacher_scores: Optional[Dict[str, float]] = None,
+    cfg=CONFIG,
 ) -> List[Triple]:
-    """Gather neighbours of all query terms, score, keep top-M (Eq. 13).
+    """Gather neighbours of all query terms, score, keep top-M (retrieval preprocessing).
 
     score = weight + lexical_match + affective_relevance + relation_prior (+ teacher)
     (equal-weight combination — Open-Q #8; deterministic tie-break).
     """
-    top_m = top_m or CONFIG.top_m_triples
+    top_m = top_m or cfg.top_m_triples
     cand: Dict[str, Triple] = {}
     aspect_key = normalize(query.aspect_term)
     qkeys = {normalize(t) for t in query.terms()}
     # Gather a quota PER SOURCE. kg.neighbors() truncates by raw weight, and SenticNet
     # edges all carry weight 1.0 while ConceptNet assertions go up to 16 — so a single
     # pooled fetch deletes SenticNet before the affective-relevance term in score()
-    # below ever sees it (measured: 6.9% SenticNet against the paper's 41.6%, Table 8).
+    # below sees it. Source quotas are an explicit implementation choice.
     # Retrieving each source separately lets the scorer, not the weight scale, decide.
-    sources = CONFIG.kg_sources or (None,)
+    sources = cfg.kg_sources or (None,)
     for term in query.terms():
         for src in sources:
             for tr in kg.neighbors(term, top=top_m * 4, sources=(src,) if src else None):
                 cand[_triple_key(tr)] = tr
 
-    # ---- Eq. 15: s_ret = alpha*s_sem + beta*s_aff + gamma*s_rel, all on a common [0,1]
-    # scale, with (alpha, beta, gamma) = (0.5, 0.3, 0.2) from Table 5. ----
-    alpha, beta, gamma = getattr(CONFIG, "kg_rank_weights", (0.5, 0.3, 0.2))
+    # ---- Retrieval score: s_ret = alpha*s_sem + beta*s_aff + gamma*s_rel, all on a common [0,1]
+    # scale, with (alpha, beta, gamma) = (0.5, 0.3, 0.2) from Table 2. ----
+    alpha, beta, gamma = cfg.kg_rank_weights
     items = list(cand.values())
     if not items:
         return []
@@ -208,13 +206,13 @@ class EntityEmbedder:
 
 
 def verbalize(t: Triple) -> str:
-    """Paper §3.6: each retrieved triple (h, r, t) is verbalized as "h r t"."""
+    """Paper Section 3.5: each retrieved triple (h, r, t) is verbalized as "h r t"."""
     rel = re.sub(r"(?<!^)(?=[A-Z])", " ", str(t.relation)).replace("_", " ").lower().strip()
     return f"{str(t.head).replace('_', ' ')} {rel} {str(t.tail).replace('_', ' ')}"
 
 
 class VerbalizedTripleEncoder(nn.Module):
-    """Paper §3.6 — encode the verbalized triple with the STUDENT'S text encoder.
+    """Paper Section 3.5 — encode the verbalized triple with the STUDENT'S text encoder.
 
     "Each retrieved triple (h, r, t) is verbalized as 'h r t' and encoded using the
     encoder. The pooled representation is projected to the common d-dimensional space to
@@ -231,15 +229,10 @@ class VerbalizedTripleEncoder(nn.Module):
         self.enc = text_encoder            # SHARED with the student, not a copy
         self.tok = tokenizer
         self.max_len = max_len
-        # freeze_backbone=False (default): L_kg backpropagates through the triple
-        # representations into the shared text encoder, so the encoder actually learns to
-        # represent KG evidence. With BERTweet-base this fits on a 16 GB card. Setting it
-        # True detaches the KG branch — an engineering compromise that changes the model
-        # (the encoder then receives no gradient from L_kg), kept only as an OOM escape.
-        self.freeze_backbone = freeze_backbone
+        # The shared backbone remains frozen in the manuscript profile.
+        self.freeze_backbone = freeze_backbone or getattr(text_encoder, "frozen", False)
         dropout = CONFIG.dropout if dropout is None else dropout
-        self.proj = nn.Sequential(nn.Linear(text_encoder.out_dim, d), nn.GELU(),
-                                  nn.Dropout(dropout))
+        self.proj = nn.Sequential(nn.Linear(text_encoder.out_dim, d))
         self._ids_cache = {}
 
     def _encode_ids(self, text: str):
@@ -278,7 +271,7 @@ class VerbalizedTripleEncoder(nn.Module):
 
 
 class TripleEncoder(nn.Module):
-    """phi([e_p ; r ; e_q]) -> g_kq in R^d  (Eq. 14) — Numberbatch entity-embedding form.
+    """phi([e_p ; r ; e_q]) -> g_kq in R^d  (experimental embedding encoder) — Numberbatch entity-embedding form.
 
     Kept as the cheap fallback; the paper's own formulation is VerbalizedTripleEncoder.
     """
@@ -313,3 +306,4 @@ class TripleEncoder(nn.Module):
         r = self.relation_emb(torch.tensor(rel_ids, device=device))  # [M, d]
         g = self.phi(torch.cat([ep, r, eq], dim=-1))              # [M, d]
         return g
+

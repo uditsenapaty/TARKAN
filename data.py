@@ -1,4 +1,4 @@
-"""Data pipeline (paper §3.1, §5).
+"""Data pipeline (paper Section 3.1).
 
 The CopotronicRifat/TwitterDataMABSA files are TomBERT/MASC format — ONE (aspect,
 sentiment) per line, with the aspect masked as `$T$`. This module:
@@ -139,7 +139,7 @@ def load_split(data_dir, split: str) -> List[Instance]:
 
 
 # --------------------------------------------------------------------------- #
-# query building (O_k opinion words, C_k visual concepts) — paper Eq. 12
+# query building (O_k opinion words, C_k visual concepts) — paper Section 3.5
 # --------------------------------------------------------------------------- #
 _NLP = None
 
@@ -154,25 +154,26 @@ def _get_spacy():
 
 
 def opinion_words(tokens: List[str], span: Tuple[int, int], window: int = 3) -> List[str]:
-    """O_k (paper Eq. 14): adjectives/adverbs/verbs in a THREE-token window of the span."""
-    try:
-        doc = _get_spacy()(" ".join(tokens))
-    except Exception:
-        return []
+    """Dependency-linked or nearby adjectives, adverbs and verbs (Table 2)."""
+    from spacy.tokens import Doc
+    nlp = _get_spacy()
+    doc = nlp(Doc(nlp.vocab, words=tokens))
     s, e = span
     out = []
     for tok in doc:
-        if tok.pos_ in ("ADJ", "ADV", "VERB") and (s - window) <= tok.i <= (e + window):
+        linked = s <= tok.head.i < e or any(s <= child.i < e for child in tok.children)
+        nearby = (s - window) <= tok.i < (e + window)
+        if tok.pos_ in ("ADJ", "ADV", "VERB") and (linked or nearby):
             out.append(tok.lemma_.lower())
     return list(dict.fromkeys(out))
 
 
 def visual_concepts(caption) -> List[str]:
-    """C_k (Eq. 12): visual concepts for the image.
+    """C_k: visual concepts for the image.
 
     The paper allows these to come from "CLIP-predicted concepts, object tags, or image
     caption keywords". A list is taken as CLIP-predicted concepts and used as-is (this is
-    the BLIP-free path, see scripts/clip_visual_concepts.py); a string is treated as a
+    the BLIP-free path, see prepare.py concepts); a string is treated as a
     caption and reduced to its noun lemmas.
     """
     if isinstance(caption, (list, tuple)):
@@ -249,10 +250,10 @@ class TarkanDataset:
             sub = tok.tokenize(w) or [w]
             pieces.extend(sub)
             word_ids.extend([wi] * len(sub))
+        max_len = self.cfg.max_text_len
+        pieces, word_ids = pieces[:max_len-1], word_ids[:max_len-1]
         pieces.append(eos)
         word_ids.append(-1)
-        max_len = self.cfg.max_text_len
-        pieces, word_ids = pieces[:max_len], word_ids[:max_len]
         input_ids = tok.convert_tokens_to_ids(pieces)
         attn = [1] * len(input_ids)
         return input_ids, attn, word_ids
@@ -271,7 +272,7 @@ class TarkanDataset:
         return labels
 
     def _subtoken_spans(self, word_ids, aspects):
-        """Map word-level aspect spans -> subtoken index ranges (for Eq. 6 pooling)."""
+        """Map word-level aspect spans -> subtoken index ranges (for aspect pooling)."""
         spans = []
         for (ws, we, _pol) in aspects:
             idxs = [i for i, wid in enumerate(word_ids) if ws <= wid < we]
@@ -289,7 +290,7 @@ class TarkanDataset:
         bio_labels = self._bio_subtoken_labels(word_ids, inst.bio)
         sub_spans = self._subtoken_spans(word_ids, inst.aspects)
         polarities = [POL2ID[p] for (_, _, p) in inst.aspects]
-        # paper §3.3, Eq. 8: aspect-ONLY tags for the preliminary anchor generator
+        # paper Section 3.3, Eq. 5: aspect-ONLY tags for the preliminary anchor generator
         anchor_words = ["O"] * len(inst.tokens)
         for (ws, we, _p) in inst.aspects:
             if we > ws and ws < len(anchor_words):
@@ -308,6 +309,9 @@ class TarkanDataset:
             prev = wid
         item = {
             "instance_id": inst.id,
+            "image_id": inst.image_id,
+            "tokens": inst.tokens,
+            "visual_concepts": visual_concepts(self.captions.get(inst.image_id))[:self.cfg.top_l_concepts],
             "input_ids": torch.tensor(input_ids, dtype=torch.long),
             "attention_mask": torch.tensor(attn, dtype=torch.long),
             "bio_labels": torch.tensor(bio_labels, dtype=torch.long),
@@ -327,12 +331,10 @@ class TarkanDataset:
         import torch
         from PIL import Image
 
-        try:
-            path = self.images_dir / image_id
-            img = Image.open(path).convert("RGB")
-            return self._img_processor()(images=img, return_tensors="pt")["pixel_values"][0]
-        except Exception:
-            return torch.zeros(3, 224, 224)  # missing image -> zeros (model suppresses via r_k)
+        path = self.images_dir / image_id
+        with Image.open(path) as source:
+            img = source.convert("RGB")
+        return self._img_processor()(images=img, return_tensors="pt")["pixel_values"][0]
 
 
 def collate_fn(batch, pad_id: int = 1):
@@ -353,6 +355,9 @@ def collate_fn(batch, pad_id: int = 1):
         anc[i, :L] = x["anchor_labels"]
     out = {
         "instance_id": [x["instance_id"] for x in batch],
+        "image_id": [x["image_id"] for x in batch],
+        "tokens": [x["tokens"] for x in batch],
+        "visual_concepts": [x["visual_concepts"] for x in batch],
         "input_ids": input_ids,
         "attention_mask": attn,
         "bio_labels": bio,
@@ -367,3 +372,4 @@ def collate_fn(batch, pad_id: int = 1):
     if "pixel_values" in batch[0]:
         out["pixel_values"] = torch.stack([x["pixel_values"] for x in batch], 0)
     return out
+
